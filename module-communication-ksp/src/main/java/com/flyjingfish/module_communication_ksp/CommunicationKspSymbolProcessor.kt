@@ -38,9 +38,11 @@ class CommunicationKspSymbolProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val ret1 = processImplementClass(resolver)
+        val symbols =
+            resolver.getSymbolsWithAnnotation(ImplementClass::class.qualifiedName!!)
+        val ret1 = processImplementClass(symbols)
+        val ret3 = processExposeInterface(resolver,symbols)
         val ret2 = processExposeBean(resolver)
-        val ret3 = processExposeInterface(resolver)
         val ret = arrayListOf<KSAnnotated>()
         ret.addAll(ret1)
         ret.addAll(ret2)
@@ -48,40 +50,7 @@ class CommunicationKspSymbolProcessor(
         return ret
     }
 
-//    private fun processImplementClass(resolver: Resolver): List<KSAnnotated> {
-//        val symbols =
-//            resolver.getSymbolsWithAnnotation(ImplementClass::class.qualifiedName!!)
-//        for (symbol in symbols) {
-//            val annotationMap = getAnnotation(symbol)
-//            val classMethodMap: MutableMap<String, Any?> =
-//                annotationMap["@ImplementClass"] ?: continue
-//
-//            val value: KSType? =
-//                if (classMethodMap["clazz"] != null) classMethodMap["clazz"] as KSType else null
-////            val targetClassName: String =
-////                (if (value != null) value.declaration.packageName.asString() + "." + value.toString() else null)
-////                    ?: continue
-//            val className = (symbol as KSClassDeclaration).packageName.asString() + "." + symbol
-//            val fileName = "${value.toString()}\$\$BindClass";
-//            val typeBuilder = TypeSpec.classBuilder(
-//                fileName
-//            ).addModifiers(KModifier.FINAL).addAnnotation(
-//                AnnotationSpec.builder(KeepClass::class)
-//                    .addMember(
-//                        "clazzName = %S",
-//                        "@$className"
-//                    )
-//                    .build()
-//            )
-//
-//            writeToFile(typeBuilder, fileName, symbol)
-//        }
-//        return symbols.filter { !it.validate() }.toList()
-//    }
-
-    private fun processImplementClass(resolver: Resolver): List<KSAnnotated> {
-        val symbols =
-            resolver.getSymbolsWithAnnotation(ImplementClass::class.qualifiedName!!)
+    private fun processImplementClass(symbols: Sequence<KSAnnotated>): List<KSAnnotated> {
         for (symbol in symbols) {
             val annotationMap = getAnnotation(symbol)
             val classMethodMap: MutableMap<String, Any?> =
@@ -120,27 +89,6 @@ class CommunicationKspSymbolProcessor(
         }
         return symbols.filter { !it.validate() }.toList()
     }
-//    private fun processExposeBean(resolver: Resolver): List<KSAnnotated> {
-//        val symbols =
-//            resolver.getSymbolsWithAnnotation(ExposeBean::class.qualifiedName!!)
-//        for (symbol in symbols) {
-//            if (symbol is KSClassDeclaration) {
-//                val filePath = (symbol.location as FileLocation).filePath;
-//                val encodePath = encodeURLComponent(filePath)
-//
-//                val typeBuilder = TypeSpec.classBuilder(
-//                    encodePath
-//                ).addModifiers(KModifier.FINAL)
-//                writeToFile2(typeBuilder,encodePath, symbol.packageName.asString(), symbol)
-//            }
-//
-//        }
-//        return symbols.filter { !it.validate() }.toList()
-//    }
-//
-//    private fun encodeURLComponent(url: String?): String {
-//        return URLEncoder.encode(url, "UTF-8")
-//    }
     private fun processExposeBean(resolver: Resolver): List<KSAnnotated> {
         val symbols =
             resolver.getSymbolsWithAnnotation(ExposeBean::class.qualifiedName!!)
@@ -159,11 +107,17 @@ class CommunicationKspSymbolProcessor(
         return symbols.filter { !it.validate() }.toList()
     }
 
-    private fun processExposeInterface(resolver: Resolver): List<KSAnnotated> {
+    private fun processExposeInterface(resolver: Resolver,implementSymbols: Sequence<KSAnnotated>): List<KSAnnotated> {
         val symbols =
             resolver.getSymbolsWithAnnotation(ExposeInterface::class.qualifiedName!!)
         for (symbol in symbols) {
             if (symbol is KSClassDeclaration) {
+                val className = symbol.packageName.asString() + "." + symbol
+                val isContain = isContainImplementClass(implementSymbols,className)
+
+                if (!isContain){
+                    throw IllegalArgumentException("注意: $symbol 没有相应的实现类")
+                }
 
                 val file = File((symbol.location as FileLocation).filePath)
 
@@ -176,41 +130,28 @@ class CommunicationKspSymbolProcessor(
         }
         return symbols.filter { !it.validate() }.toList()
     }
-//    private fun processExposeClass(resolver: Resolver): List<KSAnnotated> {
-//        val symbols =
-//            resolver.getSymbolsWithAnnotation(ExposeClass::class.qualifiedName!!)
-//        val implementClassSymbols =
-//            resolver.getSymbolsWithAnnotation(ImplementClass::class.qualifiedName!!)
-//        for (symbol in symbols) {
-//            val annotationMap = getAnnotation(symbol)
-//            val classMethodMap: MutableMap<String, Any?> =
-//                annotationMap["@ExposeClass"] ?: continue
-//
-//            if (symbol is KSClassDeclaration) {
-//                val className = symbol.packageName.asString() + "." + symbol
-//                val implementClassName = classMethodMap["clazzName"] as String
-//                if (implementClassName.isNotEmpty()) {
-//                    val contain = isContainImplementClass(
-//                        implementClassSymbols,
-//                        implementClassName,
-//                        className
-//                    )
-//                    if (!contain) {
-//                        throw IllegalArgumentException("注意：请给 $symbol 设置的实现类 $implementClassName，设置 @ImplementClass 注解")
-//                    }
-//                }
-//
-//                val file = File((symbol.location as FileLocation).filePath)
-//
-//                val fileName =
-//                    "${symbol}${file.absolutePath.substring(file.absolutePath.lastIndexOf("."))}";
-//
-//                writeToFile(fileName, symbol, symbol.packageName.asString(), file)
-//            }
-//
-//        }
-//        return symbols.filter { !it.validate() }.toList()
-//    }
+
+    private fun isContainImplementClass(
+        symbols: Sequence<KSAnnotated>,
+        className: String
+    ): Boolean {
+//        logger.error("className = $className ,symbols= ${symbols}")
+        var isContainImplementClass = false
+        for (symbol in symbols) {
+            val annotationMap = getAnnotation(symbol)
+            val classMethodMap: MutableMap<String, Any?> =
+                annotationMap["@ImplementClass"] ?: continue
+
+            val value: KSType? =
+                if (classMethodMap["clazz"] != null) classMethodMap["clazz"] as KSType else null
+            val targetClassName: String? =
+                (if (value != null) value.declaration.packageName.asString() + "." + value.toString() else null)
+            if (targetClassName == className){
+                isContainImplementClass = true
+            }
+        }
+        return isContainImplementClass
+    }
 
     private fun writeToFile(
         fileName: String, symbol: KSAnnotated, packageName: String, file: File
@@ -226,34 +167,6 @@ class CommunicationKspSymbolProcessor(
                 ).write(bytes)
         }
 
-    }
-    private fun isContainImplementClass(
-        symbols: Sequence<KSAnnotated>,
-        implementClassName: String,
-        className: String
-    ): Boolean {
-        var isContainImplementClass = false
-        for (symbol in symbols) {
-            if (symbol is KSClassDeclaration) {
-                val thisName = symbol.packageName.asString() + "." + symbol
-                if (thisName == implementClassName) {
-
-                    val typeList = symbol.superTypes.toList()
-                    for (ksTypeReference in typeList) {
-                        val superClassName =
-                            ksTypeReference.resolve().declaration.packageName.asString() + "." + ksTypeReference
-                        if (superClassName == className) {
-                            isContainImplementClass = true
-                            break
-                        }
-                    }
-                    if (!isContainImplementClass){
-                        throw IllegalArgumentException("注意：实现类 $implementClassName，没有继承 $className")
-                    }
-                }
-            }
-        }
-        return isContainImplementClass
     }
 
     private fun isImplementClass(
@@ -298,27 +211,6 @@ class CommunicationKspSymbolProcessor(
 
     private fun whatsMyName(name: String): FunSpec.Builder {
         return FunSpec.builder(name).addModifiers(KModifier.FINAL)
-    }
-    private fun writeToFile2(
-        typeBuilder: TypeSpec.Builder,
-        fileName: String,
-        packageName: String,
-        symbol: KSAnnotated
-    ) {
-        val typeSpec = typeBuilder.build()
-        val kotlinFile = FileSpec.builder(CommunicationPackage.BIND_CLASS_PACKAGE, fileName).addType(typeSpec)
-            .build()
-        codeGenerator
-            .createNewFile(
-                Dependencies(false, symbol.containingFile!!),
-                packageName,
-                fileName,
-                "api"
-            )
-            .writer()
-            .use {
-                kotlinFile.writeTo(it)
-            }
     }
     private fun writeToFile(
         typeBuilder: TypeSpec.Builder,
