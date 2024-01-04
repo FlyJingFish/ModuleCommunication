@@ -140,6 +140,7 @@ communication -> generateCommunication
 class LoginActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //getSingleInstance 是获取单例  getNewInstance 是获取新的对象
         val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class.java)
         val user = userHelper.getUser()
         Log.e("user",""+user)
