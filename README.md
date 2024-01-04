@@ -144,11 +144,11 @@ class LoginActivity: AppCompatActivity() {
 }
 ```
 
-#### 五、引入依赖库(非必须)
+#### 五、引入依赖库
 
 ```gradle
 dependencies {
-    //非必须项 👇（可以直接放在公共 module）
+    //必须项 👇（可以直接放在公共 module）
     implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.0'
 }
 ```
@@ -162,16 +162,9 @@ dependencies {
 ```
 # ModuleCommunication必备混淆规则 -----start-----
 
--keep class * {
-    @androidx.annotation.Keep <fields>;
-}
-
--keepnames class * implements com.flyjingfish.android_aop_annotation.base.BasePointCut
--keepnames class * implements com.flyjingfish.android_aop_annotation.base.MatchClassMethod
--keep class * implements com.flyjingfish.android_aop_annotation.base.BasePointCut{
-    public <init>();
-}
--keep class * implements com.flyjingfish.android_aop_annotation.base.MatchClassMethod{
+-keepnames @com.flyjingfish.module_communication_annotation.ExposeInterface class * {*;}
+-keepnames @com.flyjingfish.module_communication_annotation.KeepClass class * {*;}
+-keep @com.flyjingfish.module_communication_annotation.KeepClass class * {
     public <init>();
 }
 
