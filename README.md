@@ -52,15 +52,6 @@ CommunicationModuleName = communication
 
 - 1、在 **负责通信模块(```communication```)** 的 ```build.gradle``` 添加
 
-老版本
-
-```gradle
-//必须项 👇
-apply plugin: 'communication.module'
-```
-
-或者新版本
-
 ```gradle
 //必须项 👇
 plugins {
@@ -70,16 +61,6 @@ plugins {
 ```
 
 - 2、在需要 暴露代码的模块 的 ```build.gradle``` 添加
-
-
-老版本
-
-```gradle
-//必须项 👇
-apply plugin: 'communication.export'
-```
-
-或者新版本
 
 ```gradle
 //必须项 👇
