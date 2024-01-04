@@ -31,8 +31,8 @@ buildscript {
 
 ```gradle
 plugins {
-    //非必须项 👇，如果需要自定义切面，并且使用 android-aop-ksp 这个库的话需要配置 ，下边版本号根据你项目的 Kotlin 版本决定
-    id 'com.google.devtools.ksp' version '1.8.0-1.0.9' apply false
+    //必须项 👇
+    id 'com.google.devtools.ksp' version '1.8.10-1.0.9' apply false
 }
 ```
 
@@ -89,7 +89,16 @@ plugins {
 }
 ```
 
-#### 四、开始使用
+#### 四、引入依赖库
+
+```gradle
+dependencies {
+    //必须项 👇（可以直接放在公共 module）
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.0'
+}
+```
+
+#### 五、开始使用
 
 - 1、在需要暴露给其他module使用的逻辑代码接口上使用 ```@ExposeInterface```
 
@@ -119,7 +128,7 @@ class UserHelperImpl :UserHelper {
 }
 ```
 
-- 4、在需要使用 负责通信模块(```communication```) 的 module 上引入 ```communication``` 
+- 4、在需要使用 通信模块(```communication```) 的 module 上引入 ```communication``` 
 
 ```gradle
 compileOnly(project(":communication"))
@@ -144,14 +153,7 @@ class LoginActivity: AppCompatActivity() {
 }
 ```
 
-#### 五、引入依赖库
 
-```gradle
-dependencies {
-    //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.0'
-}
-```
 
 这个配置项理论上来说不需要加，因为在配置上边步骤三中引入插件时，已经默认引入了
 
