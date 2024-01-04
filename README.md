@@ -32,7 +32,7 @@ buildscript {
 
 ```gradle
 plugins {
-    //必须项 👇
+    //必须项 👇下边版本号根据你项目的 Kotlin 版本决定👇
     id 'com.google.devtools.ksp' version '1.8.10-1.0.9' apply false
 }
 ```
