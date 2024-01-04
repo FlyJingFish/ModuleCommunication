@@ -106,7 +106,7 @@ interface UserHelper {
 data class User (val id:String)
 ```
 
-- 3、在```@ExposeInterface```注解的接口类的实现类上使用 ```@ImplementClass(UserHelper::class)```
+- 3、在```@ExposeInterface```注解的接口类的实现类上使用 ```@ImplementClass(UserHelper::class)```，**实现类必须只有一个**
 
 ```kotlin
 @ImplementClass(UserHelper::class)
