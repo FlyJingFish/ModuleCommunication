@@ -134,7 +134,7 @@ communication -> generateCommunication
 
 调用这个命令，将会生成共享代码。不调用直接运行代码可能会报错，一般报错最多次数为项目的 module 个数，即可生成完所有共享代码
 
-- 6、调用共享的代码
+- 6、在 lib-login 模块调用 lib-user 暴露出来的的代码
 
 ```kotlin
 class LoginActivity: AppCompatActivity() {
