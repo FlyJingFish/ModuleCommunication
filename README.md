@@ -81,6 +81,10 @@ dependencies {
 
 #### 五、开始使用
 
+以下面代码结构为例介绍下
+
+<img src="/screenshot/demo.png" alt="show" />
+
 下边的暴露代码在本项目的 lib-user 中
 
 - 1、在需要暴露给其他module使用的逻辑代码接口上使用 ```@ExposeInterface```
@@ -121,6 +125,8 @@ compileOnly(project(":communication"))
 
 - 5、调用 gradle 命令
 
+communication -> generateCommunication
+
 <img src="/screenshot/gradle.png" alt="show" />
 
 调用这个命令，将会生成共享代码，不调用可能会报错
@@ -137,6 +143,7 @@ class LoginActivity: AppCompatActivity() {
     }
 }
 ```
+
 
 
 #### 六、番外（非必须项）
