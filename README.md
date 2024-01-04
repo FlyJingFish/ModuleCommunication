@@ -23,7 +23,7 @@
 buildscript {
     dependencies {
         //必须项 👇
-        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.0'
+        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.1'
     }
 }
 ```
@@ -78,7 +78,7 @@ plugins {
 ```gradle
 dependencies {
     //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.0'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.1'
 }
 ```
 
