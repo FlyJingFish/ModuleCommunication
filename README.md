@@ -23,7 +23,7 @@
 buildscript {
     dependencies {
         //必须项 👇
-        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.1'
+        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.2'
     }
 }
 ```
@@ -78,7 +78,7 @@ plugins {
 ```gradle
 dependencies {
     //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.1'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.2'
 }
 ```
 
@@ -173,8 +173,8 @@ communicationConfig{
 # ModuleCommunication必备混淆规则 -----start-----
 
 -keepnames @com.flyjingfish.module_communication_annotation.ExposeInterface class * {*;}
--keepnames @com.flyjingfish.module_communication_annotation.KeepClass class * {*;}
--keep @com.flyjingfish.module_communication_annotation.KeepClass class * {
+-keepnames class * implements com.flyjingfish.module_communication_annotation.BindClass
+-keep class * implements com.flyjingfish.module_communication_annotation.BindClass{
     public <init>();
 }
 

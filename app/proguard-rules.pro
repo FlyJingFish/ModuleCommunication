@@ -21,7 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 -keepnames @com.flyjingfish.module_communication_annotation.ExposeInterface class * {*;}
--keepnames @com.flyjingfish.module_communication_annotation.KeepClass class * {*;}
--keep @com.flyjingfish.module_communication_annotation.KeepClass class * {
+-keepnames class * implements com.flyjingfish.module_communication_annotation.BindClass
+-keep class * implements com.flyjingfish.module_communication_annotation.BindClass{
     public <init>();
 }

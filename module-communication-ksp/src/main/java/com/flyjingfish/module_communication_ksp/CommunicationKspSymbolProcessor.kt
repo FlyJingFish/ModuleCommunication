@@ -5,7 +5,6 @@ import com.flyjingfish.module_communication_annotation.CommunicationPackage
 import com.flyjingfish.module_communication_annotation.ExposeBean
 import com.flyjingfish.module_communication_annotation.ExposeInterface
 import com.flyjingfish.module_communication_annotation.ImplementClass
-import com.flyjingfish.module_communication_annotation.KeepClass
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
@@ -17,7 +16,6 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.validate
-import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -26,11 +24,6 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 import java.io.FileInputStream
-import java.io.UnsupportedEncodingException
-
-import java.net.URLEncoder
-
-
 
 
 class CommunicationKspSymbolProcessor(
@@ -72,10 +65,7 @@ class CommunicationKspSymbolProcessor(
             val fileName = "${value.toString()}\$\$BindClass";
             val typeBuilder = TypeSpec.classBuilder(
                 fileName
-            ).addModifiers(KModifier.FINAL).addSuperinterface(listOfHoverboards).addAnnotation(
-                AnnotationSpec.builder(KeepClass::class)
-                    .build()
-            )
+            ).addModifiers(KModifier.FINAL).addSuperinterface(listOfHoverboards)
 
             val whatsMyName1 = whatsMyName("getImplementClassInstance")
                 .addModifiers(KModifier.OVERRIDE)
