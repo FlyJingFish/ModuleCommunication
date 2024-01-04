@@ -137,7 +137,7 @@ class LoginActivity: AppCompatActivity() {
 ```
 
 
-#### 六、番外
+#### 六、番外（非必须项）
 
 如果你想定义更多的通信模块，而不是使用同一个，可以在使用 ```'communication.export'``` module 加入以下配置项
 
