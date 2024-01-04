@@ -9,6 +9,7 @@
 
 ### ModuleCommunication 旨在解决模块间通信，可以让模块间的代码在互相访问，并且依旧保持各个模块的代码依旧存在于其自己的模块而不需要下沉到公共模块
 
+[灵感来源-微信Android模块化架构重构实践](https://mp.weixin.qq.com/s/6Q818XA5FaHd7jJMFBG60w)
 
 ## 使用步骤
 
