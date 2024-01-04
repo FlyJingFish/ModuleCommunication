@@ -27,9 +27,9 @@ abstract class ExportTask : DefaultTask() {
         val variantName = variant.name
 //        val buildType = variant.buildType
 //        val flavorName = variant.flavorName
-        searchJSONFile(project,variantName)
+        searchApiFile(project,variantName)
     }
-    private fun searchJSONFile(curProject: Project, variantName: String){
+    private fun searchApiFile(curProject: Project, variantName: String){
         val genFile = curProject.file("${curProject.buildDir}/generated/ksp/${variantName}").listFiles()
         val collection = curProject.files(genFile).asFileTree.filter { it.name.endsWith(".api") }
 

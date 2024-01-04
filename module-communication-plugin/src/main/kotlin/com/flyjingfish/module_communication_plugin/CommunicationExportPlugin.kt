@@ -16,8 +16,8 @@ class CommunicationExportPlugin : Plugin<Project> {
         if (!hasKsp){
             project.plugins.apply("com.google.devtools.ksp")
         }
-//        project.dependencies.add("implementation","io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:${LibVersion.version}")
-//        project.dependencies.add("ksp","io.github.FlyJingFish.ModuleCommunication:module-communication-ksp:${LibVersion.version}")
+        project.dependencies.add("implementation","io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:${LibVersion.version}")
+        project.dependencies.add("ksp","io.github.FlyJingFish.ModuleCommunication:module-communication-ksp:${LibVersion.version}")
 //        project.dependencies.add("compileOnly",":communication")
         androidComponents.onVariants { variant ->
             variantList.add(variant)

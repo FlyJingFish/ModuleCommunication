@@ -3,7 +3,7 @@ package com.flyjingfish.login
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.flyjingfish.module_communication_core.BeanUtils
+import com.flyjingfish.module_communication_annotation.BeanUtils
 import com.flyjingfish.user.UserHelper
 
 class LoginActivity: AppCompatActivity() {

@@ -1,7 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+//    id("com.google.devtools.ksp")
     id("communication.export")
 }
 communicationConfig{
@@ -34,7 +34,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(project(":base-lib"))
-    implementation(project(":module-communication-annotation"))
     compileOnly(project(":communication"))
-    ksp(project(":module-communication-ksp"))
+//    implementation(project(":module-communication-annotation"))
+//    ksp(project(":module-communication-ksp"))
 }

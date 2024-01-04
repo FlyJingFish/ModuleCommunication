@@ -30,6 +30,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    api(project(":module-communication-core"))
+    api(project(":module-communication-annotation"))
 
 }
