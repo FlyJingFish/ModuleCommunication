@@ -72,6 +72,8 @@ plugins {
 
 #### 四、引入依赖库
 
+如果 module 已经引入过上一步的 ```communication.export``` ```communication.module``` 这两个插件，就无需配置这一步（不报错找不到类就无需引入）
+
 ```gradle
 dependencies {
     //必须项 👇（可以直接放在公共 module）
