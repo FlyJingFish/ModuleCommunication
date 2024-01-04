@@ -137,8 +137,20 @@ class LoginActivity: AppCompatActivity() {
 ```
 
 
+#### 六、番外
 
-这个配置项理论上来说不需要加，因为在配置上边步骤三中引入插件时，已经默认引入了
+如果你想定义更多的通信模块，而不是使用同一个，可以在使用 ```'communication.export'``` module 加入以下配置项
+
+```gradle
+plugins {
+    id("communication.export")
+}
+communicationConfig{
+    exportModuleName = "communication2"
+}
+```
+
+这样共享代码会转移到 ```communication2``` 这个 module 中
 
 #### 混淆规则
 
