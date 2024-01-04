@@ -81,6 +81,8 @@ dependencies {
 
 #### 五、开始使用
 
+下边的暴露代码在本项目的 lib-user 中
+
 - 1、在需要暴露给其他module使用的逻辑代码接口上使用 ```@ExposeInterface```
 
 ```kotlin
@@ -109,7 +111,7 @@ class UserHelperImpl :UserHelper {
 }
 ```
 
-- 4、在需要使用 通信模块(```communication```) 的 module 上引入 ```communication``` 
+- 4、在需要使用 通信模块(```communication```) 的 module（lib-login） 上引入 ```communication``` 
 
 ```gradle
 compileOnly(project(":communication"))
