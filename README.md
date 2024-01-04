@@ -121,6 +121,8 @@ compileOnly(project(":communication"))
 
 <img src="/screenshot/gradle.png" alt="show" />
 
+调用这个命令，将会生成共享代码，不调用可能会报错
+
 - 6、调用共享的代码
 
 ```kotlin
