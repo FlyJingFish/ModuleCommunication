@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     dependencies {
-        classpath("io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.0")
+        classpath("io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:${rootProject.properties["TestVersion"]}")
     }
 }
 plugins {
@@ -31,6 +31,66 @@ fun getAppVName(): String {
     return getVersionProperty("PROJ_VERSION", "1.0.0")
 }
 
+
+fun getAppVCode():Int {
+    val versionName = getAppVName()
+    val versions = versionName.split("\\.")
+    var updateVersionString = ""
+    for ((i, item) in versions.withIndex()) {
+        val subString = item
+        if (i == 0) {
+            updateVersionString += subString
+            continue
+        } else if (i >= 3) {
+            break
+        }
+        val subNumber = Integer.parseInt(subString)
+        updateVersionString += String.format("%01d", subNumber)
+    }
+    return updateVersionString.toInt()
+}
+
+task ("bumpVersion", {
+    doLast {
+        val versionName = getAppVCode() + 1
+        val str = versionName.toString()
+        val length = str.length
+        var newVersionName = ""
+        for (i in 0 until length) {
+            newVersionName += str.get(i)
+            if (i < 2) {
+                newVersionName += "."
+            }
+        }
+
+        val versionPropsFile = file("version.properties")
+        val versionProps = java.util.Properties()
+        versionProps.load(java.io.FileInputStream(versionPropsFile))
+        val oldVersionName :String= versionProps["PROJ_VERSION"].toString()
+        versionProps["PROJ_VERSION"] = newVersionName
+        versionProps.store(versionPropsFile.outputStream(), null)
+
+        updateREADME("README.md",oldVersionName,newVersionName)
+        updateREADME("README_EN.md",oldVersionName,newVersionName)
+
+        val gradleFile = File("gradle.properties")
+        val gradleText = gradleFile.readText()
+        val text2 = gradleText.replace("TestVersion = "+oldVersionName,"TestVersion = "+newVersionName)
+
+
+        gradleFile.writeText(text2)
+        println("升级版本号完成，versionName = "+newVersionName)
+    }
+})
+
+
+fun updateREADME(readme :String,oldVersionName :String,newVersionName :String) {
+    val configFile = File(readme)
+    val exportText = configFile.readText()
+    var text = exportText.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:"+oldVersionName,"io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:"+newVersionName)
+    text = text.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:"+oldVersionName,"io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:"+newVersionName)
+    configFile.writeText(text)
+}
 val appVersionName = getAppVName()
 group = properties["PROJ_GROUP"].toString()
 version = appVersionName
