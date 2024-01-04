@@ -34,7 +34,7 @@ fun getAppVName(): String {
 
 fun getAppVCode():Int {
     val versionName = getAppVName()
-    val versions = versionName.split("\\.")
+    val versions = versionName.split(".")
     var updateVersionString = ""
     for ((i, item) in versions.withIndex()) {
         val subString = item
@@ -71,7 +71,7 @@ task ("bumpVersion", {
         versionProps.store(versionPropsFile.outputStream(), null)
 
         updateREADME("README.md",oldVersionName,newVersionName)
-        updateREADME("README_EN.md",oldVersionName,newVersionName)
+        updateLib("module-communication-plugin/src/main/kotlin/com/flyjingfish/module_communication_plugin/LibVersion.kt",oldVersionName,newVersionName)
 
         val gradleFile = File("gradle.properties")
         val gradleText = gradleFile.readText()
@@ -83,6 +83,12 @@ task ("bumpVersion", {
     }
 })
 
+fun updateLib(readme :String,oldVersionName :String,newVersionName :String) {
+    val configFile = File(readme)
+    val exportText = configFile.readText()
+    val text = exportText.replace("const val version = \"$oldVersionName\"","const val version = \"$newVersionName\"")
+    configFile.writeText(text)
+}
 
 fun updateREADME(readme :String,oldVersionName :String,newVersionName :String) {
     val configFile = File(readme)
