@@ -1,7 +1,9 @@
 package com.flyjingfish.module_communication_annotation
 
-object BeanUtils {
-    private val singleBean = mutableMapOf<Class<out Any>,Any>()
+import java.util.concurrent.ConcurrentHashMap
+
+object ImplementClassUtils {
+    private val singleBean = ConcurrentHashMap<Class<out Any>,Any>()
 
     fun <T> getNewInstance(key:Class<out Any>):T{
         val clazzName = CommunicationPackage.BIND_CLASS_PACKAGE + "." + key.simpleName +"\$\$BindClass"
@@ -19,7 +21,10 @@ object BeanUtils {
         var instance = singleBean[key]
         if (instance == null){
             instance = getNewInstance(key)
-            singleBean[key] = instance as Any
+            val oldInstance = singleBean.putIfAbsent(key,instance as Any)
+            if (oldInstance != null){
+                instance = oldInstance
+            }
         }
         return instance as T
     }

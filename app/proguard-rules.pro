@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepnames @com.flyjingfish.module_communication_annotation.ExposeInterface class * {*;}
+-keepnames @com.flyjingfish.module_communication_annotation.KeepClass class * {*;}
+-keep @com.flyjingfish.module_communication_annotation.KeepClass class * {
+    public <init>();
+}

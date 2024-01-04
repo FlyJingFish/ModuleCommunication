@@ -1,6 +1,6 @@
 package com.flyjingfish.module_communication_annotation
 
 
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.CLASS)
 annotation class ExposeInterface
