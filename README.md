@@ -67,7 +67,7 @@ CommunicationModuleName = communication
 
 下边的暴露代码在本项目的 ```lib-user``` 模块中
 
-- 1、在需要 ```lib-user``` 的 ```build.gradle``` 添加
+- 1、在需要暴露代码的模块 ```lib-user``` 的 ```build.gradle``` 添加
 
 ```gradle
 //必须项 👇
