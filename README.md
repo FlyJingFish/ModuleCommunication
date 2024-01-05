@@ -114,14 +114,15 @@ communication -> generateCommunication
 
 - 6、在需要使用 ```lib-login``` 模块 上引入通信模块 ```communication``` 
 
-  a、```lib-login``` 引入通信模块
+a、```lib-login``` 引入通信模块
+
 ```gradle
 compileOnly(project(":communication"))
 ```
 
 **注意引入方式必须是 compileOnly ，否则会导致打包失败** 
 
-  b、如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件，就无需配置这一步（不报错找不到类就无需引入）
+b、如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件，就无需配置这一步（不报错找不到类就无需引入）
 
 ```gradle
 dependencies {
