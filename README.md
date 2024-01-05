@@ -39,19 +39,11 @@ plugins {
 
 [Kotlin 和 KSP Github 的匹配版本号列表](https://github.com/google/ksp/releases)
 
-#### 二、配置负责通信的 module
+#### 二、新增负责通信的 module
 
 - 1、例如新建一个名为 ```communication``` 的module(下文将以 ```communication``` 为例介绍)
 
-- 2、在项目根目录的 ```gradle.properties``` 新增如下配置
-
-```
-CommunicationModuleName = communication
-```
-
-#### 三、配置通信 module
-
-- 1、在 **负责通信模块(```communication```)** 的 ```build.gradle``` 添加
+- 2、在 ```communication``` 的 ```build.gradle``` 添加
 
 ```gradle
 //必须项 👇
@@ -61,7 +53,21 @@ plugins {
 }
 ```
 
-- 2、在需要 暴露代码的模块 的 ```build.gradle``` 添加
+- 3、在项目根目录的 ```gradle.properties``` 新增如下配置
+
+```
+CommunicationModuleName = communication
+```
+
+#### 三、开始使用
+
+以下面代码结构为例介绍下
+
+<img src="/screenshot/demo.png" alt="show" />
+
+下边的暴露代码在本项目的 ```lib-user``` 模块中
+
+- 1、在需要 ```lib-user``` 的 ```build.gradle``` 添加
 
 ```gradle
 //必须项 👇
@@ -71,26 +77,7 @@ plugins {
 }
 ```
 
-#### 四、引入依赖库
-
-如果 module 已经引入过上一步的 ```communication.export``` ```communication.module``` 这两个插件，就无需配置这一步（不报错找不到类就无需引入）
-
-```gradle
-dependencies {
-    //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.2'
-}
-```
-
-#### 五、开始使用
-
-以下面代码结构为例介绍下
-
-<img src="/screenshot/demo.png" alt="show" />
-
-下边的暴露代码在本项目的 lib-user 中
-
-- 1、在需要暴露给其他module使用的逻辑代码接口上使用 ```@ExposeInterface```
+- 2、在需要暴露给其他module使用的逻辑代码接口上使用 ```@ExposeInterface```
 
 ```kotlin
 @ExposeInterface
@@ -99,14 +86,14 @@ interface UserHelper {
 }
 ```
 
-- 2、把```@ExposeInterface```注解的接口类涉及的数据类上使用 ```@ExposeBean```
+- 3、把```@ExposeInterface```注解的接口类涉及的数据类上使用 ```@ExposeBean```
 
 ```kotlin
 @ExposeBean
 data class User (val id:String)
 ```
 
-- 3、在```@ExposeInterface```注解的接口类的实现类上使用 ```@ImplementClass(UserHelper::class)```，**实现类必须只有一个**
+- 4、在```@ExposeInterface```注解的接口类的实现类上使用 ```@ImplementClass(UserHelper::class)```，**实现类必须只有一个**
 
 ```kotlin
 @ImplementClass(UserHelper::class)
@@ -118,7 +105,7 @@ class UserHelperImpl :UserHelper {
 }
 ```
 
-- 4、在需要使用 通信模块(```communication```) 的 module（lib-login） 上引入 ```communication``` 
+- 5、在需要使用 通信模块(```communication```) 的 module（lib-login） 上引入 ```communication``` 
 
 ```gradle
 compileOnly(project(":communication"))
@@ -126,7 +113,7 @@ compileOnly(project(":communication"))
 
 **注意引入方式必须是 compileOnly ，否则会导致打包失败** 
 
-- 5、调用 gradle 命令
+- 6、调用 gradle 命令
 
 communication -> generateCommunication
 
@@ -134,8 +121,17 @@ communication -> generateCommunication
 
 调用这个命令，将会生成共享代码。不调用直接运行代码可能会报错，一般报错最多次数为项目的 module 个数，即可生成完所有共享代码
 
-- 6、在 lib-login 模块调用 lib-user 暴露出来的的代码
+- 7、在 ```lib-login``` 模块使用 ```lib-user``` 暴露出来的的代码
 
+  - 如果 ```lib-login``` 已经引入过 ```communication.export``` 插件，就无需配置这一步（不报错找不到类就无需引入）
+
+```gradle
+dependencies {
+    //必须项 👇（可以直接放在公共 module）
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.2'
+}
+```
+  - 可以调用代码了
 ```kotlin
 class LoginActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -148,9 +144,7 @@ class LoginActivity: AppCompatActivity() {
 }
 ```
 
-
-
-#### 六、番外（非必须项）
+#### 四、番外（非必须项）
 
 如果你想定义更多的通信模块，而不是使用同一个，可以在使用 ```'communication.export'``` module 加入以下配置项
 
