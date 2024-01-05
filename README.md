@@ -7,7 +7,7 @@
 [![GitHub license](https://img.shields.io/github/license/FlyJingFish/ModuleCommunication.svg)](https://github.com/FlyJingFish/ModuleCommunication/blob/master/LICENSE)
 
 
-### ModuleCommunication 旨在解决模块间通信，可以让模块间的代码在互相访问，并且依旧保持各个模块的代码依旧存在于其自己的模块而不需要下沉到公共模块
+### ModuleCommunication 旨在解决模块间的通信需求，可以让模块间的代码在依旧存在于其自己的模块的前提下，实现能够互相访问而不需要下沉到公共模块。以此来解决公共模块因为各个模块下沉代码而导致的不断膨胀的问题
 
 [灵感来源-微信Android模块化架构重构实践](https://mp.weixin.qq.com/s/6Q818XA5FaHd7jJMFBG60w)
 
