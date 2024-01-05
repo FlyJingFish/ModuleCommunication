@@ -104,16 +104,7 @@ class UserHelperImpl :UserHelper {
     }
 }
 ```
-
-- 5、在需要使用 通信模块(```communication```) 的 module（lib-login） 上引入 ```communication``` 
-
-```gradle
-compileOnly(project(":communication"))
-```
-
-**注意引入方式必须是 compileOnly ，否则会导致打包失败** 
-
-- 6、调用 gradle 命令
+- 5、调用 gradle 命令，生成共享代码
 
 communication -> generateCommunication
 
@@ -121,9 +112,16 @@ communication -> generateCommunication
 
 调用这个命令，将会生成共享代码。不调用直接运行代码可能会报错，一般报错最多次数为项目的 module 个数，即可生成完所有共享代码
 
-- 7、在 ```lib-login``` 模块使用 ```lib-user``` 暴露出来的的代码
+- 6、在需要使用 ```lib-login``` 模块 上引入通信模块 ```communication``` 
 
-  - 如果 ```lib-login``` 已经引入过 ```communication.export``` 插件，就无需配置这一步（不报错找不到类就无需引入）
+  - ```lib-login``` 引入通信模块
+```gradle
+compileOnly(project(":communication"))
+```
+
+**注意引入方式必须是 compileOnly ，否则会导致打包失败** 
+
+  - 如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件，就无需配置这一步（不报错找不到类就无需引入）
 
 ```gradle
 dependencies {
@@ -131,7 +129,9 @@ dependencies {
     implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.2'
 }
 ```
-  - 可以调用代码了
+
+- 7、在 ```lib-login``` 模块使用 ```lib-user``` 暴露出来的的代码
+
 ```kotlin
 class LoginActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
