@@ -6,7 +6,7 @@ plugins {
 }
 
 communicationConfig{
-    exportModuleName = "communication"
+    exportModuleName = "communication2"
 }
 
 android {
@@ -37,7 +37,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(project(":base-lib"))
-    compileOnly(project(":communication2"))
+    compileOnly(project(":communication"))
 //    implementation(project(":module-communication-annotation"))
 //    ksp(project(":module-communication-ksp"))
 }

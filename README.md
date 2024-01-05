@@ -110,7 +110,9 @@ communication -> generateCommunication
 
 <img src="/screenshot/gradle.png" alt="show" />
 
-调用这个命令，将会生成共享代码。不调用直接运行代码可能会报错，一般报错最多次数为项目的 module 个数，即可生成完所有共享代码
+调用这个命令，将会生成共享代码。不调用直接运行代码可能会报错，一般报错最多次数为项目的 module 个数，即可生成完所有共享代码，如下图示
+
+<img src="/screenshot/code.png" alt="show" />
 
 - 6、在需要使用 ```lib-login``` 模块 上引入通信模块 ```communication``` 
 
