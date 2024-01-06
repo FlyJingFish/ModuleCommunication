@@ -106,7 +106,7 @@ class CommunicationKspSymbolProcessor(
                 val isContain = isContainImplementClass(implementSymbols,className)
 
                 if (!isContain){
-                    throw IllegalArgumentException("注意: $symbol 没有相应的实现类")
+                    throw IllegalArgumentException("注意: $className 没有相应的实现类")
                 }
 
                 val file = File((symbol.location as FileLocation).filePath)
@@ -137,7 +137,21 @@ class CommunicationKspSymbolProcessor(
             val targetClassName: String? =
                 (if (value != null) value.declaration.packageName.asString() + "." + value.toString() else null)
             if (targetClassName == className){
-                isContainImplementClass = true
+                if (symbol is KSClassDeclaration) {
+                    val typeList = symbol.superTypes.toList()
+                    for (ksTypeReference in typeList) {
+                        val superClassName =
+                            ksTypeReference.resolve().declaration.packageName.asString() + "." + ksTypeReference
+                        if (superClassName == className) {
+                            isContainImplementClass = true
+                            break
+                        }
+                    }
+                    if (!isContainImplementClass){
+                        val thisName = symbol.packageName.asString() + "." + symbol
+                        throw IllegalArgumentException("注意：实现类 $thisName，没有继承 $className")
+                    }
+                }
             }
         }
         return isContainImplementClass
@@ -175,7 +189,8 @@ class CommunicationKspSymbolProcessor(
                 }
             }
             if (!isImplementClass){
-                throw IllegalArgumentException("注意：实现类 $symbol，没有继承 $className")
+                val thisName = symbol.packageName.asString() + "." + symbol
+                throw IllegalArgumentException("注意：实现类 $thisName 的 @ImplementClass 注解设置的类为$className，但却没有没有继承 $className")
             }
         }
         return isImplementClass
