@@ -1,6 +1,7 @@
 package com.flyjingfish.module_communication_annotation
 
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KClass
 
 object ImplementClassUtils {
     private val singleBean = ConcurrentHashMap<Class<out Any>,Any>()
@@ -29,4 +30,11 @@ object ImplementClassUtils {
         return instance as T
     }
 
+    fun <T> getNewInstance(key:KClass<out Any>):T{
+        return getNewInstance(key.java)
+    }
+
+    fun <T> getSingleInstance(key: KClass<out Any>):T{
+        return getSingleInstance(key.java)
+    }
 }

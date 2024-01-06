@@ -9,7 +9,7 @@ import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 class UserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val loginHelper = ImplementClassUtils.getNewInstance<LoginHelper>(LoginHelper::class.java)
+        val loginHelper = ImplementClassUtils.getNewInstance<LoginHelper>(LoginHelper::class)
         val login = loginHelper.getLogin()
         Log.e("login",""+login)
     }

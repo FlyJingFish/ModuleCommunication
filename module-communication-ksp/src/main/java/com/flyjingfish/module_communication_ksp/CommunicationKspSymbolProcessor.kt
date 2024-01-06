@@ -50,22 +50,22 @@ class CommunicationKspSymbolProcessor(
                 annotationMap["@ImplementClass"] ?: continue
 
             val value: KSType? =
-                if (classMethodMap["clazz"] != null) classMethodMap["clazz"] as KSType else null
+                if (classMethodMap["value"] != null) classMethodMap["value"] as KSType else null
             val targetClassName: String =
                 (if (value != null) value.declaration.packageName.asString() + "." + value.toString() else null)
                     ?: continue
 
             isImplementClass(symbol,targetClassName)
 
-            val hoverboard = ClassName((symbol as KSClassDeclaration).packageName.asString(), "$symbol")
-            val list = ClassName.bestGuess(BindClass::class.qualifiedName!!)
-            val listOfHoverboards = list.parameterizedBy(hoverboard)
-            val className = (symbol as KSClassDeclaration).packageName.asString() + "." + symbol
+            val implementClassName = ClassName((symbol as KSClassDeclaration).packageName.asString(), "$symbol")
+            val bindClassName = ClassName.bestGuess(BindClass::class.qualifiedName!!)
+            val superinterface = bindClassName.parameterizedBy(implementClassName)
+            val className = symbol.packageName.asString() + "." + symbol
 
             val fileName = "${value.toString()}\$\$BindClass";
             val typeBuilder = TypeSpec.classBuilder(
                 fileName
-            ).addModifiers(KModifier.FINAL).addSuperinterface(listOfHoverboards)
+            ).addModifiers(KModifier.FINAL).addSuperinterface(superinterface)
 
             val whatsMyName1 = whatsMyName("getImplementClassInstance")
                 .addModifiers(KModifier.OVERRIDE)
@@ -133,7 +133,7 @@ class CommunicationKspSymbolProcessor(
                 annotationMap["@ImplementClass"] ?: continue
 
             val value: KSType? =
-                if (classMethodMap["clazz"] != null) classMethodMap["clazz"] as KSType else null
+                if (classMethodMap["value"] != null) classMethodMap["value"] as KSType else null
             val targetClassName: String? =
                 (if (value != null) value.declaration.packageName.asString() + "." + value.toString() else null)
             if (targetClassName == className){

@@ -9,7 +9,7 @@ import com.flyjingfish.user.UserHelper
 class LoginActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class.java)
+        val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class)
         val user = userHelper.getUser()
         Log.e("user",""+user)
     }

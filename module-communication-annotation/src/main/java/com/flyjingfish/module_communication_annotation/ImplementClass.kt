@@ -5,4 +5,4 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class ImplementClass(val clazz : KClass<out Any>)
+annotation class ImplementClass(val value : KClass<out Any>)
