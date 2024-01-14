@@ -53,9 +53,9 @@ abstract class ExportTask : DefaultTask() {
         var packageName :String ? = null
         while (br.readLine().also { line = it } != null) {
             val code = line.trim { it <= ' ' }
-            println(code)
+//            println(code)
             if (code.startsWith("package")) {
-                println(code.split(" ".toRegex())[1])
+//                println(code.split(" ".toRegex())[1])
                 packageName = code.split(" ")[1]
                 break
             }

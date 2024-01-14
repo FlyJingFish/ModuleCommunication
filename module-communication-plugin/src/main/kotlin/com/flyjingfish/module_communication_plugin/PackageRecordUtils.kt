@@ -17,7 +17,7 @@ object PackageRecordUtils {
     fun clear(moduleKey :String,buildFile : File){
         val lastRecordPackageSet = lastRecordPackageMap[moduleKey]
         lastRecordPackageSet?.let {
-            println("lastRecordPackageSet-size="+it.size);
+//            println("lastRecordPackageSet-size="+it.size);
 
             for (packageName in it) {
                 val packageFile = File(buildFile.absolutePath +"/"+ packageName.replace(".","/"))
