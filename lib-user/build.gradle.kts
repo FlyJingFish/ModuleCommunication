@@ -4,9 +4,9 @@ plugins {
 //    id("com.google.devtools.ksp")
     id("communication.export")
 }
-communicationConfig{
-    exportModuleName = "communication"
-}
+//communicationConfig{
+//    exportModuleName = "communication"
+//}
 android {
     namespace = "com.flyjingfish.user"
     compileSdk = 34
@@ -34,7 +34,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(project(":base-lib"))
-    compileOnly(project(":communication2"))
+    compileOnly(project(":communication"))
 //    implementation(project(":module-communication-annotation"))
 //    ksp(project(":module-communication-ksp"))
 }

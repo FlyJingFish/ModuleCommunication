@@ -5,9 +5,9 @@ plugins {
     id("communication.export")
 }
 
-communicationConfig{
-    exportModuleName = "communication2"
-}
+//communicationConfig{
+//    exportModuleName = "communication2"
+//}
 
 android {
     namespace = "com.flyjingfish.login"

@@ -3,6 +3,7 @@ package com.flyjingfish.module_communication_plugin
 import com.android.build.api.variant.AndroidComponentsExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.configurationcache.extensions.capitalized
 import java.io.File
 
 class CommunicationModulePlugin : Plugin<Project> {
@@ -19,5 +20,12 @@ class CommunicationModulePlugin : Plugin<Project> {
                 java.addStaticSourceDirectory("build/${LibVersion.pathName}/${variant.name}")
             }
         }
+//        project.afterEvaluate {
+//            for (variant in variantList) {
+//                val variantName = variant.name
+//                val variantNameCapitalized = variantName.capitalized()
+//                project.tasks.findByName("ksp${variantNameCapitalized}Kotlin")?.finalizedBy("generateCommunication$variantNameCapitalized")
+//            }
+//        }
     }
 }

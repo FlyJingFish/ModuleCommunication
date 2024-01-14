@@ -19,6 +19,7 @@ abstract class ExportTask : DefaultTask() {
     abstract var variant: Variant
     @get:Input
     abstract var exportModuleName: String
+
     @TaskAction
     fun taskAction() {
         val variantName = variant.name
@@ -30,12 +31,16 @@ abstract class ExportTask : DefaultTask() {
 
         val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
         val path = "build/${LibVersion.pathName}/${variantName}"
-        val packageFile = File(dir, path)
-        packageFile.deleteRecursively()
+        val buildFile = File(dir, path)
+
+        val moduleKey = curProject.buildDir.absolutePath
+        PackageRecordUtils.clear(moduleKey,buildFile)
+
         for (file in collection.files) {
             val packageName = getPackageName(file)
             packageName?.let {
-                val packagePath = packageFile.absolutePath +"/"+ it.replace(".","/")
+                PackageRecordUtils.record(moduleKey,it)
+                val packagePath = buildFile.absolutePath +"/"+ it.replace(".","/")
                 val targetFile = File(packagePath,file.name.replace(".api",""))
                 file.copyTo(targetFile,true)
             }
