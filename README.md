@@ -25,7 +25,7 @@
 buildscript {
     dependencies {
         //必须项 👇
-        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.4'
+        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.5'
     }
 }
 ```
@@ -132,7 +132,7 @@ b、如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件�
 ```gradle
 dependencies {
     //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.4'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.5'
 }
 ```
 
