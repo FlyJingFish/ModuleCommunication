@@ -14,7 +14,7 @@ object PackageRecordUtils {
         lastRecordPackageSet.add(packageName)
     }
 
-    fun clear(moduleKey :String,buildFile : File){
+    fun clear(moduleKey :String,buildFile : File):Boolean{
         val lastRecordPackageSet = lastRecordPackageMap[moduleKey]
         lastRecordPackageSet?.let {
 //            println("lastRecordPackageSet-size="+it.size);
@@ -26,6 +26,7 @@ object PackageRecordUtils {
 
             it.clear()
         }
+        return lastRecordPackageSet.isNullOrEmpty()
     }
 
 }

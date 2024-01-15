@@ -34,7 +34,21 @@ abstract class ExportTask : DefaultTask() {
         val buildFile = File(dir, path)
 
         val moduleKey = curProject.buildDir.absolutePath
-        PackageRecordUtils.clear(moduleKey,buildFile)
+        val isClear = PackageRecordUtils.clear(moduleKey,buildFile)
+        if (isClear){
+            val recordPackageSet = mutableSetOf<String>()
+            for (file in collection.files) {
+                val packageName = getPackageName(file)
+                packageName?.let {
+                    recordPackageSet.add(it)
+                }
+            }
+
+            for (packageName in recordPackageSet) {
+                val packageFile = File(buildFile.absolutePath +"/"+ packageName.replace(".","/"))
+                packageFile.deleteRecursively()
+            }
+        }
 
         for (file in collection.files) {
             val packageName = getPackageName(file)
