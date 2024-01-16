@@ -125,7 +125,7 @@ a、```lib-login``` 引入通信模块
 compileOnly(project(":communication"))
 ```
 
-**注意引入方式必须是 compileOnly ，否则会导致打包失败** 
+**注意引入方式必须是 compileOnly ，否则会导致打包失败。并且在哪个 module 中使用就在哪引入** 
 
 b、如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件，就无需配置这一步（不报错找不到类就无需引入）
 
