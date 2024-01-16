@@ -181,7 +181,11 @@ communicationConfig{
 # ModuleCommunication必备混淆规则 -----end-----
 ```
 
+#### 常见问题
 
+1、删除某一个类后，通信 module 中依然存在删除的类
+
+- 这种情况下建议直接 clean 项目，再次重新调用 generateCommunication 命令。
 
 ### 最后推荐我写的另外一些库
 
