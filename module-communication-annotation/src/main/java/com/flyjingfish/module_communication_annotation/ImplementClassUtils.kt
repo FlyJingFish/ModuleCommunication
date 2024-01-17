@@ -7,7 +7,7 @@ object ImplementClassUtils {
     private val singleBean = ConcurrentHashMap<Class<out Any>,Any>()
 
     fun <T> getNewInstance(key:Class<out Any>):T{
-        val clazzName = CommunicationPackage.BIND_CLASS_PACKAGE + "." + key.simpleName +"\$\$BindClass"
+        val clazzName = "${CommunicationPackage.BIND_CLASS_PACKAGE}.${key.simpleName}\$\$BindClass"
         val clazz = try {
             Class.forName(clazzName) as Class<out Any>
         } catch (e: ClassNotFoundException) {
