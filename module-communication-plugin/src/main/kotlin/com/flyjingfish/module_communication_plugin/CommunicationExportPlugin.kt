@@ -31,6 +31,12 @@ class CommunicationExportPlugin : Plugin<Project> {
                 throw NullPointerException("请设置 Copy 的目标 moduleName")
             }
 
+            for ((index,exposeAsset) in communicationConfig.exposeAssets.withIndex()) {
+                if (exposeAsset.substring(0,1) == "/"){
+                    communicationConfig.exposeAssets[index] = exposeAsset.substring(1)
+                }
+            }
+
             val variantName = variant.name
             val variantNameCapitalized = variantName.capitalized()
             project.tasks.register("generateCommunicationCode$variantNameCapitalized", ExportTask::class.java) {
