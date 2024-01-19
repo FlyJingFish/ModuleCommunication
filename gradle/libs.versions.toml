@@ -2,6 +2,7 @@
 ksp = "1.8.10-1.0.9"
 kotlinpoet_version = "1.15.3"
 gradle_version = "7.4.1"
+dom4j_version = "1.6.1"
 org-jetbrains-kotlin-jvm = "1.8.10"
 agp = "7.4.1"
 org-jetbrains-kotlin-android = "1.8.10"
@@ -17,6 +18,7 @@ minSdkVersion = "21"
 kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet_version" }
 ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
 gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle_version" }
+dom4j = { group = "dom4j", name = "dom4j", version.ref = "dom4j_version" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }

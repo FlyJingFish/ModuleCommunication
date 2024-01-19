@@ -10,6 +10,7 @@ import org.gradle.configurationcache.extensions.capitalized
 class CommunicationExportPlugin : Plugin<Project> {
     private val variantList: ArrayList<Variant> = ArrayList()
     override fun apply(project: Project) {
+        variantList.clear()
         val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
         project.extensions.add("communicationConfig", CommunicationConfig::class.java)
         val hasKsp = project.plugins.hasPlugin("com.google.devtools.ksp")
@@ -23,25 +24,42 @@ class CommunicationExportPlugin : Plugin<Project> {
             variantList.add(variant)
             val communicationConfig = project.extensions.getByType(CommunicationConfig::class.java)
             var moduleName = communicationConfig.exportModuleName
-            if (moduleName.isEmpty()){
+            if (moduleName.isNullOrEmpty()){
                 moduleName = project.properties["CommunicationModuleName"].toString()
             }
-            if (moduleName.isEmpty()){
+            if (moduleName.isNullOrEmpty()){
                 throw NullPointerException("请设置 Copy 的目标 moduleName")
             }
 
             val variantName = variant.name
             val variantNameCapitalized = variantName.capitalized()
-            project.tasks.register("generateCommunication$variantNameCapitalized", ExportTask::class.java) {
+            project.tasks.register("generateCommunicationCode$variantNameCapitalized", ExportTask::class.java) {
                 it.variant = variant
+                it.communicationConfig = communicationConfig
                 it.exportModuleName = moduleName
+                it.copyType = ExportTask.CopyType.copyCode
+            }.dependsOn("ksp${variantNameCapitalized}Kotlin")
+
+            project.tasks.register("generateCommunicationRes$variantNameCapitalized", ExportTask::class.java) {
+                it.variant = variant
+                it.communicationConfig = communicationConfig
+                it.exportModuleName = moduleName
+                it.copyType = ExportTask.CopyType.copyRes
+            }.dependsOn("pre${variantNameCapitalized}Build")
+
+            project.tasks.register("generateCommunicationAll$variantNameCapitalized", ExportTask::class.java) {
+                it.variant = variant
+                it.communicationConfig = communicationConfig
+                it.exportModuleName = moduleName
+                it.copyType = ExportTask.CopyType.all
             }.dependsOn("ksp${variantNameCapitalized}Kotlin")
         }
         project.afterEvaluate {
             for (variant in variantList) {
                 val variantName = variant.name
                 val variantNameCapitalized = variantName.capitalized()
-                project.tasks.findByName("ksp${variantNameCapitalized}Kotlin")?.finalizedBy("generateCommunication$variantNameCapitalized")
+                project.tasks.findByName("ksp${variantNameCapitalized}Kotlin")?.finalizedBy("generateCommunicationCode$variantNameCapitalized")
+                project.tasks.findByName("pre${variantNameCapitalized}Build")?.finalizedBy("generateCommunicationRes$variantNameCapitalized")
             }
         }
     }

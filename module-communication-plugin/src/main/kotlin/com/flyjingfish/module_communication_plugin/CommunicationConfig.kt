@@ -6,4 +6,13 @@ open class CommunicationConfig {
      */
     var exportModuleName = ""
 
+    /**
+     * 要copy的资源id
+     */
+    val exposeResIds = mutableListOf<String>()
+
+    /**
+     * 要copy的 assets
+     */
+    val exposeAssets = mutableListOf<String>()
 }

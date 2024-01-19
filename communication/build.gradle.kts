@@ -30,6 +30,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+//    sourceSets {
+//        this.getByName("debug").res.srcDirs("src/main/res")
+//    }
 }
 
 dependencies {

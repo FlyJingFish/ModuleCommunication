@@ -10,4 +10,5 @@ dependencies {
     implementation(gradleApi())
     implementation(localGroovy())
     implementation(libs.gradle)
+    implementation(libs.dom4j)
 }

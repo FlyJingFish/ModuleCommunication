@@ -5,9 +5,18 @@ plugins {
     id("communication.export")
 }
 
-//communicationConfig{
+communicationConfig{
 //    exportModuleName = "communication2"
-//}
+    exposeResIds.addAll(arrayOf(
+        "R.drawable.login_logo",
+        "R.string.login_text",
+        "R.array.weekname",
+        "R.style.AppTheme2",
+        "R.id.icon_upi_close",
+        "R.color.color_theme",
+        "R.color.color_white_both"
+    ))
+}
 
 android {
     namespace = "com.flyjingfish.login"

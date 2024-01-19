@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    不变的-->
+    <color name="color_theme">#F8697A</color>
+    <color name="color_white_both">#ffffff</color>
+
+
+</resources>
