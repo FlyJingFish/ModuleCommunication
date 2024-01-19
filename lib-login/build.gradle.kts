@@ -6,7 +6,7 @@ plugins {
 }
 
 communicationConfig{
-//    exportModuleName = "communication2"
+    exportModuleName = "communication"
     exposeResIds.addAll(arrayOf(
         "R.drawable.login_logo",
         "R.string.login_text",

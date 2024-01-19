@@ -63,6 +63,8 @@ CommunicationModuleName = communication
 
 #### 三、开始使用
 
+##### 暴露 java 或 kotlin 代码
+
 以下面代码结构为例介绍下
 
 <img src="/screenshot/demo.png" alt="show" />
@@ -110,7 +112,7 @@ class UserHelperImpl :UserHelper {
 
 communication -> generateCommunication
 
-<img src="/screenshot/gradle.png" alt="show" />
+<img src="/screenshot/copy_code.png" alt="show" />
 
 调用这个命令，将会生成共享代码。不调用直接运行代码可能会报错，一般报错最多次数为项目的 module 个数，即可生成完所有共享代码，如下图示
 暴露的代码出现在了 ```communication``` 模块下
@@ -149,10 +151,38 @@ class LoginActivity: AppCompatActivity() {
     }
 }
 ```
+调用以下命令
+
+<img src="/screenshot/copy_assets_res.png" alt="show" />
+
+##### 暴露 res 或 assets 代码
+
+在需要暴露代码的模块的 ```build.gradle``` 设置如下代码：
+
+```gradle
+communicationConfig{
+    exportModuleName = "communication"
+    exposeResIds.addAll(arrayOf(
+        "R.drawable.login_logo",
+        "R.string.login_text",
+        "R.array.weekname",
+        "R.style.AppTheme2",
+        "R.color.color_theme",
+        "R.color.color_white_both"
+    ))
+    exposeAssets.addAll(arrayOf(
+        "matching",
+        "swipe_like"
+    ))
+}
+```
+
+
+
 
 #### 四、番外（非必须项）
 
-如果你想定义更多的通信模块，而不是使用同一个，可以在使用 ```'communication.export'``` module 加入以下配置项
+1、如果你想定义更多的通信模块，而不是使用同一个，可以在使用 ```'communication.export'``` module 加入以下配置项
 
 ```gradle
 plugins {
@@ -164,6 +194,12 @@ communicationConfig{
 ```
 
 这样共享代码会转移到 ```communication2``` 这个 module 中
+
+2、调用以下命令可一键暴露所有代码
+
+<img src="/screenshot/copy_all.png" alt="show" />
+
+
 
 #### 混淆规则
 
