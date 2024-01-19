@@ -16,6 +16,10 @@ communicationConfig{
         "R.color.color_theme",
         "R.color.color_white_both"
     ))
+    exposeAssets.addAll(arrayOf(
+        "matching",
+        "swipe_like"
+    ))
 }
 
 android {

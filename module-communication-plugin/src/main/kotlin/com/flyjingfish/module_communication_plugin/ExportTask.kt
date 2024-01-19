@@ -27,29 +27,84 @@ abstract class ExportTask : DefaultTask() {
     abstract var copyType: CopyType
 
     enum class CopyType{
-        all,copyRes,copyCode
+        ALL,COPY_RES,COPY_CODE,COPY_ASSETS
     }
 
     @TaskAction
     fun taskAction() {
-        val variantName = variant.name
         when(copyType){
-            CopyType.copyRes ->{
-                searchResFileAndCopy(project,variantName)
+            CopyType.COPY_RES ->{
+                searchResFileAndCopy(project)
             }
-            CopyType.copyCode ->{
-                searchApiFileAndCopy(project,variantName)
+            CopyType.COPY_CODE ->{
+                searchApiFileAndCopy(project)
+            }
+            CopyType.COPY_ASSETS ->{
+                searchAssetsFileAndCopy(project)
             }
             else -> {
-                searchApiFileAndCopy(project,variantName)
-                searchResFileAndCopy(project,variantName)
+                searchApiFileAndCopy(project)
+                searchResFileAndCopy(project)
+                searchAssetsFileAndCopy(project)
             }
         }
     }
 
+    fun searchAssetsFileAndCopy(curProject: Project){
+        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.assetsName}"
+        val libraryExtension = project.extensions.getByName("android") as LibraryExtension
+        val variantNames = libraryExtension.sourceSets.names
+
+        val moduleKey = curProject.buildDir.absolutePath
+        val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
+        val path = "build$codePath"
+        val buildFile = File(dir, path)
+
+        val resValuesDel = mutableListOf<String>()
+        for (resId in PackageRecordUtils.getExposeResAssets()) {
+            resValuesDel.add(resId)
+        }
+        if (resValuesDel.isNotEmpty()){
+            for (name in variantNames) {
+                val assets = libraryExtension.sourceSets.getByName(name).assets
+                for (srcDir in assets.srcDirs) {
+                    if (srcDir.exists()){
+                        for (resValue in resValuesDel) {
+                            val file = File("${srcDir.absolutePath}/$resValue")
+                            if (file.exists()){
+                                file.deleteRecursively()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        val resValues = mutableListOf<String>()
+        for (resId in communicationConfig.exposeAssets) {
+            resValues.add(resId)
+        }
+        if (resValues.isEmpty()){
+            return
+        }
+        for (name in variantNames) {
+            val res = libraryExtension.sourceSets.getByName(name).assets
+            for (srcDir in res.srcDirs) {
+                if (srcDir.exists()){
+                    for (resValue in resValues) {
+                        val targetFile = File("${buildFile.absolutePath}/$resValue")
+                        val file = File("${srcDir.absolutePath}/$resValue")
+                        file.copyRecursively(targetFile,true)
+                    }
 
 
-    fun searchResFileAndCopy(curProject: Project, variantName: String){
+                }
+            }
+        }
+        PackageRecordUtils.recordExposeAssets(communicationConfig.exposeResIds)
+    }
+
+    fun searchResFileAndCopy(curProject: Project){
         val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}"
         val libraryExtension = project.extensions.getByName("android") as LibraryExtension
         val variantNames = libraryExtension.sourceSets.names
@@ -190,87 +245,9 @@ abstract class ExportTask : DefaultTask() {
         }
         PackageRecordUtils.recordExposeResIds(communicationConfig.exposeResIds)
     }
-//    fun searchResFileAndCopy(curProject: Project, variantName: String){
-//        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}"
-//        val libraryExtension = project.extensions.getByName("android") as LibraryExtension
-//        val variantNames = libraryExtension.sourceSets.names
-//        val resValuesPre = mutableListOf<ResValue>()
-//        for (resId in communicationConfig.exposeResIds) {
-//            val res = ResValue(resId,resId.substring(resId.indexOf(".")+1,resId.lastIndexOf(".")),resId.substring(resId.lastIndexOf(".")+1))
-//            resValuesPre.add(res)
-//        }
-//        val resValues = resValuesPre.filter {
-//            it.id.startsWith("R.")
-//        }
-//        if (resValues.isEmpty()){
-//            return
-//        }
-//        val moduleKey = curProject.buildDir.absolutePath
-//        val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
-//        val path = "build$codePath"
-//        val buildFile = File(dir, path)
-//        PackageRecordUtils.clearResFile(moduleKey, buildFile)
-//        PackageRecordUtils.clearResXml(moduleKey, buildFile)
-//        for (name in variantNames) {
-//            val res = libraryExtension.sourceSets.getByName(name).res
-//            for (srcDir in res.srcDirs) {
-//                if (srcDir.exists()){
-//                    val genFile = srcDir.listFiles()
-//                    for (resValue in resValues) {
-//                        if (Dom4jData.fileRes.contains(resValue.dir)){//复制文件的
-//                            val dirs = genFile.filter {
-//                                it.name.startsWith(resValue.dir)
-//                            }
-//                            val collection = curProject.files(dirs).asFileTree.filter { it.name.startsWith(resValue.fileName) }
-//
-//                            for (file in collection.files) {
-//                                val copyPath = "${file.parentFile.name}/${file.name}"
-//                                PackageRecordUtils.recordResFile(moduleKey,copyPath)
-//                                val targetFile = File("${buildFile.absolutePath}/$copyPath")
-//                                file.copyTo(targetFile,true)
-//                            }
-//                        }else{//复制xml里边的值
-//                            val dirs = genFile.filter {
-//                                it.name.startsWith("values")
-//                            }
-//                            val collection = curProject.files(dirs).asFileTree.filter { it.name.endsWith(".xml") }
-//
-//                            for (file in collection.files) {
-//                                val elements = Dom4jData.getXmlFileElements(file) ?: continue
-//                                for (element in elements) {
-//                                    val nodeName: String = element.name
-//                                    val name: String = element.attribute("name").value
-//                                    if (name == resValue.fileName && nodeName != "item"){
-//                                        val targetFile = File("${buildFile.absolutePath}/${file.parentFile.name}",file.name)
-//                                        if (!targetFile.exists()){
-//                                            targetFile.parentFile?.mkdirs()
-//                                            targetFile.createNewFile()
-//                                            targetFile.writeText("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-//                                                    "<resources xmlns:tools=\"http://schemas.android.com/tools\" xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:app=\"http://schemas.android.com/apk/res-auto\">\n" +
-//                                                    "</resources>", Charset.forName("utf-8"))
-//                                        }
-//                                        val resMapValue = Dom4jData.resMap[resValue.dir]
-//                                        if ((resMapValue != null && nodeName == resMapValue)||resValue.dir == nodeName){
-//                                            val resValueRecord = ResValueRecord(targetFile,resValue)
-//                                            PackageRecordUtils.recordResXml(moduleKey,resValueRecord)
-//                                            Dom4jData.addElementLabel(targetFile,element,resValue.fileName)
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//
-//
-//
-//                }
-//            }
-//        }
-////        println("libraryExtension.sourceSets=${libraryExtension.sourceSets}")
-////        println("res.srcDirs=${res.srcDirs}")
-//    }
 
-    private fun searchApiFileAndCopy(curProject: Project, variantName: String){
+    private fun searchApiFileAndCopy(curProject: Project){
+        val variantName = variant.name
         val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.pathName}"
         val genFile = curProject.file("${curProject.buildDir}/generated/ksp/${variantName}").listFiles()
         val collection = curProject.files(genFile).asFileTree.filter { it.name.endsWith(".api") }

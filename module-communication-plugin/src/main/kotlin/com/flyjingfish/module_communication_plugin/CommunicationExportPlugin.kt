@@ -37,21 +37,28 @@ class CommunicationExportPlugin : Plugin<Project> {
                 it.variant = variant
                 it.communicationConfig = communicationConfig
                 it.exportModuleName = moduleName
-                it.copyType = ExportTask.CopyType.copyCode
+                it.copyType = ExportTask.CopyType.COPY_CODE
             }.dependsOn("ksp${variantNameCapitalized}Kotlin")
 
             project.tasks.register("generateCommunicationRes$variantNameCapitalized", ExportTask::class.java) {
                 it.variant = variant
                 it.communicationConfig = communicationConfig
                 it.exportModuleName = moduleName
-                it.copyType = ExportTask.CopyType.copyRes
-            }.dependsOn("pre${variantNameCapitalized}Build")
+                it.copyType = ExportTask.CopyType.COPY_RES
+            }
+
+            project.tasks.register("generateCommunicationAssets$variantNameCapitalized", ExportTask::class.java) {
+                it.variant = variant
+                it.communicationConfig = communicationConfig
+                it.exportModuleName = moduleName
+                it.copyType = ExportTask.CopyType.COPY_ASSETS
+            }
 
             project.tasks.register("generateCommunicationAll$variantNameCapitalized", ExportTask::class.java) {
                 it.variant = variant
                 it.communicationConfig = communicationConfig
                 it.exportModuleName = moduleName
-                it.copyType = ExportTask.CopyType.all
+                it.copyType = ExportTask.CopyType.ALL
             }.dependsOn("ksp${variantNameCapitalized}Kotlin")
         }
         project.afterEvaluate {
@@ -60,6 +67,7 @@ class CommunicationExportPlugin : Plugin<Project> {
                 val variantNameCapitalized = variantName.capitalized()
                 project.tasks.findByName("ksp${variantNameCapitalized}Kotlin")?.finalizedBy("generateCommunicationCode$variantNameCapitalized")
                 project.tasks.findByName("pre${variantNameCapitalized}Build")?.finalizedBy("generateCommunicationRes$variantNameCapitalized")
+                project.tasks.findByName("pre${variantNameCapitalized}Build")?.finalizedBy("generateCommunicationAssets$variantNameCapitalized")
             }
         }
     }
