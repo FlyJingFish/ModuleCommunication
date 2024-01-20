@@ -1,7 +1,7 @@
 package com.flyjingfish.module_communication_plugin
 
 object LibVersion {
-    const val version = "1.0.6"
+    const val version = "1.0.7"
     const val buildDir = "communication"
     const val pathName = "java"
     const val resName = "res"
