@@ -42,30 +42,7 @@ class CommunicationModulePlugin : Plugin<Project> {
                 file.mkdirs()
             }
             libraryExtension.sourceSets.getByName(variant.name).res.srcDirs("build$path")
-//            println("srcDirs="+libraryExtension.sourceSets.getByName(variant.name).res.srcDirs)
-//            println("srcDirs="+libraryExtension.sourceSets.names)
 
-
-//            variant.sources.res?.let { res ->
-//                val path = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}"
-//                val file = File("${project.buildDir}$path")
-//                if (!file.exists()){
-//                    file.mkdirs()
-//                }
-//                val resCreationTask =
-//                    project.tasks.register("create${variant.name}Res",ResCreatorTask::class.java){
-//                        it.variant = variant
-//                    }
-//                res.addGeneratedSourceDirectory(resCreationTask,ResCreatorTask::outputDirectory)
-//            }
         }
-
-//        project.afterEvaluate {
-//            for (variant in variantList) {
-//                val variantName = variant.name
-//                val variantNameCapitalized = variantName.capitalized()
-//                project.tasks.findByName("generateCommunication$variantNameCapitalized")?.finalizedBy("create${variantNameCapitalized}Res")
-//            }
-//        }
     }
 }

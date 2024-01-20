@@ -11,6 +11,14 @@
 
 ### 每个模块使用此库生成属于自己模块的跳转 Activity 的帮助类，也是可以做到市面上那些 router 的功能，框架代码极少，风险可控！（不过仅限您一个小项目可以这么做，如果没有插件化完全够用）
 
+## 特色功能
+
+1、支持模块间共享 Java 或 Kotlin 代码
+
+2、支持模块间共享 res 文件夹下的资源
+
+3、支持共享 assets 资源
+
 [灵感来源-微信Android模块化架构重构实践](https://mp.weixin.qq.com/s/6Q818XA5FaHd7jJMFBG60w)
 
 ## 使用步骤
@@ -25,7 +33,7 @@
 buildscript {
     dependencies {
         //必须项 👇
-        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.5'
+        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.0.6'
     }
 }
 ```
@@ -62,8 +70,6 @@ CommunicationModuleName = communication
 ```
 
 #### 三、开始使用
-
-##### 暴露 java 或 kotlin 代码
 
 以下面代码结构为例介绍下
 
@@ -134,7 +140,7 @@ b、如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件�
 ```gradle
 dependencies {
     //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.5'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.0.6'
 }
 ```
 
@@ -151,13 +157,7 @@ class LoginActivity: AppCompatActivity() {
     }
 }
 ```
-调用以下命令
-
-<img src="/screenshot/copy_assets_res.png" alt="show" />
-
-##### 暴露 res 或 assets 代码
-
-在需要暴露代码的模块的 ```build.gradle``` 设置如下代码：
+- 8、假如 ```lib-user``` 需要暴露 res 或 assets 代码，可在 ```build.gradle``` 设置如下代码：
 
 ```gradle
 communicationConfig{
@@ -176,13 +176,21 @@ communicationConfig{
     ))
 }
 ```
+直接调用下边命令即可
 
+<img src="/screenshot/copy_assets_res.png" alt="show" />
+
+共享之后在使用共享资源之前需要把下边这项设置关掉
+
+<img src="/screenshot/gradle_set.png" alt="show" />
+
+根目录下的 ```gradle.properties``` 的 ```android.nonTransitiveRClass``` 设置为 ```false```
 
 
 
 #### 四、番外（非必须项）
 
-1、如果你想定义更多的通信模块，而不是使用同一个，可以在使用 ```'communication.export'``` module 加入以下配置项
+- 1、如果你想定义更多的通信模块，而不是使用同一个，可以在使用 ```'communication.export'``` module 加入以下配置项
 
 ```gradle
 plugins {
@@ -195,7 +203,7 @@ communicationConfig{
 
 这样共享代码会转移到 ```communication2``` 这个 module 中
 
-2、调用以下命令可一键暴露所有代码
+- 2、调用以下命令可一键暴露所有代码
 
 <img src="/screenshot/copy_all.png" alt="show" />
 
