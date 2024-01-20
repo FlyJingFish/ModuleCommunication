@@ -184,7 +184,7 @@ communicationConfig{
 
 <img src="/screenshot/gradle_set.png" alt="show" />
 
-根目录下的 ```gradle.properties``` 的 ```android.nonTransitiveRClass``` 设置为 ```false```
+根目录下的 ```gradle.properties``` 的 ```android.nonTransitiveRClass``` 设置为 ```false```（否则 R 文件的包名只能用通信module的，打包后会出现异常）
 
 
 
