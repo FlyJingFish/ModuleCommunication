@@ -5,8 +5,15 @@ import org.dom4j.Document
 import org.dom4j.Element
 import org.dom4j.io.SAXReader
 import org.dom4j.io.XMLWriter
+import java.io.BufferedReader
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.FileWriter
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.io.PrintWriter
 
 
 object Dom4jData {
@@ -93,6 +100,11 @@ object Dom4jData {
             writer.close()
         } catch (e: Exception) {
             e.printStackTrace()
+        } finally {
+            try {
+                deleteEmptyLine(xmlFile)
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -125,6 +137,22 @@ object Dom4jData {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun deleteEmptyLine(xmlFile:File) {
+        val reader = BufferedReader(InputStreamReader(FileInputStream(xmlFile)))
+        val sb = StringBuilder()
+        var line: String?
+        while (reader.readLine().also { line = it } != null) {
+            if (line?.trim()?.isNotEmpty() == true) { // 判断当前行不为空白字符串或只包含空格时才添加到结果中
+                sb.append(line).append("\n")
+            }
+        }
+        reader.close()
+        val writer = PrintWriter(OutputStreamWriter(FileOutputStream(xmlFile), "UTF-8"))
+        writer.write(sb.toString())
+        writer.flush()
+        writer.close()
     }
 
 }

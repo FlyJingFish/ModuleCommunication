@@ -61,7 +61,7 @@ abstract class ExportTask : DefaultTask() {
         val buildFile = File(dir, path)
 
         val resValuesDel = mutableListOf<String>()
-        for (resId in PackageRecordUtils.getExposeResAssets()) {
+        for (resId in IncrementalRecordUtils.getExposeAssets()) {
             resValuesDel.add(resId)
         }
         if (resValuesDel.isNotEmpty()){
@@ -70,9 +70,9 @@ abstract class ExportTask : DefaultTask() {
                 for (srcDir in assets.srcDirs) {
                     if (srcDir.exists()){
                         for (resValue in resValuesDel) {
-                            val file = File("${srcDir.absolutePath}/$resValue")
-                            if (file.exists()){
-                                file.deleteRecursively()
+                            val targetFile = File("${buildFile.absolutePath}/$resValue")
+                            if (targetFile.exists()){
+                                targetFile.deleteRecursively()
                             }
                         }
                     }
@@ -94,14 +94,16 @@ abstract class ExportTask : DefaultTask() {
                     for (resValue in resValues) {
                         val targetFile = File("${buildFile.absolutePath}/$resValue")
                         val file = File("${srcDir.absolutePath}/$resValue")
-                        file.copyRecursively(targetFile,true)
+                        if (file.exists()){
+                            file.copyRecursively(targetFile,true)
+                        }
                     }
 
 
                 }
             }
         }
-        PackageRecordUtils.recordExposeAssets(communicationConfig.exposeResIds)
+        IncrementalRecordUtils.recordExposeAssets(communicationConfig.exposeAssets)
     }
 
     fun searchResFileAndCopy(curProject: Project){
@@ -114,70 +116,8 @@ abstract class ExportTask : DefaultTask() {
         val path = "build$codePath"
         val buildFile = File(dir, path)
 
-        val resValuesPreDel = mutableListOf<ResValue>()
-        for (resId in PackageRecordUtils.getExposeResIds()) {
-            val res = ResValue(resId,resId.substring(resId.indexOf(".")+1,resId.lastIndexOf(".")),resId.substring(resId.lastIndexOf(".")+1))
-            resValuesPreDel.add(res)
-        }
-        val resValuesDel = resValuesPreDel.filter {
-            it.id.startsWith("R.")
-        }
-        if (resValuesDel.isNotEmpty()){
-            for (name in variantNames) {
-                val res = libraryExtension.sourceSets.getByName(name).res
-                for (srcDir in res.srcDirs) {
-                    if (srcDir.exists()){
-                        val genFile = srcDir.listFiles()
-                        for (resValue in resValuesDel) {
-                            if (Dom4jData.fileRes.contains(resValue.dir)){//复制文件的
-                                val dirs = genFile.filter {
-                                    it.name.startsWith(resValue.dir)
-                                }
-                                val collection = curProject.files(dirs).asFileTree.filter { it.name.startsWith(resValue.fileName) }
-
-                                for (file in collection.files) {
-                                    val copyPath = "${file.parentFile.name}/${file.name}"
-                                    val targetFile = File("${buildFile.absolutePath}/$copyPath")
-                                    if (targetFile.exists()){
-                                        targetFile.delete()
-                                    }
-                                }
-                            }else{//复制xml里边的值
-                                val dirs = genFile.filter {
-                                    it.name.startsWith("values")
-                                }
-                                val collection = curProject.files(dirs).asFileTree.filter { it.name.endsWith(".xml") }
-
-                                for (file in collection.files) {
-                                    val elements = Dom4jData.getXmlFileElements(file) ?: continue
-                                    for (element in elements) {
-                                        val nodeName: String = element.name
-                                        val name: String = element.attribute("name").value
-                                        if (name == resValue.fileName && nodeName != "item"){
-                                            val targetFile = File("${buildFile.absolutePath}/${file.parentFile.name}",file.name)
-                                            if (!targetFile.exists()){
-                                                targetFile.parentFile?.mkdirs()
-                                                targetFile.createNewFile()
-                                                targetFile.writeText("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                                                        "<resources xmlns:tools=\"http://schemas.android.com/tools\" xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:app=\"http://schemas.android.com/apk/res-auto\">\n" +
-                                                        "</resources>", Charset.forName("utf-8"))
-                                            }
-                                            val resMapValue = Dom4jData.resMap[resValue.dir]
-                                            if ((resMapValue != null && nodeName == resMapValue)||resValue.dir == nodeName){
-                                                Dom4jData.deleteElementLabel(targetFile,resValue)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-
-
-                    }
-                }
-            }
-        }
+        IncrementalRecordUtils.clearResFile(moduleKey, buildFile)
+        IncrementalRecordUtils.clearResValue(moduleKey, buildFile)
 
         val resValuesPre = mutableListOf<ResValue>()
         for (resId in communicationConfig.exposeResIds) {
@@ -206,6 +146,7 @@ abstract class ExportTask : DefaultTask() {
                                 val copyPath = "${file.parentFile.name}/${file.name}"
                                 val targetFile = File("${buildFile.absolutePath}/$copyPath")
                                 file.copyTo(targetFile,true)
+                                IncrementalRecordUtils.recordResFile(moduleKey,copyPath)
                             }
                         }else{//复制xml里边的值
                             val dirs = genFile.filter {
@@ -229,8 +170,12 @@ abstract class ExportTask : DefaultTask() {
                                         }
                                         val resMapValue = Dom4jData.resMap[resValue.dir]
                                         if ((resMapValue != null && nodeName == resMapValue)||resValue.dir == nodeName){
-                                            val resValueRecord = ResValueRecord(targetFile,resValue)
                                             Dom4jData.addElementLabel(targetFile,element,resValue.fileName)
+                                            val resValueRecord = ResValueRecord(targetFile,resValue)
+                                            IncrementalRecordUtils.recordResValue(moduleKey, resValueRecord)
+
+                                            val text = targetFile.readText(Charset.forName("utf-8")).replace("\\s*[\r\n]+", "");
+                                            targetFile.writeText(text,Charset.forName("utf-8"))
                                         }
                                     }
                                 }
@@ -243,7 +188,6 @@ abstract class ExportTask : DefaultTask() {
                 }
             }
         }
-        PackageRecordUtils.recordExposeResIds(communicationConfig.exposeResIds)
     }
 
     private fun searchApiFileAndCopy(curProject: Project){
@@ -257,7 +201,7 @@ abstract class ExportTask : DefaultTask() {
         val buildFile = File(dir, path)
 
         val moduleKey = curProject.buildDir.absolutePath
-        val isClear = PackageRecordUtils.clearCodeFile(moduleKey,buildFile)
+        val isClear = IncrementalRecordUtils.clearCodeFile(moduleKey,buildFile)
         if (isClear){
             val recordPackageSet = mutableSetOf<String>()
             for (file in collection.files) {
@@ -276,7 +220,7 @@ abstract class ExportTask : DefaultTask() {
         for (file in collection.files) {
             val packageName = getPackageName(file)
             packageName?.let {
-                PackageRecordUtils.recordCodeFile(moduleKey,it)
+                IncrementalRecordUtils.recordCodeFile(moduleKey,it)
                 val packagePath = buildFile.absolutePath +"/"+ it.replace(".","/")
                 val targetFile = File(packagePath,file.name.replace(".api",""))
                 file.copyTo(targetFile,true)
