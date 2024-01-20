@@ -17,7 +17,7 @@
 
 2、支持模块间共享 res 文件夹下的资源
 
-3、支持共享 assets 资源
+3、支持模块间共享 assets 资源
 
 [灵感来源-微信Android模块化架构重构实践](https://mp.weixin.qq.com/s/6Q818XA5FaHd7jJMFBG60w)
 
