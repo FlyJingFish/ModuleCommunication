@@ -16,6 +16,7 @@ communicationConfig{
         "R.color.color_theme",
         "R.color.color_white_both"
     ))
+    //直接可以输入 assets 下的文件夹或者文件路径即可
     exposeAssets.addAll(arrayOf(
         "matching",
         "swipe_like"

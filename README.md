@@ -161,15 +161,16 @@ class LoginActivity: AppCompatActivity() {
 
 ```gradle
 communicationConfig{
-    exportModuleName = "communication"
     exposeResIds.addAll(arrayOf(
         "R.drawable.login_logo",
         "R.string.login_text",
         "R.array.weekname",
         "R.style.AppTheme2",
+        "R.id.icon_upi_close",
         "R.color.color_theme",
         "R.color.color_white_both"
     ))
+    //直接可以输入 assets 下的文件夹或者文件路径即可
     exposeAssets.addAll(arrayOf(
         "matching",
         "swipe_like"
