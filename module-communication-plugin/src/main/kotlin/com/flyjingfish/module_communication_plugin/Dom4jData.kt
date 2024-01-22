@@ -111,6 +111,9 @@ object Dom4jData {
     fun deleteElementLabel(xmlFile: File, resValue: ResValue) {
 
         try {
+            if (!xmlFile.exists()){
+                return
+            }
             //读取XML文件，获得document对象
             val reader = SAXReader()
             val document: Document = reader.read(xmlFile)

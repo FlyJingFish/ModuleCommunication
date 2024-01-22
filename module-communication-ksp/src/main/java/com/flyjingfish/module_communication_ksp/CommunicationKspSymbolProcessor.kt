@@ -1,7 +1,6 @@
 package com.flyjingfish.module_communication_ksp
 
 import com.flyjingfish.module_communication_annotation.BindClass
-import com.flyjingfish.module_communication_annotation.CommunicationPackage
 import com.flyjingfish.module_communication_annotation.ExposeBean
 import com.flyjingfish.module_communication_annotation.ExposeInterface
 import com.flyjingfish.module_communication_annotation.ImplementClass
@@ -49,8 +48,9 @@ class CommunicationKspSymbolProcessor(
             val classMethodMap: MutableMap<String, Any?> =
                 annotationMap["@ImplementClass"] ?: continue
 
-            val value: KSType? =
-                if (classMethodMap["value"] != null) classMethodMap["value"] as KSType else null
+            val value: KSType =
+                (if (classMethodMap["value"] != null) classMethodMap["value"] as KSType else null)
+                    ?: continue
             val targetClassName: String =
                 (if (value != null) value.declaration.packageName.asString() + "." + value.toString() else null)
                     ?: continue
@@ -75,7 +75,7 @@ class CommunicationKspSymbolProcessor(
                 .addStatement("return $symbol()")
 
             typeBuilder.addFunction(whatsMyName1.build())
-            writeToFile(typeBuilder, fileName, symbol)
+            writeToFile(typeBuilder, value.declaration.packageName.asString(),fileName, symbol)
         }
         return symbols.filter { !it.validate() }.toList()
     }
@@ -157,22 +157,6 @@ class CommunicationKspSymbolProcessor(
         return isContainImplementClass
     }
 
-    private fun writeToFile(
-        fileName: String, symbol: KSAnnotated, packageName: String, file: File
-    ) {
-        FileInputStream(file).use { inputs ->
-            val bytes = inputs.readAllBytes()
-            codeGenerator
-                .createNewFile(
-                    Dependencies(false, symbol.containingFile!!),
-                    packageName,
-                    fileName,
-                    "api"
-                ).write(bytes)
-        }
-
-    }
-
     private fun isImplementClass(
         symbol: KSAnnotated,
         className: String
@@ -217,18 +201,35 @@ class CommunicationKspSymbolProcessor(
     private fun whatsMyName(name: String): FunSpec.Builder {
         return FunSpec.builder(name).addModifiers(KModifier.FINAL)
     }
+
+    private fun writeToFile(
+        fileName: String, symbol: KSAnnotated, packageName: String, file: File
+    ) {
+        FileInputStream(file).use { inputs ->
+            val bytes = inputs.readAllBytes()
+            codeGenerator
+                .createNewFile(
+                    Dependencies(false, symbol.containingFile!!),
+                    packageName,
+                    fileName,
+                    "api"
+                ).write(bytes)
+        }
+
+    }
     private fun writeToFile(
         typeBuilder: TypeSpec.Builder,
+        packageName: String,
         fileName: String,
         symbol: KSAnnotated
     ) {
         val typeSpec = typeBuilder.build()
-        val kotlinFile = FileSpec.builder(CommunicationPackage.BIND_CLASS_PACKAGE, fileName).addType(typeSpec)
+        val kotlinFile = FileSpec.builder(packageName, fileName).addType(typeSpec)
             .build()
         codeGenerator
             .createNewFile(
                 Dependencies(false, symbol.containingFile!!),
-                CommunicationPackage.BIND_CLASS_PACKAGE,
+                packageName,
                 fileName
             )
             .writer()
