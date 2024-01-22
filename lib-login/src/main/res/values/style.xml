@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar" />
-    <style name="AppTheme2" parent="Theme.AppCompat.Light.NoActionBar" >
+    <style name="LoginAppTheme" parent="Theme.AppCompat.Light.NoActionBar" >
         <item name="colorPrimary">@color/color_white_both</item>
         <item name="colorPrimaryDark">@color/color_white_both</item>
         <item name="colorAccent">@color/color_theme</item>

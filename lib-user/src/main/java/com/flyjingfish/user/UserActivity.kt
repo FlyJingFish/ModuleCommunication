@@ -15,5 +15,7 @@ class UserActivity : AppCompatActivity() {
         val login = loginHelper.getLogin()
         Log.e("login",""+login)
         findViewById<ImageView>(R.id.iv_image).setImageResource(R.drawable.login_logo)
+        val text = R.string.login_text
+        val theme = R.style.LoginAppTheme
     }
 }

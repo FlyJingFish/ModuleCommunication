@@ -11,7 +11,7 @@ communicationConfig{
         "R.drawable.login_logo",
         "R.string.login_text",
         "R.array.weekname",
-        "R.style.AppTheme2",
+        "R.style.LoginAppTheme",
         "R.id.icon_upi_close",
         "R.color.color_theme",
         "R.color.color_white_both"
