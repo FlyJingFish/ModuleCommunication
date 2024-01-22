@@ -25,7 +25,7 @@
 
 **在开始之前可以给项目一个Star吗？非常感谢，你的支持是我唯一的动力。欢迎Star和Issues!**
 
-#### 一、引入插件
+### 一、引入插件
 
 1、在 **项目根目录** 的 ```build.gradle``` 里依赖插件
 
@@ -49,7 +49,7 @@ plugins {
 
 [Kotlin 和 KSP Github 的匹配版本号列表](https://github.com/google/ksp/releases)
 
-#### 二、新增负责通信的 module
+### 二、新增负责通信的 module
 
 - 1、例如新建一个名为 ```communication``` 的module(下文将以 ```communication``` 为例介绍)
 
@@ -69,7 +69,9 @@ plugins {
 CommunicationModuleName = communication
 ```
 
-#### 三、开始使用
+### 三、开始使用
+
+#### 1、共享 Kotlin 或 Java 代码
 
 以下面代码结构为例介绍下
 
@@ -125,7 +127,7 @@ communication -> generateCommunication
 
 <img src="/screenshot/code.png" alt="show" />
 
-- 6、在需要使用 ```lib-login``` 模块 上引入通信模块 ```communication``` 
+- 6、在需要使用 ```lib-login``` 模块 上引入通信模块 ```communication```
 
 a、```lib-login``` 引入通信模块
 
@@ -133,7 +135,7 @@ a、```lib-login``` 引入通信模块
 compileOnly(project(":communication"))
 ```
 
-**注意引入方式必须是 compileOnly ，否则会导致打包失败。并且在哪个 module 中使用就在哪引入** 
+**注意引入方式必须是 compileOnly ，否则会导致打包失败。并且在哪个 module 中使用就在哪引入**
 
 b、如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件，就无需配置这一步（不报错找不到类就无需引入）
 
@@ -157,7 +159,14 @@ class LoginActivity: AppCompatActivity() {
     }
 }
 ```
-- 8、假如 ```lib-user``` 需要暴露 res 或 assets 代码，可在 ```build.gradle``` 设置如下代码：
+
+#### 2、共享 res 或 assets 文件夹下的资源
+
+以下面代码结构为例介绍下
+
+<img src="/screenshot/res_demo.png" alt="show" />
+
+- 1、 ```lib-login``` 需要暴露 res 或 assets 代码，可在 ```build.gradle``` 设置如下代码：
 
 ```gradle
 communicationConfig{
@@ -165,7 +174,7 @@ communicationConfig{
         "R.drawable.login_logo",
         "R.string.login_text",
         "R.array.weekname",
-        "R.style.AppTheme2",
+        "R.style.LoginAppTheme",
         "R.id.icon_upi_close",
         "R.color.color_theme",
         "R.color.color_white_both"
@@ -187,6 +196,19 @@ communicationConfig{
 
 根目录下的 ```gradle.properties``` 的 ```android.nonTransitiveRClass``` 设置为 ```false```（否则 R 文件的包名只能用通信module的，打包后会出现异常）
 
+- 2、在 ```lib-user``` 中使用资源即可
+
+```kotlin
+class UserActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_user)
+        findViewById<ImageView>(R.id.iv_image).setImageResource(R.drawable.login_logo)
+        val text = R.string.login_text
+        val theme = R.style.LoginAppTheme
+    }
+}
+```
 
 
 #### 四、番外（非必须项）
