@@ -32,6 +32,7 @@ abstract class ExportTask : DefaultTask() {
 
     @TaskAction
     fun taskAction() {
+        TmpUtils.initTmp(project.project(":${exportModuleName}".replace("\"","")),variant)
         when(copyType){
             CopyType.COPY_RES ->{
                 searchResFileAndCopy(project)
@@ -48,6 +49,7 @@ abstract class ExportTask : DefaultTask() {
                 searchAssetsFileAndCopy(project)
             }
         }
+        TmpUtils.exportTmp()
     }
 
     fun searchAssetsFileAndCopy(curProject: Project){
@@ -171,7 +173,7 @@ abstract class ExportTask : DefaultTask() {
                                         val resMapValue = Dom4jData.resMap[resValue.dir]
                                         if ((resMapValue != null && nodeName == resMapValue)||resValue.dir == nodeName){
                                             Dom4jData.addElementLabel(targetFile,element,resValue.fileName)
-                                            val resValueRecord = ResValueRecord(targetFile,resValue)
+                                            val resValueRecord = ResValueRecord(targetFile.absolutePath,resValue)
                                             IncrementalRecordUtils.recordResValue(moduleKey, resValueRecord)
 
                                             val text = targetFile.readText(Charset.forName("utf-8")).replace("\\s*[\r\n]+", "");

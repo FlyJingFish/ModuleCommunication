@@ -7,7 +7,28 @@ object IncrementalRecordUtils {
     private val lastExposeResFileMap = mutableMapOf<String,MutableSet<String>>()
     private val lastExposeResValueMap = mutableMapOf<String,MutableList<ResValueRecord>>()
 //    private val exposeResIds = mutableListOf<String>()
-    private val exposeAssets = mutableListOf<String>()
+    private val exposeAssets = mutableSetOf<String>()
+
+    fun init(incrementalRecord: IncrementalRecord?){
+        if (incrementalRecord != null){
+            if (!lastRecordPackageMap.isNullOrEmpty() && !incrementalRecord.lastRecordPackageMap.isNullOrEmpty()){
+                lastRecordPackageMap.putAll(incrementalRecord.lastRecordPackageMap)
+            }
+            if (!lastExposeResFileMap.isNullOrEmpty() && !incrementalRecord.lastExposeResFileMap.isNullOrEmpty()){
+                lastExposeResFileMap.putAll(incrementalRecord.lastExposeResFileMap)
+            }
+            if (!lastExposeResValueMap.isNullOrEmpty() && !incrementalRecord.lastExposeResValueMap.isNullOrEmpty()){
+                lastExposeResValueMap.putAll(incrementalRecord.lastExposeResValueMap)
+            }
+            if (!exposeAssets.isNullOrEmpty() && !incrementalRecord.exposeAssets.isNullOrEmpty()){
+                exposeAssets.addAll(incrementalRecord.exposeAssets)
+            }
+        }
+    }
+
+    fun getIncrementalRecord(): IncrementalRecord {
+        return IncrementalRecord(lastRecordPackageMap,lastExposeResFileMap,lastExposeResValueMap,exposeAssets)
+    }
 
 //    fun recordExposeResIds(ids : MutableList<String>){
 //        exposeResIds.clear()
@@ -51,7 +72,7 @@ object IncrementalRecordUtils {
         val lastRecordPackageSet = lastExposeResValueMap[moduleKey]
         lastRecordPackageSet?.let {
             for (resValueRecord in it) {
-                val xmlFile = resValueRecord.xmlFile
+                val xmlFile = resValueRecord.getXmlFile()
                 Dom4jData.deleteElementLabel(xmlFile,resValueRecord.resValue)
             }
 
@@ -65,7 +86,7 @@ object IncrementalRecordUtils {
         exposeAssets.addAll(ids)
     }
 
-    fun getExposeAssets():MutableList<String>{
+    fun getExposeAssets():MutableSet<String>{
         return exposeAssets
     }
 

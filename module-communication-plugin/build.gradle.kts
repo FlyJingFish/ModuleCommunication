@@ -11,4 +11,5 @@ dependencies {
     implementation(localGroovy())
     implementation(libs.gradle)
     implementation(libs.dom4j)
+    implementation(libs.gson)
 }

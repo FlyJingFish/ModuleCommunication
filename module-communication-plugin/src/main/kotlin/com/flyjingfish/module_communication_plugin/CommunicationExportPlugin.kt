@@ -36,7 +36,6 @@ class CommunicationExportPlugin : Plugin<Project> {
                     communicationConfig.exposeAssets[index] = exposeAsset.substring(1)
                 }
             }
-
             val variantName = variant.name
             val variantNameCapitalized = variantName.capitalized()
             project.tasks.register("generateCommunicationCode$variantNameCapitalized", ExportTask::class.java) {
