@@ -175,7 +175,6 @@ communicationConfig{
         "R.string.login_text",
         "R.array.weekname",
         "R.style.LoginAppTheme",
-        "R.id.icon_upi_close",
         "R.color.color_theme",
         "R.color.color_white_both"
     ))
