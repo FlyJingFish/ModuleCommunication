@@ -250,7 +250,7 @@ communicationConfig{
 
 #### 常见问题
 
-1、删除某一个类后，通信 module 中依然存在删除的类
+1、删除某一个类或资源后，通信 module 中依然存在删除的代码
 
 - 这种情况下建议直接 clean 项目，再次重新调用 generateCommunication 命令。
 
