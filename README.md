@@ -71,7 +71,7 @@ CommunicationModuleName = communication
 
 ### 三、开始使用
 
-#### 1、共享 Kotlin 或 Java 代码
+#### 1⃣️、共享 Kotlin 或 Java 代码
 
 以下面代码结构为例介绍下
 
@@ -160,7 +160,7 @@ class LoginActivity: AppCompatActivity() {
 }
 ```
 
-#### 2、共享 res 或 assets 文件夹下的资源
+#### 2⃣️、共享 res 或 assets 文件夹下的资源
 
 以下面代码结构为例介绍下
 
