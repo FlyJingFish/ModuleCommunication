@@ -11,16 +11,16 @@ object IncrementalRecordUtils {
 
     fun init(incrementalRecord: IncrementalRecord?){
         if (incrementalRecord != null){
-            if (!lastRecordPackageMap.isNullOrEmpty() && !incrementalRecord.lastRecordPackageMap.isNullOrEmpty()){
+            if (lastRecordPackageMap.isEmpty() && !incrementalRecord.lastRecordPackageMap.isNullOrEmpty()){
                 lastRecordPackageMap.putAll(incrementalRecord.lastRecordPackageMap)
             }
-            if (!lastExposeResFileMap.isNullOrEmpty() && !incrementalRecord.lastExposeResFileMap.isNullOrEmpty()){
+            if (lastExposeResFileMap.isEmpty() && !incrementalRecord.lastExposeResFileMap.isNullOrEmpty()){
                 lastExposeResFileMap.putAll(incrementalRecord.lastExposeResFileMap)
             }
-            if (!lastExposeResValueMap.isNullOrEmpty() && !incrementalRecord.lastExposeResValueMap.isNullOrEmpty()){
+            if (lastExposeResValueMap.isEmpty() && !incrementalRecord.lastExposeResValueMap.isNullOrEmpty()){
                 lastExposeResValueMap.putAll(incrementalRecord.lastExposeResValueMap)
             }
-            if (!exposeAssets.isNullOrEmpty() && !incrementalRecord.exposeAssets.isNullOrEmpty()){
+            if (exposeAssets.isEmpty() && !incrementalRecord.exposeAssets.isNullOrEmpty()){
                 exposeAssets.addAll(incrementalRecord.exposeAssets)
             }
         }
