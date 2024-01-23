@@ -205,7 +205,7 @@ communicationConfig{
 
 <img src="/screenshot/copy_assets_res.png" alt="show" />
 
-共享之后在使用共享资源之前需要把下边这项设置关掉
+**然后必须在使用共享资源之前需要把下边这项设置关掉**
 
 <img src="/screenshot/gradle_set.png" alt="show" />
 
