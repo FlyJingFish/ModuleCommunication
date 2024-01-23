@@ -164,7 +164,7 @@ class LoginActivity: AppCompatActivity() {
 
 **共享资源目前支持的类型包括 drawable、mipmap、string、array、layout、style、color（包括 xml 的 color 文件）、dimen、anim、animator、styleable、raw、menu、xml、navigation、font、transition**
 
-以下面代码结构为例介绍下
+以下面代码结构为例介绍下（共享的资源文件如果牵涉到其他资源，注意也要一并共享）
 
 <img src="/screenshot/res_demo.png" alt="show" />
 
