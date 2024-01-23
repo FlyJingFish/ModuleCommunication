@@ -19,7 +19,7 @@
 
 3、支持模块间共享 assets 资源
 
-4、真正打进安装包里的代码只有[BindClass](https://github.com/FlyJingFish/ModuleCommunication/blob/master/module-communication-annotation/src/main/java/com/flyjingfish/module_communication_annotation/BindClass.kt) 和 [ImplementClassUtils](https://github.com/FlyJingFish/ModuleCommunication/blob/master/module-communication-annotation/src/main/java/com/flyjingfish/module_communication_annotation/ImplementClassUtils.kt) 这两个类，代码极少！ 
+4、使用本库，真正打进安装包里的代码只有[BindClass](https://github.com/FlyJingFish/ModuleCommunication/blob/master/module-communication-annotation/src/main/java/com/flyjingfish/module_communication_annotation/BindClass.kt) 和 [ImplementClassUtils](https://github.com/FlyJingFish/ModuleCommunication/blob/master/module-communication-annotation/src/main/java/com/flyjingfish/module_communication_annotation/ImplementClassUtils.kt) 这两个类，代码极少！ 
 
 [灵感来源-微信Android模块化架构重构实践](https://mp.weixin.qq.com/s/6Q818XA5FaHd7jJMFBG60w)
 
