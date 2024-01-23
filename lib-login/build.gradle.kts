@@ -25,7 +25,8 @@ communicationConfig{
         "R.menu.main_menu",
         "R.xml.dialog_match_success_scene",
         "R.navigation.nav_main",
-        "R.color.textcolor_btn_tiger_bottom"
+        "R.color.textcolor_btn_tiger_bottom",
+        "R.font.call_font"
     ))
     //直接可以输入 assets 下的文件夹或者文件路径即可
     exposeAssets.addAll(arrayOf(

@@ -162,7 +162,7 @@ class LoginActivity: AppCompatActivity() {
 
 #### 2⃣️ 共享 res 或 assets 文件夹下的资源
 
-共享资源目前支持的类型包括 drawable、mipmap、string、array、layout、style、color、dimen、anim、animator、styleable、raw、menu、xml、navigation
+共享资源目前支持的类型包括 drawable、mipmap、string、array、layout、style、color（包括文件）、dimen、anim、animator、styleable、raw、menu、xml、navigation、font
 
 以下面代码结构为例介绍下
 
@@ -190,7 +190,8 @@ communicationConfig{
         "R.menu.main_menu",
         "R.xml.dialog_match_success_scene",
         "R.navigation.nav_main",
-        "R.color.textcolor_btn_tiger_bottom"
+        "R.color.textcolor_btn_tiger_bottom",
+        "R.font.call_font"
     ))
     //直接可以输入 assets 下的文件夹或者文件路径即可
     exposeAssets.addAll(arrayOf(
