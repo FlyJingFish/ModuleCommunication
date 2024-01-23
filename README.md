@@ -162,7 +162,7 @@ class LoginActivity: AppCompatActivity() {
 
 #### 2⃣️ 共享 res 或 assets 文件夹下的资源
 
-共享资源目前支持的类型包括 drawable、mipmap、string、array、layout、style、color（包括文件）、dimen、anim、animator、styleable、raw、menu、xml、navigation、font
+**共享资源目前支持的类型包括 drawable、mipmap、string、array、layout、style、color（包括文件）、dimen、anim、animator、styleable、raw、menu、xml、navigation、font**
 
 以下面代码结构为例介绍下
 
