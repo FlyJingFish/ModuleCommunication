@@ -4,9 +4,12 @@ plugins {
 //    id("com.google.devtools.ksp")
     id("communication.export")
 }
-//communicationConfig{
-//    exportModuleName = "communication"
-//}
+communicationConfig{
+    exportModuleName = "communication"
+    exposeResIds.addAll(arrayOf(
+        "R.layout.activity_user"
+    ))
+}
 android {
     namespace = "com.flyjingfish.user"
     compileSdk = 34

@@ -162,6 +162,8 @@ class LoginActivity: AppCompatActivity() {
 
 #### 2⃣️ 共享 res 或 assets 文件夹下的资源
 
+共享资源目前支持的类型包括 drawable、mipmap、string、array、layout、style、color、dimen、anim、animator、styleable、raw、menu、xml、navigation
+
 以下面代码结构为例介绍下
 
 <img src="/screenshot/res_demo.png" alt="show" />
@@ -170,13 +172,21 @@ class LoginActivity: AppCompatActivity() {
 
 ```gradle
 communicationConfig{
-    exposeResIds.addAll(arrayOf(
+     exposeResIds.addAll(arrayOf(
         "R.drawable.login_logo",
+        "R.mipmap.login_logo2",
         "R.string.login_text",
         "R.array.weekname",
         "R.style.LoginAppTheme",
         "R.color.color_theme",
-        "R.color.color_white_both"
+        "R.color.color_white_both",
+        "R.layout.activity_login",
+        "R.anim.toast_out",
+        "R.animator.animator_incoming",
+        "R.styleable.ColorTextView",
+        "R.dimen.dp20",
+        "R.raw.call_video_play",
+        "R.raw.connecting"
     ))
     //直接可以输入 assets 下的文件夹或者文件路径即可
     exposeAssets.addAll(arrayOf(

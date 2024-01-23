@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_hot"
+        android:icon="@drawable/login_logo"
+        android:title="TODO" />
+
+    <item
+        android:id="@+id/menu_show"
+        android:icon="@drawable/login_logo"
+        android:title="TODO"/>
+
+    <item
+        android:id="@+id/menu_message"
+        android:icon="@drawable/login_logo"
+        android:title="TODO"/>
+
+    <item
+        android:id="@+id/menu_mine"
+        android:icon="@drawable/login_logo"
+        android:title="TODO"/>
+
+</menu>

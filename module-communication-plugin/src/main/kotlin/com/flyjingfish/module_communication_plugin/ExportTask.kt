@@ -138,7 +138,8 @@ abstract class ExportTask : DefaultTask() {
                 if (srcDir.exists()){
                     val genFile = srcDir.listFiles()
                     for (resValue in resValues) {
-                        if (Dom4jData.fileRes.contains(resValue.dir)){//复制文件的
+                        var color = false
+                        if (Dom4jData.fileRes.contains(resValue.dir) || resValue.dir == "color"){//复制文件的
                             val dirs = genFile.filter {
                                 it.name.startsWith(resValue.dir)
                             }
@@ -149,8 +150,12 @@ abstract class ExportTask : DefaultTask() {
                                 val targetFile = File("${buildFile.absolutePath}/$copyPath")
                                 file.copyTo(targetFile,true)
                                 IncrementalRecordUtils.recordResFile(moduleKey,copyPath)
+                                if (resValue.dir == "color"){
+                                    color = true
+                                }
                             }
-                        }else{//复制xml里边的值
+                        }
+                        if(!Dom4jData.fileRes.contains(resValue.dir) && !color){//复制xml里边的值
                             val dirs = genFile.filter {
                                 it.name.startsWith("values")
                             }
