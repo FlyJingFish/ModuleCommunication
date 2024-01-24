@@ -25,6 +25,10 @@
 
 ## 功能示意图
 
+我们常见的模块化架构模型基本上就是这样的，本库在不影响任何结构的情况下即可做到通信
+
+<img src="/screenshot/tip2.png" alt="show" />
+
 如下图所示，所有 module 的代码全部暴露到 ```communication``` 模块下，然后想要使用共享代码的 module 使用 compileOnly 方式引入 ```communication``` 模块就可以了
 
 💡compileOnly 方式导入 在打包时，整个 module 都不会打进安装包，可以说起一个桥梁作用
