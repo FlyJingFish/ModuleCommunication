@@ -23,6 +23,12 @@
 
 [灵感来源-微信Android模块化架构重构实践](https://mp.weixin.qq.com/s/6Q818XA5FaHd7jJMFBG60w)
 
+## 功能示意图
+
+如下图所示，所有 module 的代码全部暴露到 ```communication``` 模块下，然后想要使用共享代码的 module 使用 compileOnly 方式引入 ```communication``` 模块就可以了
+
+<img src="/screenshot/tip1.png" alt="show" />
+
 ## 使用步骤
 
 **在开始之前可以给项目一个Star吗？非常感谢，你的支持是我唯一的动力。欢迎Star和Issues!**
