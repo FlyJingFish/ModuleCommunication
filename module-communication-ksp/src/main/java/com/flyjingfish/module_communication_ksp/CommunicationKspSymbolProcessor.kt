@@ -4,6 +4,8 @@ import com.flyjingfish.module_communication_annotation.BindClass
 import com.flyjingfish.module_communication_annotation.ExposeBean
 import com.flyjingfish.module_communication_annotation.ExposeInterface
 import com.flyjingfish.module_communication_annotation.ImplementClass
+import com.flyjingfish.module_communication_annotation.Route
+import com.flyjingfish.module_communication_annotation.RouteParams
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
@@ -13,16 +15,23 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.validate
+import com.squareup.kotlinpoet.ANY
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.STAR
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 import java.io.FileInputStream
+import java.util.Locale
 
 
 class CommunicationKspSymbolProcessor(
@@ -35,10 +44,14 @@ class CommunicationKspSymbolProcessor(
         val ret1 = processImplementClass(symbols)
         val ret3 = processExposeInterface(resolver,symbols)
         val ret2 = processExposeBean(resolver)
+        val ret4 = processRouteParams(resolver)
+        val ret5 = processRoute(resolver)
         val ret = arrayListOf<KSAnnotated>()
         ret.addAll(ret1)
         ret.addAll(ret2)
         ret.addAll(ret3)
+        ret.addAll(ret4)
+        ret.addAll(ret5)
         return ret
     }
 
@@ -92,6 +105,116 @@ class CommunicationKspSymbolProcessor(
 
                 writeToFile(fileName, symbol, symbol.packageName.asString(), file)
             }
+
+        }
+        return symbols.filter { !it.validate() }.toList()
+    }
+    private fun processRoute(resolver: Resolver): List<KSAnnotated> {
+        val symbols =
+            resolver.getSymbolsWithAnnotation(Route::class.qualifiedName!!)
+        for (symbol in symbols) {
+            val annotationMap = getAnnotation(symbol)
+            val className = (symbol as KSClassDeclaration).packageName.asString() + "." + symbol
+            val path : String = annotationMap["@Route"]?.get("path") as String
+
+            val classKey:String
+            val routeClassName = if (path.isNotEmpty()){
+                classKey = path.replace(".","_").replace("/","_")
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+                classKey
+            }else{
+                classKey = className.replace(".","_")
+                "$symbol"
+            }
+
+            val fileName1 = "${routeClassName}\$\$RouterClass"
+            val typeBuilder1 = TypeSpec.objectBuilder(
+                fileName1
+            )
+
+            val bindClassName = ClassName.bestGuess(Class::class.qualifiedName!!)
+            val returnType = bindClassName.parameterizedBy(STAR)
+
+//            val android = PropertySpec.builder(classKey, returnType)
+//                .initializer("%T::class.java",  ClassName.bestGuess(
+//                    className
+//                ))
+//                .build()
+            val android = PropertySpec.builder(classKey, returnType)
+                .initializer("Class.forName(\"$className\")")
+                .build()
+            typeBuilder1.addProperty(android)
+            writeToFile(typeBuilder1, symbol.packageName.asString(),fileName1, symbol,true)
+
+
+            val fileName = "${routeClassName}\$\$Router"
+            val typeBuilder = TypeSpec.objectBuilder(
+                fileName
+            )
+//                .addModifiers(KModifier.FINAL)
+
+            val paramMap = routeParamsMap[className]
+//            logger.error("paramMap=$paramMap")
+            val whatsMyName1 = whatsMyName("go${symbol}")
+                .addAnnotation(JvmStatic::class)
+            whatsMyName1.addParameter("context",ClassName.bestGuess(
+                "android.content.Context"
+            ))
+            whatsMyName1.addStatement(
+                "val intent = %T(context,`$fileName1`.$classKey)",
+                ClassName.bestGuess(
+                    "android.content.Intent"
+                )
+            )
+            paramMap?.forEach { (_, value) ->
+                val config = value.annoMap["@RouteParams"]
+//                logger.error("paramMap-value=$value")
+                if (config != null){
+                    val paramsName : String = config["key"] as String
+                    val paramsType : KSType = config["keyType"] as KSType
+                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
+                    val bindClassName = ClassName.bestGuess(targetClassName)
+                    whatsMyName1.addParameter(paramsName,bindClassName)
+                    whatsMyName1.addStatement(
+                        "intent.putExtra(\"$paramsName\",$paramsName)",
+                    )
+                }
+            }
+            whatsMyName1.addStatement(
+                "context.startActivity(intent)",
+            )
+
+
+            typeBuilder.addFunction(whatsMyName1.build())
+
+            writeToFile(typeBuilder, symbol.packageName.asString(),fileName, symbol,true)
+        }
+        return symbols.filter { !it.validate() }.toList()
+    }
+
+    private val routeParamsMap = mutableMapOf<String,MutableMap<String,RouteParamsConfig>>()
+    private fun processRouteParams(resolver: Resolver): List<KSAnnotated> {
+        val symbols =
+            resolver.getSymbolsWithAnnotation(RouteParams::class.qualifiedName!!)
+        for (symbol in symbols) {
+            val annotationMap = getAnnotation(symbol)
+            var className = "${(symbol as KSPropertyDeclaration).packageName.asString()}."
+            var parent = symbol.parent
+            while (parent !is KSFile){
+                className = "$className$parent."
+                parent = parent?.parent
+            }
+            className = className.substring(0,className.length-1)
+            val config = RouteParamsConfig(className,annotationMap)
+            var map = routeParamsMap[className]
+            if (map == null){
+                map = mutableMapOf()
+                routeParamsMap[className] = map
+            }
+            val key = annotationMap["@RouteParams"].toString()
+            map[key] = config
+//            logger.error("annotationMap=$annotationMap")
+//            logger.error("symbolLocation=$className${symbol}")
 
         }
         return symbols.filter { !it.validate() }.toList()
@@ -221,7 +344,8 @@ class CommunicationKspSymbolProcessor(
         typeBuilder: TypeSpec.Builder,
         packageName: String,
         fileName: String,
-        symbol: KSAnnotated
+        symbol: KSAnnotated,
+        writeApi:Boolean = false
     ) {
         val typeSpec = typeBuilder.build()
         val kotlinFile = FileSpec.builder(packageName, fileName).addType(typeSpec)
@@ -233,6 +357,22 @@ class CommunicationKspSymbolProcessor(
                 fileName
             )
             .writer()
-            .use { kotlinFile.writeTo(it) }
+            .use {
+                kotlinFile.writeTo(it)
+            }
+        if (writeApi){
+
+            codeGenerator
+                .createNewFile(
+                    Dependencies(false, symbol.containingFile!!),
+                    packageName,
+                    "$fileName.kt",
+                    "api"
+                )
+                .writer()
+                .use {
+                    kotlinFile.writeTo(it)
+                }
+        }
     }
 }

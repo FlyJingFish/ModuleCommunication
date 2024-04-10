@@ -39,5 +39,5 @@ dependencies {
     implementation(project(":base-lib"))
     compileOnly(project(":communication"))
 //    implementation(project(":module-communication-annotation"))
-//    ksp(project(":module-communication-ksp"))
+    ksp(project(":module-communication-ksp"))
 }

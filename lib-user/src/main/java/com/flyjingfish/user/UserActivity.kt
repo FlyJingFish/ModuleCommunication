@@ -6,8 +6,18 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.flyjingfish.login.LoginHelper
 import com.flyjingfish.module_communication_annotation.ImplementClassUtils
+import com.flyjingfish.module_communication_annotation.Route
+import com.flyjingfish.module_communication_annotation.RouteParams
 
+@Route("user/UserActivity")
 class UserActivity : AppCompatActivity() {
+
+    @RouteParams(key = "params1", keyType = String::class)
+    lateinit var params1 :String
+
+    @RouteParams(key = "params2", keyType = User::class)
+    lateinit var params2 :String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
