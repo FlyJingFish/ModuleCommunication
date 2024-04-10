@@ -27,5 +27,7 @@ class UserActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.iv_image).setImageResource(R.drawable.login_logo)
         val text = R.string.login_text
         val theme = R.style.LoginAppTheme
+        val bundle = Bundle()
+        intent.extras
     }
 }

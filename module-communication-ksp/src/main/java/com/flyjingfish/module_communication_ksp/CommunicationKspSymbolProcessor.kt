@@ -19,7 +19,6 @@ import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.validate
-import com.squareup.kotlinpoet.ANY
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -27,7 +26,6 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STAR
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 import java.io.FileInputStream
@@ -155,7 +153,11 @@ class CommunicationKspSymbolProcessor(
 
             val paramMap = routeParamsMap[className]
 //            logger.error("paramMap=$paramMap")
-            val whatsMyName1 = whatsMyName("go${symbol}")
+
+
+
+
+            val whatsMyName1 = whatsMyName("go${routeClassName}")
                 .addAnnotation(JvmStatic::class)
             whatsMyName1.addParameter("context",ClassName.bestGuess(
                 "android.content.Context"
@@ -184,8 +186,59 @@ class CommunicationKspSymbolProcessor(
                 "context.startActivity(intent)",
             )
 
-
             typeBuilder.addFunction(whatsMyName1.build())
+
+            val whatsMyName2 = whatsMyName("get${routeClassName}")
+                .addAnnotation(JvmStatic::class)
+                .returns(Any::class)
+
+            whatsMyName2.addStatement(
+                "val fragmentMeta : %T = `$fileName1`.$classKey",
+                returnType
+            )
+            whatsMyName2.addStatement(
+                "val intent = %T()",
+                ClassName.bestGuess(
+                    "android.content.Intent"
+                )
+            )
+            whatsMyName2.addStatement(
+                "val instance = fragmentMeta.getConstructor().newInstance()",
+            )
+            paramMap?.forEach { (_, value) ->
+                val config = value.annoMap["@RouteParams"]
+//                logger.error("paramMap-value=$value")
+                if (config != null){
+                    val paramsName : String = config["key"] as String
+                    val paramsType : KSType = config["keyType"] as KSType
+                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
+                    val bindClassName = ClassName.bestGuess(targetClassName)
+                    whatsMyName2.addParameter(paramsName,bindClassName)
+                    whatsMyName2.addStatement(
+                        "intent.putExtra(\"$paramsName\",$paramsName)",
+                    )
+                }
+            }
+            whatsMyName2.addStatement(
+                "if (instance is %T) {"
+                ,ClassName.bestGuess(
+                    "androidx.fragment.app.Fragment"
+                )
+            )
+
+            whatsMyName2.addStatement(
+                "  instance.arguments = intent.getExtras()"
+            )
+
+            whatsMyName2.addStatement(
+                "}"
+            )
+
+            whatsMyName2.addStatement(
+                "return instance"
+            )
+
+            typeBuilder.addFunction(whatsMyName2.build())
 
             writeToFile(typeBuilder, symbol.packageName.asString(),fileName, symbol,true)
         }
