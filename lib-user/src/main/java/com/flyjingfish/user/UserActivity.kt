@@ -12,11 +12,15 @@ import com.flyjingfish.module_communication_annotation.RouteParams
 @Route("user/UserActivity")
 class UserActivity : AppCompatActivity() {
 
-    @RouteParams(key = "params1", keyType = String::class)
-    lateinit var params1 :String
+    @delegate:RouteParams("params1")
+    val params1 :String ? by lazy(LazyThreadSafetyMode.NONE) {
+        intent.getStringExtra("params1")
+    }
 
-    @RouteParams(key = "params2", keyType = User::class)
-    lateinit var params2 :String
+    @delegate:RouteParams("params2")
+    val params2 :User ? by lazy(LazyThreadSafetyMode.NONE) {
+        intent.getSerializableExtra("params2") as User
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +32,8 @@ class UserActivity : AppCompatActivity() {
         val text = R.string.login_text
         val theme = R.style.LoginAppTheme
         val bundle = Bundle()
-        intent.extras
+
+
+        Log.e("UserActivity","params1=$params1,params2=$params2")
     }
 }

@@ -5,4 +5,4 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.FIELD)
-annotation class RouteParams(val key : String,val keyType : KClass<out Any>)
+annotation class RouteParams(val name : String)

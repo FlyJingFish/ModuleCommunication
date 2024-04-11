@@ -15,9 +15,11 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSClassifierReference
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -172,9 +174,10 @@ class CommunicationKspSymbolProcessor(
                 val config = value.annoMap["@RouteParams"]
 //                logger.error("paramMap-value=$value")
                 if (config != null){
-                    val paramsName : String = config["key"] as String
-                    val paramsType : KSType = config["keyType"] as KSType
-                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
+                    val paramsName : String = config["name"] as String
+//                    val paramsType : KSType = config["keyType"] as KSType
+//                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
+                    val targetClassName: String = value.className
                     val bindClassName = ClassName.bestGuess(targetClassName)
                     whatsMyName1.addParameter(paramsName,bindClassName)
                     whatsMyName1.addStatement(
@@ -209,9 +212,10 @@ class CommunicationKspSymbolProcessor(
                 val config = value.annoMap["@RouteParams"]
 //                logger.error("paramMap-value=$value")
                 if (config != null){
-                    val paramsName : String = config["key"] as String
-                    val paramsType : KSType = config["keyType"] as KSType
-                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
+                    val paramsName : String = config["name"] as String
+//                    val paramsType : KSType = config["keyType"] as KSType
+//                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
+                    val targetClassName: String = value.className
                     val bindClassName = ClassName.bestGuess(targetClassName)
                     whatsMyName2.addParameter(paramsName,bindClassName)
                     whatsMyName2.addStatement(
@@ -258,7 +262,7 @@ class CommunicationKspSymbolProcessor(
                 parent = parent?.parent
             }
             className = className.substring(0,className.length-1)
-            val config = RouteParamsConfig(className,annotationMap)
+            val config = RouteParamsConfig("${symbol.type.resolve().declaration.packageName.asString()}.${symbol.type}",annotationMap)
             var map = routeParamsMap[className]
             if (map == null){
                 map = mutableMapOf()
@@ -268,6 +272,7 @@ class CommunicationKspSymbolProcessor(
             map[key] = config
 //            logger.error("annotationMap=$annotationMap")
 //            logger.error("symbolLocation=$className${symbol}")
+//            logger.error("symbolType=${symbol.type.resolve().declaration.packageName.asString()}.${symbol.type}")
 
         }
         return symbols.filter { !it.validate() }.toList()
