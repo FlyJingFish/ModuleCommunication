@@ -242,7 +242,7 @@ class UserActivity : AppCompatActivity() {
 ```
 
 
-#### 四、番外（非必须项）
+#### 3⃣️、番外（非必须项）
 
 - 1、如果你想定义更多的通信模块，而不是使用同一个，可以在使用 ```'communication.export'``` module 加入以下配置项
 
@@ -261,7 +261,7 @@ communicationConfig{
 
 <img src="/screenshot/copy_all.png" alt="show" />
 
-### 路由注解
+#### 4⃣️、路由注解
 
 - @Route 路由页面
 
