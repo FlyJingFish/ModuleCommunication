@@ -18,11 +18,11 @@ class LoginActivity: AppCompatActivity() {
         val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class)
         val user = userHelper.getUser()
         binding.btnGo.setOnClickListener {
-            `User_UserActivity$$Router`.goUser_UserActivity(this,"hahah",user)
+            `User_UserActivity$$Router`.go(this,"hahah",user)
         }
 
         binding.btnGoFragment.setOnClickListener {
-            val fragment : Fragment = `User_UserFragment$$Router`.getUser_UserFragment("lalala",user) as Fragment
+            val fragment : Fragment = `User_UserFragment$$Router`.newInstance("lalala",user) as Fragment
             supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
         }
 

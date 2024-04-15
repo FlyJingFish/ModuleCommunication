@@ -65,8 +65,7 @@ class CommunicationKspSymbolProcessor(
                 (if (classMethodMap["value"] != null) classMethodMap["value"] as KSType else null)
                     ?: continue
             val targetClassName: String =
-                (if (value != null) value.declaration.packageName.asString() + "." + value.toString() else null)
-                    ?: continue
+                (value.declaration.packageName.asString() + "." + value.toString())
 
             isImplementClass(symbol,targetClassName)
 
@@ -159,7 +158,7 @@ class CommunicationKspSymbolProcessor(
 
 
 
-            val whatsMyName1 = whatsMyName("go${routeClassName}")
+            val whatsMyName1 = whatsMyName("go")
                 .addAnnotation(JvmStatic::class)
             whatsMyName1.addParameter("context",ClassName.bestGuess(
                 "android.content.Context"
@@ -191,7 +190,7 @@ class CommunicationKspSymbolProcessor(
 
             typeBuilder.addFunction(whatsMyName1.build())
 
-            val whatsMyName2 = whatsMyName("get${routeClassName}")
+            val whatsMyName2 = whatsMyName("newInstance")
                 .addAnnotation(JvmStatic::class)
                 .returns(Any::class)
 
