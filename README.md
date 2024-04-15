@@ -261,7 +261,84 @@ communicationConfig{
 
 <img src="/screenshot/copy_all.png" alt="show" />
 
+### 路由注解
 
+- @Route 路由页面
+
+- @RouteParams 路由页面参数
+
+示例
+
+```kotlin
+// activity 
+@Route("user/UserActivity")
+class UserActivity : AppCompatActivity() {
+
+    @delegate:RouteParams("params1")
+    val params1 :String ? by lazy(LazyThreadSafetyMode.NONE) {
+        intent.getStringExtra("params1")
+    }
+
+    @delegate:RouteParams("params2")
+    val params2 :User ? by lazy(LazyThreadSafetyMode.NONE) {
+        intent.getSerializableExtra("params2") as User
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_user)
+        Log.e("UserActivity","params1=$params1,params2=$params2")
+    }
+}
+
+//fragment
+@Route("user/UserFragment")
+class UserFragment : Fragment() {
+    @delegate:RouteParams("params1")
+    val params1 :String ? by lazy(LazyThreadSafetyMode.NONE) {
+        arguments?.getString("params1")
+    }
+
+    @delegate:RouteParams("params2")
+    val params2 :User ? by lazy(LazyThreadSafetyMode.NONE) {
+        arguments?.getSerializable("params2") as User
+    }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val binding = ActivityUserBinding.inflate(inflater,container,false)
+        Log.e("UserFragment","params1=$params1,params2=$params2")
+        return binding.root
+    }
+
+}
+```
+
+在其他 module 调用
+
+```kotlin
+class LoginActivity: AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class)
+        val user = userHelper.getUser()
+        binding.btnGo.setOnClickListener {
+            `User_UserActivity$$Router`.goUser_UserActivity(this,"hahah",user)
+        }
+
+        binding.btnGoFragment.setOnClickListener {
+            val fragment : Fragment = `User_UserFragment$$Router`.getUser_UserFragment("lalala",user) as Fragment
+            supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
+        }
+
+        Log.e("user",""+user)
+    }
+}
+```
 
 #### 混淆规则
 
