@@ -1,5 +1,6 @@
 package com.flyjingfish.module_communication_ksp
 
+import com.flyjingfish.module_communication_annotation.BaseRouter
 import com.flyjingfish.module_communication_annotation.BindClass
 import com.flyjingfish.module_communication_annotation.ExposeBean
 import com.flyjingfish.module_communication_annotation.ExposeInterface
@@ -145,11 +146,10 @@ class CommunicationKspSymbolProcessor(
             typeBuilder1.addProperty(android)
             writeToFile(typeBuilder1, symbol.packageName.asString(),fileName1, symbol,true)
 
-
             val fileName = "${routeClassName}\$\$Router"
             val typeBuilder = TypeSpec.objectBuilder(
                 fileName
-            )
+            ).addSuperinterface(ClassName.bestGuess(BaseRouter::class.qualifiedName!!))
 //                .addModifiers(KModifier.FINAL)
 
             val paramMap = routeParamsMap[className]
