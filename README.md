@@ -51,7 +51,7 @@
 buildscript {
     dependencies {
         //必须项 👇
-        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.1.2'
+        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.1.3'
     }
 }
 ```
@@ -84,7 +84,10 @@ plugins {
 - 3、在项目根目录的 ```gradle.properties``` 新增如下配置
 
 ```
-CommunicationModuleName = communication
+//公共导出的 module 名
+communication.moduleName = communication
+//是否自动在设置 communication.export 插件的 module 自动 compileOnly 入公共的 module（前提是已经设置了 communication.moduleName）
+communication.antoCompileOnly = true
 ```
 
 ### 三、开始使用
@@ -160,7 +163,7 @@ b、如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件�
 ```gradle
 dependencies {
     //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.1.2'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.1.3'
 }
 ```
 
@@ -341,6 +344,18 @@ class LoginActivity: AppCompatActivity() {
     }
 }
 ```
+
+设置以下设置可以生成空的导航方法，这样方便移除当前module
+
+```gradle
+communicationConfig{
+    //第一步生成
+    exportEmptyRoute = false
+    exportModuleName = "communication2"
+}
+```
+
+> 可能你会问移除当前module，那么导航类不也就没了吗，当然是的，`exportEmptyRoute = false` 是第1步，第2步就是设置单独导出的通信 module，然后在强引用（例如：implementation）通信 module 即可
 
 #### 混淆规则
 
