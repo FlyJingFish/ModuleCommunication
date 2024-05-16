@@ -349,8 +349,9 @@ class LoginActivity: AppCompatActivity() {
 
 ```gradle
 communicationConfig{
-    //第一步生成
+    // 第1步让导航方法失效
     exportEmptyRoute = false
+    // 第2步 导出一个单独的 module
     exportModuleName = "communication2"
 }
 ```
