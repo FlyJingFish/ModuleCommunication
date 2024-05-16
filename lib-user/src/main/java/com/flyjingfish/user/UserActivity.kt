@@ -26,7 +26,7 @@ class UserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
         val loginHelper = ImplementClassUtils.getNewInstance<LoginHelper>(LoginHelper::class)
-        val login = loginHelper.getLogin()
+        val login = loginHelper?.getLogin()
         Log.e("login",""+login)
         findViewById<ImageView>(R.id.iv_image).setImageResource(R.drawable.login_logo)
         val text = R.string.login_text
