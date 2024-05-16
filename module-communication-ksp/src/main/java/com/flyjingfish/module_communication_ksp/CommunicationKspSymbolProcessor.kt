@@ -122,6 +122,11 @@ class CommunicationKspSymbolProcessor(
             val routeModulePackageName = environment.options["routeModulePackageName"]
                 ?: throw IllegalArgumentException("注意：你还没有给当前 module 设置 communication.export 插件")
 
+            val exportEmptyRoute = environment.options["exportEmptyRoute"]
+                ?: "false"
+
+            val emptyRoute = exportEmptyRoute == "true"
+
             var fullName = ""
             val names = routeModuleName.split("-");
             for(token in names){
@@ -193,98 +198,121 @@ class CommunicationKspSymbolProcessor(
 
                 if (isSubtype(symbol,"android.app.Activity")){
                     val whatsMyName1 = whatsMyName("go$routeClassName")
-                        .addAnnotation(JvmStatic::class)
-                    whatsMyName1.addParameter("context",ClassName.bestGuess(
-                        "android.content.Context"
-                    ))
-                    whatsMyName1.addStatement(
-                        "val intent = %T(context,`$routeClassFile`.$classFunName())",
-                        ClassName.bestGuess(
-                            "android.content.Intent"
-                        )
-                    )
-                    paramMap?.forEach { (_, value) ->
-                        val config = value.annoMap["@RouteParams"]
-//                logger.error("paramMap-value=$value")
-                        if (config != null){
-                            val paramsName : String = config["name"] as String
-//                    val paramsType : KSType = config["keyType"] as KSType
-//                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
-                            val targetClassName: String = value.className
-                            val bindClassName = ClassName.bestGuess(targetClassName)
-                            whatsMyName1.addParameter(paramsName,bindClassName)
-                            whatsMyName1.addStatement(
-                                "intent.putExtra(\"$paramsName\",$paramsName)",
+                    if (!emptyRoute){
+                        whatsMyName1.addParameter("context",ClassName.bestGuess(
+                            "android.content.Context"
+                        ))
+                        whatsMyName1.addStatement(
+                            "val intent = %T(context,`$routeClassFile`.$classFunName())",
+                            ClassName.bestGuess(
+                                "android.content.Intent"
                             )
+                        )
+                        paramMap?.forEach { (_, value) ->
+                            val config = value.annoMap["@RouteParams"]
+                            if (config != null){
+                                val paramsName : String = config["name"] as String
+                                val targetClassName: String = value.className
+                                val bindClassName = ClassName.bestGuess(targetClassName)
+                                whatsMyName1.addParameter(paramsName,bindClassName)
+                                whatsMyName1.addStatement(
+                                    "intent.putExtra(\"$paramsName\",$paramsName)",
+                                )
+                            }
+                        }
+                        whatsMyName1.addStatement(
+                            "context.startActivity(intent)",
+                        )
+                    }else{
+                        whatsMyName1.addParameter("context",ClassName.bestGuess(
+                            "android.content.Context"
+                        ))
+                        paramMap?.forEach { (_, value) ->
+                            val config = value.annoMap["@RouteParams"]
+                            if (config != null){
+                                val paramsName : String = config["name"] as String
+                                val targetClassName: String = value.className
+                                val bindClassName = ClassName.bestGuess(targetClassName)
+                                whatsMyName1.addParameter(paramsName,bindClassName)
+                            }
                         }
                     }
-                    whatsMyName1.addStatement(
-                        "context.startActivity(intent)",
-                    )
 
                     routeBuilder.addFunction(whatsMyName1.build())
                 }else if (isSubtype(symbol,"androidx.fragment.app.Fragment") || isSubtype(symbol,"android.app.Fragment")){
+                    val anyClassName = ClassName.bestGuess(Any::class.qualifiedName!!)
                     val whatsMyName2 = whatsMyName("new$routeClassName")
-                        .addAnnotation(JvmStatic::class)
-                        .returns(Any::class)
+                        .returns(anyClassName.copy(nullable = true))
 
-                    whatsMyName2.addStatement(
-                        "val fragmentMeta : %T = `$routeClassFile`.$classFunName()",
-                        returnType
-                    )
-                    whatsMyName2.addStatement(
-                        "val intent = %T()",
-                        ClassName.bestGuess(
-                            "android.content.Intent"
+                    if (!emptyRoute){
+                        whatsMyName2.addStatement(
+                            "val fragmentMeta : %T = `$routeClassFile`.$classFunName()",
+                            returnType
                         )
-                    )
-                    whatsMyName2.addStatement(
-                        "val instance = fragmentMeta.getConstructor().newInstance()",
-                    )
-                    paramMap?.forEach { (_, value) ->
-                        val config = value.annoMap["@RouteParams"]
-//                logger.error("paramMap-value=$value")
-                        if (config != null){
-                            val paramsName : String = config["name"] as String
-//                    val paramsType : KSType = config["keyType"] as KSType
-//                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
-                            val targetClassName: String = value.className
-                            val bindClassName = ClassName.bestGuess(targetClassName)
-                            whatsMyName2.addParameter(paramsName,bindClassName)
+                        whatsMyName2.addStatement(
+                            "val intent = %T()",
+                            ClassName.bestGuess(
+                                "android.content.Intent"
+                            )
+                        )
+                        whatsMyName2.addStatement(
+                            "val instance = fragmentMeta.getConstructor().newInstance()",
+                        )
+                        paramMap?.forEach { (_, value) ->
+                            val config = value.annoMap["@RouteParams"]
+                            if (config != null){
+                                val paramsName : String = config["name"] as String
+                                val targetClassName: String = value.className
+                                val bindClassName = ClassName.bestGuess(targetClassName)
+                                whatsMyName2.addParameter(paramsName,bindClassName)
+                                whatsMyName2.addStatement(
+                                    "intent.putExtra(\"$paramsName\",$paramsName)",
+                                )
+                            }
+                        }
+
+                        if (isSubtype(symbol,"androidx.fragment.app.Fragment")){
                             whatsMyName2.addStatement(
-                                "intent.putExtra(\"$paramsName\",$paramsName)",
+                                "if (instance is %T) {"
+                                ,ClassName.bestGuess(
+                                    "androidx.fragment.app.Fragment"
+                                )
+                            )
+                        }else{
+                            whatsMyName2.addStatement(
+                                "if (instance is %T) {"
+                                ,ClassName.bestGuess(
+                                    "android.app.Fragment"
+                                )
                             )
                         }
-                    }
 
-                    if (isSubtype(symbol,"androidx.fragment.app.Fragment")){
+
                         whatsMyName2.addStatement(
-                            "if (instance is %T) {"
-                            ,ClassName.bestGuess(
-                                "androidx.fragment.app.Fragment"
-                            )
+                            "  instance.arguments = intent.getExtras()"
+                        )
+
+                        whatsMyName2.addStatement(
+                            "}"
+                        )
+
+                        whatsMyName2.addStatement(
+                            "return instance"
                         )
                     }else{
+                        paramMap?.forEach { (_, value) ->
+                            val config = value.annoMap["@RouteParams"]
+                            if (config != null){
+                                val paramsName : String = config["name"] as String
+                                val targetClassName: String = value.className
+                                val bindClassName = ClassName.bestGuess(targetClassName)
+                                whatsMyName2.addParameter(paramsName,bindClassName)
+                            }
+                        }
                         whatsMyName2.addStatement(
-                            "if (instance is %T) {"
-                            ,ClassName.bestGuess(
-                                "android.app.Fragment"
-                            )
+                            "return null"
                         )
                     }
-
-
-                    whatsMyName2.addStatement(
-                        "  instance.arguments = intent.getExtras()"
-                    )
-
-                    whatsMyName2.addStatement(
-                        "}"
-                    )
-
-                    whatsMyName2.addStatement(
-                        "return instance"
-                    )
 
                     routeBuilder.addFunction(whatsMyName2.build())
                 }

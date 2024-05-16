@@ -11,14 +11,24 @@ import org.gradle.configurationcache.extensions.capitalized
 
 class ApplyExportPlugin: Plugin<Project> {
     companion object{
-        private const val ANDROID_EXTENSION_NAME = "android"
-        private const val COMMON_MODULE_NAME = "CommunicationModuleName"
+        /**
+         * 公共导出的 module 名
+         */
+        private const val COMMON_MODULE_NAME = "communication.moduleName"
+
+        /**
+         * 是否自动在设置 communication.export 插件的 module 自动 compileOnly 入公共的 module（前提是已经设置了 communication.moduleName）
+         * 默认 true
+         */
+        private const val COMMON_AUTO = "communication.antoCompileOnly"
     }
 
     private val variantList: ArrayList<Variant> = ArrayList()
-    fun applyCommonDependencies(project: Project) {
+    private fun applyCommonDependencies(project: Project) {
         val moduleName = project.properties[COMMON_MODULE_NAME]?:""
-        if (moduleName.toString().isNotEmpty()){
+        val autoStr = project.properties[COMMON_AUTO]?:"true"
+        val autoCompileOnly = autoStr == "true"
+        if (moduleName.toString().isNotEmpty() && autoCompileOnly){
             project.dependencies.add("compileOnly",project.dependencies.project(mapOf("path" to ":$moduleName")))
         }
     }
@@ -85,9 +95,11 @@ class ApplyExportPlugin: Plugin<Project> {
             }.dependsOn("ksp${variantNameCapitalized}Kotlin")
         }
         project.afterEvaluate {
+            val communicationConfig = project.extensions.getByType(CommunicationConfig::class.java)
             val kspExtension = project.extensions.getByType(KspExtension::class.java)
             val android: BaseExtension = project.extensions.getByName("android") as BaseExtension
             kspExtension.arg("routeModuleName",project.name)
+            kspExtension.arg("exportEmptyRoute","${communicationConfig.exportEmptyRoute}")
             val packageName = if (android.namespace == null || android.namespace == "null"){
                 android.defaultConfig.applicationId.toString()
             }else{

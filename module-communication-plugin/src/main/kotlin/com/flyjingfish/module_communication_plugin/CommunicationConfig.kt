@@ -7,6 +7,11 @@ open class CommunicationConfig {
     var exportModuleName = ""
 
     /**
+     * 对于 @Route 是否导出空的函数，设置为true，route功能就会失效
+     */
+    var exportEmptyRoute = false
+
+    /**
      * 要copy的资源id
      */
     val exposeResIds = mutableListOf<String>()

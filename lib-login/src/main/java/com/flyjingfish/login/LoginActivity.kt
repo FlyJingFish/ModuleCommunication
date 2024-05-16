@@ -21,7 +21,7 @@ class LoginActivity: AppCompatActivity() {
         }
 
         binding.btnGoFragment.setOnClickListener {
-            val fragment : Fragment = `LibUser$$Router`.newInstanceForUser_UserFragment("lalala",user) as Fragment
+            val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",user) as Fragment
             supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
         }
 
