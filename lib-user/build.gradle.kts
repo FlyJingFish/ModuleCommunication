@@ -10,10 +10,6 @@ communicationConfig{
         "R.layout.activity_user"
     ))
 }
-ksp {
-    arg("option1", "value1")
-    arg("option2", "value2")
-}
 android {
     namespace = "com.flyjingfish.user"
     compileSdk = 34
@@ -41,7 +37,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(project(":base-lib"))
-    compileOnly(project(":communication"))
+//    compileOnly(project(":communication"))
 //    implementation(project(":module-communication-annotation"))
-    ksp(project(":module-communication-ksp"))
+//    ksp(project(":module-communication-ksp"))
 }

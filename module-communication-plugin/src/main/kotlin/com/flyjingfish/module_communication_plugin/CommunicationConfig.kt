@@ -15,4 +15,9 @@ open class CommunicationConfig {
      * 要copy的 assets
      */
     val exposeAssets = mutableListOf<String>()
+    override fun toString(): String {
+        return "CommunicationConfig(exportModuleName='$exportModuleName', exposeResIds=$exposeResIds, exposeAssets=$exposeAssets)"
+    }
+
+
 }
