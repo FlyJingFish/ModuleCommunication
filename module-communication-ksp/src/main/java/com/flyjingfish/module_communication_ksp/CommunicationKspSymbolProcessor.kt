@@ -1,6 +1,7 @@
 package com.flyjingfish.module_communication_ksp
 
 import com.flyjingfish.module_communication_annotation.BaseRouter
+import com.flyjingfish.module_communication_annotation.BaseRouterClass
 import com.flyjingfish.module_communication_annotation.BindClass
 import com.flyjingfish.module_communication_annotation.ExposeBean
 import com.flyjingfish.module_communication_annotation.ExposeInterface
@@ -8,19 +9,19 @@ import com.flyjingfish.module_communication_annotation.ImplementClass
 import com.flyjingfish.module_communication_annotation.Route
 import com.flyjingfish.module_communication_annotation.RouteParams
 import com.google.devtools.ksp.containingFile
+import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSClassifierReference
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -36,9 +37,11 @@ import java.util.Locale
 
 
 class CommunicationKspSymbolProcessor(
-    private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger
+    private val environment: SymbolProcessorEnvironment,
 ) : SymbolProcessor {
+    private val codeGenerator: CodeGenerator = environment.codeGenerator
+    private val logger: KSPLogger = environment.logger
+    private lateinit var moduleName :String
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols =
             resolver.getSymbolsWithAnnotation(ImplementClass::class.qualifiedName!!)
@@ -111,141 +114,198 @@ class CommunicationKspSymbolProcessor(
     }
     private fun processRoute(resolver: Resolver): List<KSAnnotated> {
         val symbols =
-            resolver.getSymbolsWithAnnotation(Route::class.qualifiedName!!)
-        for (symbol in symbols) {
-            val annotationMap = getAnnotation(symbol)
-            val className = (symbol as KSClassDeclaration).packageName.asString() + "." + symbol
-            val path : String = annotationMap["@Route"]?.get("path") as String
+            resolver.getSymbolsWithAnnotation(Route::class.qualifiedName!!).toList()
+        if (symbols.isNotEmpty()){
+            val routeModuleName = environment.options["routeModuleName"]
+                ?: throw IllegalArgumentException("注意：你还没有给当前 module 设置 communication.export 插件")
 
-            val classKey:String
-            val routeClassName = if (path.isNotEmpty()){
-                classKey = path.replace(".","_").replace("/","_")
-                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-                classKey
-            }else{
-                classKey = className.replace(".","_")
-                "$symbol"
+            val routeModulePackageName = environment.options["routeModulePackageName"]
+                ?: throw IllegalArgumentException("注意：你还没有给当前 module 设置 communication.export 插件")
+
+            var fullName = ""
+            val names = routeModuleName.split("-");
+            for(token in names){
+                if ("" != token){
+                    fullName += (token.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(
+                            Locale.getDefault()
+                        ) else it.toString()
+                    })
+                }
             }
+            moduleName = fullName
 
-            val fileName1 = "${routeClassName}\$\$RouterClass"
-            val typeBuilder1 = TypeSpec.objectBuilder(
-                fileName1
-            )
+            val routeClassFile = "$moduleName\$\$RouterClass"
+            val classBuilder = TypeSpec.objectBuilder(
+                routeClassFile
+            ).addSuperinterface(ClassName.bestGuess(BaseRouterClass::class.qualifiedName!!))
+            val routeFile = "$moduleName\$\$Router"
+            val routeBuilder = TypeSpec.objectBuilder(
+                routeFile
+            ).addSuperinterface(ClassName.bestGuess(BaseRouter::class.qualifiedName!!))
 
-            val bindClassName = ClassName.bestGuess(Class::class.qualifiedName!!)
-            val returnType = bindClassName.parameterizedBy(STAR)
+            val ksFiles = mutableListOf<KSFile>()
+            for (symbol in symbols) {
+                val annotationMap = getAnnotation(symbol)
+                val className = (symbol as KSClassDeclaration).packageName.asString() + "." + symbol
+                val path : String = annotationMap["@Route"]?.get("path") as String
 
+
+
+                val classKey:String
+                val routeClassName = if (path.isNotEmpty()){
+                    classKey = path.replace(".","_").replace("/","_")
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+                    classKey
+                }else{
+                    classKey = className.replace(".","_")
+                    "$symbol"
+                }
+
+
+                val bindClassName = ClassName.bestGuess(Class::class.qualifiedName!!)
+                val returnType = bindClassName.parameterizedBy(STAR)
 //            val android = PropertySpec.builder(classKey, returnType)
 //                .initializer("%T::class.java",  ClassName.bestGuess(
 //                    className
 //                ))
 //                .build()
-            val android = PropertySpec.builder(classKey, returnType)
-                .initializer("Class.forName(\"$className\")")
-                .build()
-            typeBuilder1.addProperty(android)
-            writeToFile(typeBuilder1, symbol.packageName.asString(),fileName1, symbol,true)
+                val android = PropertySpec.builder(classKey, returnType.copy(nullable = true))
+                    .mutable()
+                    .initializer("null")
+                    .addModifiers(KModifier.PRIVATE)
+                    .build()
+                classBuilder.addProperty(android)
+                val classFunName = "get${classKey}Class"
+                classBuilder.addFunction(whatsMyName(classFunName)
+                    .returns(returnType)
+                    .addStatement("val clazz = ${classKey}")
+                    .addStatement("val returnClazz = if(clazz == null) {" )
+                    .addStatement("  Class.forName(\"$className\")")
+                    .addStatement("}else{" )
+                    .addStatement("  clazz" )
+                    .addStatement("}")
+                    .addStatement("$classKey = clazz")
+                    .addStatement("return returnClazz")
+                    .build())
 
-            val fileName = "${routeClassName}\$\$Router"
-            val typeBuilder = TypeSpec.objectBuilder(
-                fileName
-            ).addSuperinterface(ClassName.bestGuess(BaseRouter::class.qualifiedName!!))
-//                .addModifiers(KModifier.FINAL)
+                val paramMap = routeParamsMap[className]
 
-            val paramMap = routeParamsMap[className]
-//            logger.error("paramMap=$paramMap")
-
-
-
-
-            val whatsMyName1 = whatsMyName("go")
-                .addAnnotation(JvmStatic::class)
-            whatsMyName1.addParameter("context",ClassName.bestGuess(
-                "android.content.Context"
-            ))
-            whatsMyName1.addStatement(
-                "val intent = %T(context,`$fileName1`.$classKey)",
-                ClassName.bestGuess(
-                    "android.content.Intent"
-                )
-            )
-            paramMap?.forEach { (_, value) ->
-                val config = value.annoMap["@RouteParams"]
-//                logger.error("paramMap-value=$value")
-                if (config != null){
-                    val paramsName : String = config["name"] as String
-//                    val paramsType : KSType = config["keyType"] as KSType
-//                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
-                    val targetClassName: String = value.className
-                    val bindClassName = ClassName.bestGuess(targetClassName)
-                    whatsMyName1.addParameter(paramsName,bindClassName)
+                if (isSubtype(symbol,"android.app.Activity")){
+                    val whatsMyName1 = whatsMyName("go$routeClassName")
+                        .addAnnotation(JvmStatic::class)
+                    whatsMyName1.addParameter("context",ClassName.bestGuess(
+                        "android.content.Context"
+                    ))
                     whatsMyName1.addStatement(
-                        "intent.putExtra(\"$paramsName\",$paramsName)",
+                        "val intent = %T(context,`$routeClassFile`.$classFunName())",
+                        ClassName.bestGuess(
+                            "android.content.Intent"
+                        )
                     )
-                }
-            }
-            whatsMyName1.addStatement(
-                "context.startActivity(intent)",
-            )
-
-            typeBuilder.addFunction(whatsMyName1.build())
-
-            val whatsMyName2 = whatsMyName("newInstance")
-                .addAnnotation(JvmStatic::class)
-                .returns(Any::class)
-
-            whatsMyName2.addStatement(
-                "val fragmentMeta : %T = `$fileName1`.$classKey",
-                returnType
-            )
-            whatsMyName2.addStatement(
-                "val intent = %T()",
-                ClassName.bestGuess(
-                    "android.content.Intent"
-                )
-            )
-            whatsMyName2.addStatement(
-                "val instance = fragmentMeta.getConstructor().newInstance()",
-            )
-            paramMap?.forEach { (_, value) ->
-                val config = value.annoMap["@RouteParams"]
+                    paramMap?.forEach { (_, value) ->
+                        val config = value.annoMap["@RouteParams"]
 //                logger.error("paramMap-value=$value")
-                if (config != null){
-                    val paramsName : String = config["name"] as String
+                        if (config != null){
+                            val paramsName : String = config["name"] as String
 //                    val paramsType : KSType = config["keyType"] as KSType
 //                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
-                    val targetClassName: String = value.className
-                    val bindClassName = ClassName.bestGuess(targetClassName)
-                    whatsMyName2.addParameter(paramsName,bindClassName)
-                    whatsMyName2.addStatement(
-                        "intent.putExtra(\"$paramsName\",$paramsName)",
+                            val targetClassName: String = value.className
+                            val bindClassName = ClassName.bestGuess(targetClassName)
+                            whatsMyName1.addParameter(paramsName,bindClassName)
+                            whatsMyName1.addStatement(
+                                "intent.putExtra(\"$paramsName\",$paramsName)",
+                            )
+                        }
+                    }
+                    whatsMyName1.addStatement(
+                        "context.startActivity(intent)",
                     )
+
+                    routeBuilder.addFunction(whatsMyName1.build())
+                }else if (isSubtype(symbol,"androidx.fragment.app.Fragment") || isSubtype(symbol,"android.app.Fragment")){
+                    val whatsMyName2 = whatsMyName("newInstanceFor$routeClassName")
+                        .addAnnotation(JvmStatic::class)
+                        .returns(Any::class)
+
+                    whatsMyName2.addStatement(
+                        "val fragmentMeta : %T = `$routeClassFile`.$classFunName()",
+                        returnType
+                    )
+                    whatsMyName2.addStatement(
+                        "val intent = %T()",
+                        ClassName.bestGuess(
+                            "android.content.Intent"
+                        )
+                    )
+                    whatsMyName2.addStatement(
+                        "val instance = fragmentMeta.getConstructor().newInstance()",
+                    )
+                    paramMap?.forEach { (_, value) ->
+                        val config = value.annoMap["@RouteParams"]
+//                logger.error("paramMap-value=$value")
+                        if (config != null){
+                            val paramsName : String = config["name"] as String
+//                    val paramsType : KSType = config["keyType"] as KSType
+//                    val targetClassName: String = paramsType.declaration.packageName.asString() + "." + paramsType.toString()
+                            val targetClassName: String = value.className
+                            val bindClassName = ClassName.bestGuess(targetClassName)
+                            whatsMyName2.addParameter(paramsName,bindClassName)
+                            whatsMyName2.addStatement(
+                                "intent.putExtra(\"$paramsName\",$paramsName)",
+                            )
+                        }
+                    }
+
+                    if (isSubtype(symbol,"androidx.fragment.app.Fragment")){
+                        whatsMyName2.addStatement(
+                            "if (instance is %T) {"
+                            ,ClassName.bestGuess(
+                                "androidx.fragment.app.Fragment"
+                            )
+                        )
+                    }else{
+                        whatsMyName2.addStatement(
+                            "if (instance is %T) {"
+                            ,ClassName.bestGuess(
+                                "android.app.Fragment"
+                            )
+                        )
+                    }
+
+
+                    whatsMyName2.addStatement(
+                        "  instance.arguments = intent.getExtras()"
+                    )
+
+                    whatsMyName2.addStatement(
+                        "}"
+                    )
+
+                    whatsMyName2.addStatement(
+                        "return instance"
+                    )
+
+                    routeBuilder.addFunction(whatsMyName2.build())
                 }
+
+                ksFiles.add(symbol.containingFile!!)
             }
-            whatsMyName2.addStatement(
-                "if (instance is %T) {"
-                ,ClassName.bestGuess(
-                    "androidx.fragment.app.Fragment"
-                )
-            )
-
-            whatsMyName2.addStatement(
-                "  instance.arguments = intent.getExtras()"
-            )
-
-            whatsMyName2.addStatement(
-                "}"
-            )
-
-            whatsMyName2.addStatement(
-                "return instance"
-            )
-
-            typeBuilder.addFunction(whatsMyName2.build())
-
-            writeToFile(typeBuilder, symbol.packageName.asString(),fileName, symbol,true)
+            writeToFile(classBuilder, routeModulePackageName,routeClassFile,true, ksFiles.toTypedArray())
+            writeToFile(routeBuilder, routeModulePackageName,routeFile, true,ksFiles.toTypedArray())
         }
         return symbols.filter { !it.validate() }.toList()
+    }
+
+    private fun isSubtype(symbol: KSClassDeclaration,superType :String):Boolean{
+        symbol.getAllSuperTypes().toList().forEach {
+            val className = "${it.declaration.packageName.asString()}.${it}"
+            if (className == superType){
+                return true
+            }
+//            logger.error("symbol=${symbol},superTypes= ${it.declaration.packageName.asString()+"."+it}")
+        }
+        return false
     }
 
     private val routeParamsMap = mutableMapOf<String,MutableMap<String,RouteParamsConfig>>()
@@ -422,6 +482,42 @@ class CommunicationKspSymbolProcessor(
             codeGenerator
                 .createNewFile(
                     Dependencies(false, symbol.containingFile!!),
+                    packageName,
+                    "$fileName.kt",
+                    "api"
+                )
+                .writer()
+                .use {
+                    kotlinFile.writeTo(it)
+                }
+        }
+    }
+
+    private fun writeToFile(
+        typeBuilder: TypeSpec.Builder,
+        packageName: String,
+        fileName: String,
+        writeApi:Boolean = false,
+        ksFiles : Array<KSFile>
+    ) {
+        val typeSpec = typeBuilder.build()
+        val kotlinFile = FileSpec.builder(packageName, fileName).addType(typeSpec)
+            .build()
+        codeGenerator
+            .createNewFile(
+                Dependencies(false, *ksFiles),
+                packageName,
+                fileName
+            )
+            .writer()
+            .use {
+                kotlinFile.writeTo(it)
+            }
+        if (writeApi){
+
+            codeGenerator
+                .createNewFile(
+                    Dependencies(false, *ksFiles),
                     packageName,
                     "$fileName.kt",
                     "api"

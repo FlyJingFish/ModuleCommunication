@@ -10,6 +10,10 @@ communicationConfig{
         "R.layout.activity_user"
     ))
 }
+ksp {
+    arg("option1", "value1")
+    arg("option2", "value2")
+}
 android {
     namespace = "com.flyjingfish.user"
     compileSdk = 34

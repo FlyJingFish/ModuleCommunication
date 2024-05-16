@@ -2,7 +2,9 @@ package com.flyjingfish.module_communication_plugin
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
@@ -22,7 +24,10 @@ class CommunicationExportPlugin : Plugin<Project> {
 //        project.dependencies.add("compileOnly",":communication")
         androidComponents.onVariants { variant ->
             variantList.add(variant)
+
+
             val communicationConfig = project.extensions.getByType(CommunicationConfig::class.java)
+
             var moduleName = communicationConfig.exportModuleName
             if (moduleName.isNullOrEmpty()){
                 moduleName = project.properties["CommunicationModuleName"].toString()
@@ -67,6 +72,17 @@ class CommunicationExportPlugin : Plugin<Project> {
             }.dependsOn("ksp${variantNameCapitalized}Kotlin")
         }
         project.afterEvaluate {
+            val kspExtension = project.extensions.getByType(KspExtension::class.java)
+            val android: BaseExtension = project.extensions.getByName("android") as BaseExtension
+            kspExtension.arg("routeModuleName",project.name)
+            val packageName = if (android.namespace == null || android.namespace == "null"){
+                android.defaultConfig.applicationId.toString()
+            }else{
+                android.namespace.toString()
+            }
+            println("gradle-routeModulePackageName=${packageName}")
+
+            kspExtension.arg("routeModulePackageName",packageName)
             for (variant in variantList) {
                 val variantName = variant.name
                 val variantNameCapitalized = variantName.capitalized()

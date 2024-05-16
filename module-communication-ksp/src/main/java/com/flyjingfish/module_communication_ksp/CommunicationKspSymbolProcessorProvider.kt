@@ -6,6 +6,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 class CommunicationKspSymbolProcessorProvider : SymbolProcessorProvider {
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-    return CommunicationKspSymbolProcessor(environment.codeGenerator, environment.logger)
+    return CommunicationKspSymbolProcessor(environment)
   }
 }

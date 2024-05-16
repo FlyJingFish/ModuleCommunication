@@ -12,4 +12,5 @@ dependencies {
     implementation(libs.gradle)
     implementation(libs.dom4j)
     implementation(libs.gson)
+    implementation(libs.symbol.processing.gradle.plugin)
 }
