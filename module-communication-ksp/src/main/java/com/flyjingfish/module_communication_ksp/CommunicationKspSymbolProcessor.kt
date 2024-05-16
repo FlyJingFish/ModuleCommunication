@@ -213,9 +213,9 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
+                                val paramNullable : Boolean = config["nullable"] as Boolean
                                 val targetClassName: String = value.className
-                                val bindClassName = ClassName.bestGuess(targetClassName)
-                                whatsMyName1.addParameter(paramsName,bindClassName)
+                                whatsMyName1.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
                                 whatsMyName1.addStatement(
                                     "intent.putExtra(\"$paramsName\",$paramsName)",
                                 )
@@ -237,9 +237,9 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
+                                val paramNullable : Boolean = config["nullable"] as Boolean
                                 val targetClassName: String = value.className
-                                val bindClassName = ClassName.bestGuess(targetClassName)
-                                whatsMyName1.addParameter(paramsName,bindClassName)
+                                whatsMyName1.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
                             }
                         }
                     }
@@ -282,9 +282,9 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
+                                val paramNullable : Boolean = config["nullable"] as Boolean
                                 val targetClassName: String = value.className
-                                val bindClassName = ClassName.bestGuess(targetClassName)
-                                whatsMyName2.addParameter(paramsName,bindClassName)
+                                whatsMyName2.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
                                 whatsMyName2.addStatement(
                                     "intent.putExtra(\"$paramsName\",$paramsName)",
                                 )
@@ -329,9 +329,9 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
+                                val paramNullable : Boolean = config["nullable"] as Boolean
                                 val targetClassName: String = value.className
-                                val bindClassName = ClassName.bestGuess(targetClassName)
-                                whatsMyName2.addParameter(paramsName,bindClassName)
+                                whatsMyName2.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
                             }
                         }
                         whatsMyName2.addStatement(

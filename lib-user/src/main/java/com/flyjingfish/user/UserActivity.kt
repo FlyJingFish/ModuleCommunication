@@ -17,9 +17,14 @@ class UserActivity : AppCompatActivity() {
         intent.getStringExtra("params1")
     }
 
-    @delegate:RouteParams("params2")
+    @delegate:RouteParams("params2",nullable = true)
     val params2 :User ? by lazy(LazyThreadSafetyMode.NONE) {
-        intent.getSerializableExtra("params2") as User
+        val result = intent.getSerializableExtra("params2")
+        if (result != null){
+            result as User
+        }else{
+            null
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

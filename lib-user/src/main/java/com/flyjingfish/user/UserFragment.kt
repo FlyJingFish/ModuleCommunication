@@ -17,9 +17,14 @@ class UserFragment : Fragment() {
         arguments?.getString("params1")
     }
 
-    @delegate:RouteParams("params2")
+    @delegate:RouteParams("params2",nullable = true)
     val params2 :User ? by lazy(LazyThreadSafetyMode.NONE) {
-        arguments?.getSerializable("params2") as User
+        val result = arguments?.getSerializable("params2")
+        if (result != null){
+            result as User
+        }else{
+            null
+        }
     }
     override fun onCreateView(
         inflater: LayoutInflater,
