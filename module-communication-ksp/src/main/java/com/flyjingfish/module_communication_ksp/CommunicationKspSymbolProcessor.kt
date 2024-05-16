@@ -224,7 +224,7 @@ class CommunicationKspSymbolProcessor(
 
                     routeBuilder.addFunction(whatsMyName1.build())
                 }else if (isSubtype(symbol,"androidx.fragment.app.Fragment") || isSubtype(symbol,"android.app.Fragment")){
-                    val whatsMyName2 = whatsMyName("newInstanceFor$routeClassName")
+                    val whatsMyName2 = whatsMyName("new$routeClassName")
                         .addAnnotation(JvmStatic::class)
                         .returns(Any::class)
 
