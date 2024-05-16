@@ -6,6 +6,7 @@ plugins {
 }
 communicationConfig{
     exportModuleName = "communication"
+    exportEmptyRoute = false
     exposeResIds.addAll(arrayOf(
         "R.layout.activity_user"
     ))

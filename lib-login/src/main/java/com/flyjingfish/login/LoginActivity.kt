@@ -15,13 +15,13 @@ class LoginActivity: AppCompatActivity() {
         val binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class)
-        val user = userHelper.getUser()
+        val user = userHelper?.getUser()
         binding.btnGo.setOnClickListener {
-            `LibUser$$Router`.goUser_UserActivity(this,"hahah",user)
+            `LibUser$$Router`.goUser_UserActivity(this,"hahah",user!!)
         }
 
         binding.btnGoFragment.setOnClickListener {
-            val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",user) as Fragment
+            val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",user!!) as Fragment
             supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
         }
 

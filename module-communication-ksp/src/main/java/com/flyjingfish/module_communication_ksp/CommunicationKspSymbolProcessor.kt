@@ -175,30 +175,31 @@ class CommunicationKspSymbolProcessor(
 //                    className
 //                ))
 //                .build()
-                val android = PropertySpec.builder(classKey, returnType.copy(nullable = true))
-                    .mutable()
-                    .initializer("null")
-                    .addModifiers(KModifier.PRIVATE)
-                    .build()
-                classBuilder.addProperty(android)
-                val classFunName = "get${classKey}Class"
-                classBuilder.addFunction(whatsMyName(classFunName)
-                    .returns(returnType)
-                    .addStatement("val clazz = ${classKey}")
-                    .addStatement("val returnClazz = if(clazz == null) {" )
-                    .addStatement("  Class.forName(\"$className\")")
-                    .addStatement("}else{" )
-                    .addStatement("  clazz" )
-                    .addStatement("}")
-                    .addStatement("$classKey = clazz")
-                    .addStatement("return returnClazz")
-                    .build())
+//                val android = PropertySpec.builder(classKey, returnType.copy(nullable = true))
+//                    .mutable()
+//                    .initializer("null")
+//                    .addModifiers(KModifier.PRIVATE)
+//                    .build()
+//                classBuilder.addProperty(android)
+
 
                 val paramMap = routeParamsMap[className]
 
+                val classFunName = "get${classKey}Class"
                 if (isSubtype(symbol,"android.app.Activity")){
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
+                        classBuilder.addFunction(whatsMyName(classFunName)
+                            .returns(returnType.copy(nullable = true))
+                            .addStatement("return $className::class.java")
+                            .build())
+
+                        val activityBuilder = TypeSpec.classBuilder(
+                            symbol.toString()
+                        ).superclass(ClassName.bestGuess("android.app.Activity"))
+
+                        writeToFile(activityBuilder, symbol.packageName.asString(),symbol.toString(),symbol,true,false)
+
                         whatsMyName1.addParameter("context",ClassName.bestGuess(
                             "android.content.Context"
                         ))
@@ -224,6 +225,11 @@ class CommunicationKspSymbolProcessor(
                             "context.startActivity(intent)",
                         )
                     }else{
+                        classBuilder.addFunction(whatsMyName(classFunName)
+                            .returns(returnType.copy(nullable = true))
+                            .addStatement("return null")
+                            .build())
+
                         whatsMyName1.addParameter("context",ClassName.bestGuess(
                             "android.content.Context"
                         ))
@@ -244,11 +250,24 @@ class CommunicationKspSymbolProcessor(
                     val whatsMyName2 = whatsMyName("new$routeClassName")
                         .returns(anyClassName.copy(nullable = true))
 
+
                     if (!emptyRoute){
-                        whatsMyName2.addStatement(
-                            "val fragmentMeta : %T = `$routeClassFile`.$classFunName()",
-                            returnType
+                        classBuilder.addFunction(whatsMyName(classFunName)
+                            .returns(anyClassName.copy(nullable = true))
+                            .addStatement("return $className()")
+                            .build())
+
+                        val activityBuilder = TypeSpec.classBuilder(
+                            symbol.toString()
                         )
+
+                        if (isSubtype(symbol,"androidx.fragment.app.Fragment")){
+                            activityBuilder.superclass(ClassName.bestGuess("androidx.fragment.app.Fragment"))
+                        }else{
+                            activityBuilder.superclass(ClassName.bestGuess("android.app.Fragment"))
+                        }
+
+                        writeToFile(activityBuilder, symbol.packageName.asString(),symbol.toString(),symbol,true,false)
                         whatsMyName2.addStatement(
                             "val intent = %T()",
                             ClassName.bestGuess(
@@ -256,7 +275,8 @@ class CommunicationKspSymbolProcessor(
                             )
                         )
                         whatsMyName2.addStatement(
-                            "val instance = fragmentMeta.getConstructor().newInstance()",
+                            "val instance : %T = `$routeClassFile`.$classFunName()",
+                            anyClassName.copy(nullable = true)
                         )
                         paramMap?.forEach { (_, value) ->
                             val config = value.annoMap["@RouteParams"]
@@ -300,6 +320,11 @@ class CommunicationKspSymbolProcessor(
                             "return instance"
                         )
                     }else{
+                        classBuilder.addFunction(whatsMyName(classFunName)
+                            .returns(anyClassName.copy(nullable = true))
+                            .addStatement("return null")
+                            .build())
+
                         paramMap?.forEach { (_, value) ->
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
@@ -490,21 +515,24 @@ class CommunicationKspSymbolProcessor(
         packageName: String,
         fileName: String,
         symbol: KSAnnotated,
-        writeApi:Boolean = false
+        writeApi:Boolean = false,
+        writeKt:Boolean = true
     ) {
         val typeSpec = typeBuilder.build()
         val kotlinFile = FileSpec.builder(packageName, fileName).addType(typeSpec)
             .build()
-        codeGenerator
-            .createNewFile(
-                Dependencies(false, symbol.containingFile!!),
-                packageName,
-                fileName
-            )
-            .writer()
-            .use {
-                kotlinFile.writeTo(it)
-            }
+        if (writeKt){
+            codeGenerator
+                .createNewFile(
+                    Dependencies(false, symbol.containingFile!!),
+                    packageName,
+                    fileName
+                )
+                .writer()
+                .use {
+                    kotlinFile.writeTo(it)
+                }
+        }
         if (writeApi){
 
             codeGenerator
