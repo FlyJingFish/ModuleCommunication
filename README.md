@@ -356,7 +356,7 @@ communicationConfig{
 }
 ```
 
-> 可能你会问移除当前module，那么导航类不也就没了吗，当然是的，`exportEmptyRoute = false` 是第1步，第2步就是设置单独导出的通信 module，然后在强引用（例如：implementation）通信 module 即可
+> 可能你会问移除当前module，那么导航类不也就没了吗，当然是的，`exportEmptyRoute = false` 是第1步，第2步就是设置单独导出的通信 module，然后在强引用（例如：implementation）通信 module ，第3步在公共通信module，用api方式引用第2步的通信module
 
 #### 混淆规则
 
