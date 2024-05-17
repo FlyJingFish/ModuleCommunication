@@ -1,5 +1,7 @@
+apply plugin: "com.android.library"
+apply plugin: "org.jetbrains.kotlin.android"
 android {
-    compileSdk libs.sdkVersion
+    compileSdk rootProject.ext.sdkVersion
 
     defaultConfig {
         minSdk rootProject.ext.minSdkVersion

@@ -1,6 +1,12 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("android.aop")
+}
+
+androidAopConfig{
+    debug = true
 }
 
 android {
@@ -87,4 +93,5 @@ dependencies {
     implementation(project(mapOf("path" to ":base-lib")))
     implementation(project(mapOf("path" to ":lib-user")))
     implementation(project(mapOf("path" to ":lib-login")))
+    ksp(libs.androidAop.ksp)
 }

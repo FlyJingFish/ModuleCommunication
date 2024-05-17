@@ -31,5 +31,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     api(project(":module-communication-annotation"))
+    api(project(":module-communication-intercept"))
 
 }

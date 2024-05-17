@@ -15,6 +15,7 @@ material = "1.6.0"
 gson = "2.10.1"
 sdkVersion = "31"
 minSdkVersion = "21"
+androidAopVersion = "1.8.2"
 [libraries]
 kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet_version" }
 ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
@@ -28,6 +29,11 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 symbol-processing-gradle-plugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp" }
+#androidAop-plugin = { group = "io.github.FlyJingFish.AndroidAop.android-aop.", version.ref = "androidAopVersion" }
+androidAop-plugin = { group = "io.github.FlyJingFish.AndroidAop",name = "android-aop-plugin", version.ref = "androidAopVersion" }
+androidAop-core = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-core" ,version.ref = "androidAopVersion" }
+androidAop-annotation = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-annotation" ,version.ref = "androidAopVersion" }
+androidAop-ksp = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-ksp" ,version.ref = "androidAopVersion" }
 [plugins]
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "org-jetbrains-kotlin-jvm" }
 com-android-library = { id = "com.android.library", version.ref = "agp" }

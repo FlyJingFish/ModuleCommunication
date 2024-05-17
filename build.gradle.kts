@@ -11,8 +11,13 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.8.10" apply false
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
     id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
-}
 
+    id("io.github.FlyJingFish.AndroidAop.android-aop") version "1.8.1" apply true
+}
+ext {
+    set("sdkVersion",31)
+    set("minSdkVersion",21)
+}
 fun getVersionProperty(propName:String, defValue:String):String {
     val file = file("version.properties")
     var ret = defValue
