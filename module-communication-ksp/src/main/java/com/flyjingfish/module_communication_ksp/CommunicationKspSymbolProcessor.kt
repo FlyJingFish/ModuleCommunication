@@ -6,7 +6,6 @@ import com.flyjingfish.module_communication_annotation.BindClass
 import com.flyjingfish.module_communication_annotation.ExposeBean
 import com.flyjingfish.module_communication_annotation.ExposeInterface
 import com.flyjingfish.module_communication_annotation.ImplementClass
-import com.flyjingfish.module_communication_annotation.InvokeRoute
 import com.flyjingfish.module_communication_annotation.Route
 import com.flyjingfish.module_communication_annotation.RouteParams
 import com.google.devtools.ksp.containingFile
@@ -34,7 +33,6 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.tag
 import java.io.File
 import java.io.FileInputStream
 import java.util.Locale
@@ -239,7 +237,29 @@ class CommunicationKspSymbolProcessor(
                             "android.content.Context"
                         ))
                         whatsMyName1.addStatement(
-                            "val intent = %T(context,`$routeClassFile`(false).$classFunName())",
+                            "val paramMap = mutableMapOf<String,Any?>()"
+                        )
+
+                        whatsMyName1.addStatement(
+                            "val routeClazz = `$routeClassFile`(false)",
+                            ClassName.bestGuess(
+                                "android.content.Intent"
+                            )
+                        )
+                        paramMap?.forEach { (_, value) ->
+                            val config = value.annoMap["@RouteParams"]
+                            if (config != null){
+                                val paramsName : String = config["name"] as String
+                                whatsMyName1.addStatement(
+                                    "paramMap[\"$paramsName\"] = $paramsName",
+                                )
+                            }
+                        }
+                        whatsMyName1.addStatement(
+                            "routeClazz.goByPath(\"$path\",paramMap,false){"
+                        )
+                        whatsMyName1.addStatement(
+                            "  val intent = %T(context,routeClazz.$classFunName())",
                             ClassName.bestGuess(
                                 "android.content.Intent"
                             )
@@ -252,12 +272,15 @@ class CommunicationKspSymbolProcessor(
                                 val targetClassName: String = value.className
                                 whatsMyName1.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
                                 whatsMyName1.addStatement(
-                                    "intent.putExtra(\"$paramsName\",$paramsName)",
+                                    "  intent.putExtra(\"$paramsName\",$paramsName)",
                                 )
                             }
                         }
                         whatsMyName1.addStatement(
-                            "context.startActivity(intent)",
+                            "  context.startActivity(intent)",
+                        )
+                        whatsMyName1.addStatement(
+                            "}"
                         )
                     }else{
                         classBuilder.addFunction(whatsMyName(classFunName)
@@ -397,9 +420,10 @@ class CommunicationKspSymbolProcessor(
             classBuilder.addFunction(whatsMyName("goByPath")
                 .addParameter("path",String::class)
                 .addParameter("params", mapClassName.parameterizedBy(ClassName.bestGuess(String::class.qualifiedName!!)
-                    ,ClassName.bestGuess(Any::class.qualifiedName!!)))
-                .addParameter("invokeRoute", InvokeRoute::class)
-                .addStatement("invokeRoute.onRoute()")
+                    ,ClassName.bestGuess(Any::class.qualifiedName!!).copy(nullable = true)))
+                .addParameter("byPath", Boolean::class)
+                .addParameter("invokeRoute", Runnable::class)
+                .addStatement("invokeRoute.run()")
                 .addModifiers(KModifier.OVERRIDE)
                 .addModifiers(KModifier.FINAL)
                 .addModifiers(KModifier.PUBLIC)

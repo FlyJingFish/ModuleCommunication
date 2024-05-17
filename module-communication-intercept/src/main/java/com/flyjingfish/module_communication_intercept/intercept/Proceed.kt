@@ -4,17 +4,26 @@ import com.flyjingfish.android_aop_annotation.ProceedJoinPoint
 
 class Proceed(
     private val joinPoint: ProceedJoinPoint,
-    val routerMethodName: String,
-    val byPath: Boolean = false,
-    val paramsMap: MutableMap<String, Any> = mutableMapOf()
+    /**
+     * 路由页面的 path
+     */
+    val path: String,
+    /**
+     * 跳转页面时传入的数据
+     */
+    val paramsMap: MutableMap<String, Any?>,
+    /**
+     * true则时通过 ModuleRoute 类跳转的，false则是通过帮助类
+     */
+    val byPath:Boolean
 ) {
     internal var hasNext = false
-    internal var listener: OnProceedListener? = null
+    internal lateinit var listener: OnProceedListener
     fun proceed() {
         if (!hasNext) {
             joinPoint.proceed()
         } else {
-            listener?.onInvoke()
+            listener.onInvoke()
         }
     }
 

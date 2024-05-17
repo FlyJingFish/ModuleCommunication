@@ -1,16 +1,16 @@
-package com.flyjingfish.module_communication_route.route
+package com.flyjingfish.module_communication_route
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import com.flyjingfish.module_communication_annotation.BaseRouterClass
-import com.flyjingfish.module_communication_annotation.InvokeRoute
+import com.flyjingfish.module_communication_route.bean.ClassInfo
 import java.io.Serializable
 
 object ModuleRoute {
     private val allRouteClass = mutableMapOf<String,BaseRouterClass>()
-    private val allClazz = mutableMapOf<String,Class<*>>()
+    private val allClazz = mutableMapOf<String, ClassInfo?>()
 
     private fun addRouteClass(moduleName:String, routeClazz :BaseRouterClass){
         allRouteClass[moduleName] = routeClazz
@@ -28,8 +28,8 @@ object ModuleRoute {
 
     class RouteBuilder (private val path:String){
         private val intent = Intent()
-        private val paramsMap = mutableMapOf<String,Any>()
-        fun <T> putValue(paramName:String,paramsValue:T) :RouteBuilder{
+        private val paramsMap = mutableMapOf<String,Any?>()
+        fun <T> putValue(paramName:String,paramsValue:T) : RouteBuilder {
             paramsMap[paramName] = (paramsValue as Any)
             when(paramsValue){
                 is Char ->{
@@ -78,28 +78,36 @@ object ModuleRoute {
         }
 
         fun go(context: Context){
-            var clazz = allClazz[path]
-            var goRouterClazz :BaseRouterClass?= null
-            if (clazz == null){
-                for ((moduleName, routeClazz) in allRouteClass) {
+            var clazzInfo = allClazz[path]
+            if (clazzInfo == null){
+                for ((_, routeClazz) in allRouteClass) {
                     val pathClazz = routeClazz.getClassByPath(path)
                     if (pathClazz != null){
-                        allClazz[path] = pathClazz
-                        clazz = pathClazz
-                        goRouterClazz = routeClazz
+                        clazzInfo = ClassInfo(pathClazz,routeClazz)
+                        allClazz[path] = clazzInfo
                         break
                     }
                 }
             }
-            if (clazz != null && goRouterClazz != null){
-                goRouterClazz.goByPath(path,paramsMap,object : InvokeRoute{
-                    override fun onRoute() {
-                        intent.setClass(context,clazz)
-                        context.startActivity(intent)
-                    }
-                })
-
+            clazzInfo?.goRouterClazz?.goByPath(path,paramsMap,true){
+                intent.setClass(context,clazzInfo.clazz)
+                context.startActivity(intent)
             }
+        }
+
+        fun getClass():Class<*>?{
+            var clazzInfo = allClazz[path]
+            if (clazzInfo == null){
+                for ((_, routeClazz) in allRouteClass) {
+                    val pathClazz = routeClazz.getClassByPath(path)
+                    if (pathClazz != null){
+                        clazzInfo = ClassInfo(pathClazz,routeClazz)
+                        allClazz[path] = clazzInfo
+                        break
+                    }
+                }
+            }
+            return clazzInfo?.clazz
         }
     }
 }

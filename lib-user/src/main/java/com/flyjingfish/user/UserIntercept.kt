@@ -6,7 +6,7 @@ import com.flyjingfish.module_communication_intercept.intercept.RouterIntercept
 
 class UserIntercept : RouterIntercept {
     override fun onIntercept(proceed: Proceed) {
-        Log.e("onIntercept","--UserIntercept--${proceed.routerMethodName}")
+        Log.e("onIntercept","--UserIntercept--${proceed.path},params = ${proceed.paramsMap},byPath = ${proceed.byPath}")
         proceed.proceed()
     }
 

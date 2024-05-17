@@ -8,17 +8,17 @@ import com.flyjingfish.module_communication_intercept.intercept.Proceed
 import com.flyjingfish.module_communication_intercept.intercept.RouterInterceptManager
 
 @AndroidAopMatchClassMethod(
-    targetClassName = "com.flyjingfish.module_communication_annotation.BaseRouter",
-    methodName = ["*"],
+    targetClassName = "com.flyjingfish.module_communication_annotation.BaseRouterClass",
+    methodName = ["goByPath"],
     type = MatchType.DIRECT_EXTENDS
 )
 internal class RouteInterceptCut : MatchClassMethod{
     override fun invoke(joinPoint: ProceedJoinPoint, methodName: String): Any? {
-        if (joinPoint.targetMethod.returnType === Void.TYPE){
-            val proceed = Proceed(joinPoint,methodName,false)
-            RouterInterceptManager.notifyIntercept(proceed)
-            return null
-        }
-        return joinPoint.proceed()
+        val path = joinPoint.args?.get(0)
+        val map = joinPoint.args?.get(1)
+        val byPath = joinPoint.args?.get(2)
+        val proceed = Proceed(joinPoint,path as String,map as MutableMap<String,Any?>,byPath as Boolean)
+        RouterInterceptManager.notifyIntercept(proceed)
+        return null
     }
 }
