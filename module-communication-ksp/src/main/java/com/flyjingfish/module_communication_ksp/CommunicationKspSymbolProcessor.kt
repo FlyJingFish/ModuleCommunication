@@ -68,17 +68,21 @@ class CommunicationKspSymbolProcessor(
             val value: KSType =
                 (if (classMethodMap["value"] != null) classMethodMap["value"] as KSType else null)
                     ?: continue
+            if (symbol !is KSClassDeclaration){
+                continue
+            }
+
             val targetClassName: String =
                 (value.declaration.packageName.asString() + "." + value.toString())
 
             isImplementClass(symbol,targetClassName)
 
-            val implementClassName = ClassName((symbol as KSClassDeclaration).packageName.asString(), "$symbol")
+            val implementClassName = ClassName(value.declaration.packageName.asString(), "$value")
             val bindClassName = ClassName.bestGuess(BindClass::class.qualifiedName!!)
             val superinterface = bindClassName.parameterizedBy(implementClassName)
             val className = symbol.packageName.asString() + "." + symbol
 
-            val fileName = "${value.toString()}\$\$BindClass";
+            val fileName = "$value\$\$BindClass"
             val typeBuilder = TypeSpec.classBuilder(
                 fileName
             ).addModifiers(KModifier.FINAL).addSuperinterface(superinterface)
@@ -87,8 +91,8 @@ class CommunicationKspSymbolProcessor(
                 .addModifiers(KModifier.OVERRIDE)
                 .addModifiers(KModifier.FINAL)
                 .addModifiers(KModifier.PUBLIC)
-                .returns(ClassName.bestGuess(className))
-                .addStatement("return $symbol()")
+                .returns(implementClassName)
+            whatsMyName1.addStatement("return %T()",ClassName.bestGuess(className))
 
             typeBuilder.addFunction(whatsMyName1.build())
             writeToFile(typeBuilder, value.declaration.packageName.asString(),fileName, symbol)
@@ -104,7 +108,7 @@ class CommunicationKspSymbolProcessor(
                 val file = File((symbol.location as FileLocation).filePath)
 
                 val fileName =
-                    "${symbol}${file.absolutePath.substring(file.absolutePath.lastIndexOf("."))}";
+                    "${symbol}${file.absolutePath.substring(file.absolutePath.lastIndexOf("."))}"
 
                 writeToFile(fileName, symbol, symbol.packageName.asString(), file)
             }
@@ -128,7 +132,7 @@ class CommunicationKspSymbolProcessor(
             val emptyRoute = exportEmptyRoute == "true"
 
             var fullName = ""
-            val names = routeModuleName.split("-");
+            val names = routeModuleName.split("-")
             for(token in names){
                 if ("" != token){
                     fullName += (token.replaceFirstChar {
@@ -191,7 +195,9 @@ class CommunicationKspSymbolProcessor(
                     if (!emptyRoute){
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(returnType.copy(nullable = true))
-                            .addStatement("return $className::class.java")
+                            .addStatement("return %T::class.java",ClassName.bestGuess(
+                                className
+                            ))
                             .build())
 
                         val activityBuilder = TypeSpec.classBuilder(
@@ -255,7 +261,9 @@ class CommunicationKspSymbolProcessor(
                     if (!emptyRoute){
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(anyClassName.copy(nullable = true))
-                            .addStatement("return $className()")
+                            .addStatement("return %T()",ClassName.bestGuess(
+                                className
+                            ))
                             .build())
 
                         val activityBuilder = TypeSpec.classBuilder(
@@ -406,7 +414,7 @@ class CommunicationKspSymbolProcessor(
                 val file = File((symbol.location as FileLocation).filePath)
 
                 val fileName =
-                    "${symbol}${file.absolutePath.substring(file.absolutePath.lastIndexOf("."))}";
+                    "${symbol}${file.absolutePath.substring(file.absolutePath.lastIndexOf("."))}"
 
                 writeToFile(fileName, symbol, symbol.packageName.asString(), file)
             }
