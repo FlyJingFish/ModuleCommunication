@@ -35,25 +35,49 @@ object ModuleRoute {
                 is Char ->{
                     intent.putExtra(paramName,paramsValue)
                 }
+                is CharArray ->{
+                    intent.putExtra(paramName,paramsValue)
+                }
                 is Byte ->{
+                    intent.putExtra(paramName,paramsValue)
+                }
+                is ByteArray ->{
                     intent.putExtra(paramName,paramsValue)
                 }
                 is Short ->{
                     intent.putExtra(paramName,paramsValue)
                 }
+                is ShortArray ->{
+                    intent.putExtra(paramName,paramsValue)
+                }
                 is Int ->{
+                    intent.putExtra(paramName,paramsValue)
+                }
+                is IntArray ->{
                     intent.putExtra(paramName,paramsValue)
                 }
                 is Long ->{
                     intent.putExtra(paramName,paramsValue)
                 }
+                is LongArray ->{
+                    intent.putExtra(paramName,paramsValue)
+                }
                 is Float ->{
+                    intent.putExtra(paramName,paramsValue)
+                }
+                is FloatArray ->{
                     intent.putExtra(paramName,paramsValue)
                 }
                 is Double ->{
                     intent.putExtra(paramName,paramsValue)
                 }
+                is DoubleArray ->{
+                    intent.putExtra(paramName,paramsValue)
+                }
                 is Boolean ->{
+                    intent.putExtra(paramName,paramsValue)
+                }
+                is BooleanArray ->{
                     intent.putExtra(paramName,paramsValue)
                 }
                 is String ->{
@@ -62,6 +86,10 @@ object ModuleRoute {
                 is Array<*> ->{
                     if (paramsValue.isArrayOf<Parcelable>()){
                         intent.putExtra(paramName,paramsValue as Array<out Parcelable>)
+                    }else if (paramsValue.isArrayOf<CharSequence>()){
+                        intent.putExtra(paramName,paramsValue as Array<out CharSequence>)
+                    }else if (paramsValue.isArrayOf<String>()){
+                        intent.putExtra(paramName,paramsValue as Array<out String>)
                     }
                 }
                 is Bundle ->{
@@ -95,7 +123,7 @@ object ModuleRoute {
             }
         }
 
-        fun getClass():Class<*>?{
+        fun getClazz():Class<*>?{
             var clazzInfo = allClazz[path]
             if (clazzInfo == null){
                 for ((_, routeClazz) in allRouteClass) {
