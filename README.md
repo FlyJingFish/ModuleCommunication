@@ -272,7 +272,7 @@ communicationConfig{
 
 - @RouteParams 路由页面参数
 
-
+//👇👇👇这两个库都需要 [AndroidAOP](https://github.com/FlyJingFish/AndroidAOP) 提供支持,详细使用方式下文有介绍
 ```gradle
 dependencies {
     //使用拦截器（不是必须的）
