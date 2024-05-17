@@ -185,8 +185,8 @@ class CommunicationKspSymbolProcessor(
 
                 val paramMap = routeParamsMap[className]
 
-                val classFunName = "get${classKey}Class"
                 if (isSubtype(symbol,"android.app.Activity")){
+                    val classFunName = "get${classKey}Class"
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
                         classBuilder.addFunction(whatsMyName(classFunName)
@@ -246,6 +246,7 @@ class CommunicationKspSymbolProcessor(
 
                     routeBuilder.addFunction(whatsMyName1.build())
                 }else if (isSubtype(symbol,"androidx.fragment.app.Fragment") || isSubtype(symbol,"android.app.Fragment")){
+                    val classFunName = "new${classKey}"
                     val anyClassName = ClassName.bestGuess(Any::class.qualifiedName!!)
                     val whatsMyName2 = whatsMyName("new$routeClassName")
                         .returns(anyClassName.copy(nullable = true))
