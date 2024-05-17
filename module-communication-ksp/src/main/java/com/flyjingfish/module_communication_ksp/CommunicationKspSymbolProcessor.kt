@@ -28,10 +28,12 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STAR
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.tag
 import java.io.File
 import java.io.FileInputStream
 import java.util.Locale
@@ -154,7 +156,7 @@ class CommunicationKspSymbolProcessor(
             val registerMapFun = whatsMyName("registerMap")
 
             val routeClassFile = "$moduleName\$\$RouterClass"
-            val classBuilder = TypeSpec.objectBuilder(
+            val classBuilder = TypeSpec.classBuilder(
                 routeClassFile
             ).addProperty(
                     PropertySpec.builder("classMap", mapInterface)
@@ -162,7 +164,14 @@ class CommunicationKspSymbolProcessor(
                         .initializer("mutableMapOf()")
                         .build()
                 )
-                .addInitializerBlock(CodeBlock.of("registerMap()"))
+                .primaryConstructor(FunSpec.constructorBuilder()
+                    .addParameter(ParameterSpec.builder("initClazzMap", Boolean::class)
+                        .defaultValue("true")
+                        .build())
+                    .build())
+                .addInitializerBlock(CodeBlock.of("if (initClazzMap){\n" +
+                        "      registerMap()\n" +
+                        "    }"))
                 .addSuperinterface(ClassName.bestGuess(BaseRouterClass::class.qualifiedName!!))
             val routeFile = "$moduleName\$\$Router"
             val routeBuilder = TypeSpec.objectBuilder(
@@ -229,7 +238,7 @@ class CommunicationKspSymbolProcessor(
                             "android.content.Context"
                         ))
                         whatsMyName1.addStatement(
-                            "val intent = %T(context,`$routeClassFile`.$classFunName())",
+                            "val intent = %T(context,`$routeClassFile`(false).$classFunName())",
                             ClassName.bestGuess(
                                 "android.content.Intent"
                             )
@@ -306,7 +315,7 @@ class CommunicationKspSymbolProcessor(
                             )
                         )
                         whatsMyName2.addStatement(
-                            "val instance : %T = `$routeClassFile`.$classFunName()",
+                            "val instance : %T = `$routeClassFile`(false).$classFunName()",
                             anyClassName.copy(nullable = true)
                         )
                         paramMap?.forEach { (_, value) ->

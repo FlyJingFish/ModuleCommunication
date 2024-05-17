@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.flyjingfish.login.databinding.ActivityLoginBinding
 import com.flyjingfish.module_communication_annotation.ImplementClassUtils
+import com.flyjingfish.module_communication_route.route.ModuleRoute
 import com.flyjingfish.user.`LibUser$$Router`
 import com.flyjingfish.user.UserHelper
 
@@ -17,7 +18,12 @@ class LoginActivity: AppCompatActivity() {
         val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class)
         val user = userHelper?.getUser()
         binding.btnGo.setOnClickListener {
-            `LibUser$$Router`.goUser_UserActivity(this,"hahah",null)
+//            `LibUser$$Router`.goUser_UserActivity(this,"hahah",null)
+            ModuleRoute.builder("user/UserActivity")
+                .putValue("params1","lalla")
+                .putValue("params2",user)
+                .go(this)
+
         }
         binding.btnGoFragment.setOnClickListener {
             val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",null) as Fragment

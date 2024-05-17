@@ -32,5 +32,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     api(project(":module-communication-annotation"))
     api(project(":module-communication-intercept"))
+    api(project(":module-communication-route"))
 
 }
