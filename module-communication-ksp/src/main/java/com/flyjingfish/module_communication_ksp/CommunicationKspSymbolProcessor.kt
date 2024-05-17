@@ -391,9 +391,12 @@ class CommunicationKspSymbolProcessor(
                 .addParameter("path",String::class).returns(classStar.copy(nullable = true))
                 .addStatement("return classMap[path]")
 
+            val arrayClassName = ClassName.bestGuess(Array::class.qualifiedName!!)
+
             classBuilder.addFunction(getClazzFun.build())
             classBuilder.addFunction(whatsMyName("goByPath")
                 .addParameter("path",String::class)
+                .addParameter("array", arrayClassName.parameterizedBy(ClassName.bestGuess(Any::class.qualifiedName!!)))
                 .addParameter("invokeRoute", InvokeRoute::class)
                 .addStatement("invokeRoute.onRoute()")
                 .addModifiers(KModifier.OVERRIDE)

@@ -28,7 +28,9 @@ object ModuleRoute {
 
     class RouteBuilder (private val path:String){
         private val intent = Intent()
+        private val paramsSet = mutableSetOf<Any>()
         fun <T> putValue(paramName:String,paramsValue:T) :RouteBuilder{
+            paramsSet.add(paramsValue as Any)
             when(paramsValue){
                 is Char ->{
                     intent.putExtra(paramName,paramsValue)
@@ -90,7 +92,7 @@ object ModuleRoute {
                 }
             }
             if (clazz != null && goRouterClazz != null){
-                goRouterClazz.goByPath(path,object : InvokeRoute{
+                goRouterClazz.goByPath(path,paramsSet.toTypedArray(),object : InvokeRoute{
                     override fun onRoute() {
                         intent.setClass(context,clazz)
                         context.startActivity(intent)
