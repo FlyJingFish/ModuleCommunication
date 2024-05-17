@@ -6,6 +6,7 @@ import com.flyjingfish.module_communication_annotation.BindClass
 import com.flyjingfish.module_communication_annotation.ExposeBean
 import com.flyjingfish.module_communication_annotation.ExposeInterface
 import com.flyjingfish.module_communication_annotation.ImplementClass
+import com.flyjingfish.module_communication_annotation.InvokeRoute
 import com.flyjingfish.module_communication_annotation.Route
 import com.flyjingfish.module_communication_annotation.RouteParams
 import com.google.devtools.ksp.containingFile
@@ -391,6 +392,14 @@ class CommunicationKspSymbolProcessor(
                 .addStatement("return classMap[path]")
 
             classBuilder.addFunction(getClazzFun.build())
+            classBuilder.addFunction(whatsMyName("goByPath")
+                .addParameter("path",String::class)
+                .addParameter("invokeRoute", InvokeRoute::class)
+                .addStatement("invokeRoute.onRoute()")
+                .addModifiers(KModifier.OVERRIDE)
+                .addModifiers(KModifier.FINAL)
+                .addModifiers(KModifier.PUBLIC)
+                .build())
             writeToFile(classBuilder, routeModulePackageName,routeClassFile,true, ksFiles.toTypedArray())
             writeToFile(routeBuilder, routeModulePackageName,routeFile, true,ksFiles.toTypedArray())
         }

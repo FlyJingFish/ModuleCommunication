@@ -7,16 +7,13 @@ import com.flyjingfish.android_aop_annotation.enums.MatchType
 import com.flyjingfish.module_communication_intercept.intercept.RouterInterceptManager
 
 @AndroidAopMatchClassMethod(
-    targetClassName = "com.flyjingfish.module_communication_annotation.BaseRouter",
-    methodName = ["*"],
+    targetClassName = "com.flyjingfish.module_communication_annotation.BaseRouterClass",
+    methodName = ["goByPath"],
     type = MatchType.DIRECT_EXTENDS
 )
-internal class RouteInterceptCut : MatchClassMethod{
+internal class RouteInterceptCut2 : MatchClassMethod{
     override fun invoke(joinPoint: ProceedJoinPoint, methodName: String): Any? {
-        if (joinPoint.targetMethod.returnType === Void.TYPE){
-            RouterInterceptManager.notifyIntercept(joinPoint,methodName,false)
-            return null
-        }
-        return joinPoint.proceed()
+        RouterInterceptManager.notifyIntercept(joinPoint, joinPoint.args?.get(0) as String,true)
+        return null
     }
 }

@@ -14,7 +14,7 @@ object RouterInterceptManager {
         this.intercepts.addAll(intercepts.sortedBy { it.order() })
     }
 
-    fun notifyIntercept(joinPoint: ProceedJoinPoint, methodName: String) {
+    fun notifyIntercept(joinPoint: ProceedJoinPoint, methodName: String,byPath:Boolean) {
         if (intercepts.isEmpty()) {
             return
         }
@@ -22,7 +22,7 @@ object RouterInterceptManager {
             addAll(intercepts)
         }
         val iterator = thisIntercepts.iterator()
-        val proceed = Proceed(joinPoint, methodName)
+        val proceed = Proceed(joinPoint, methodName,byPath)
         proceed.listener = object : Proceed.OnProceedListener {
             override fun onInvoke() {
                 if (iterator.hasNext()) {

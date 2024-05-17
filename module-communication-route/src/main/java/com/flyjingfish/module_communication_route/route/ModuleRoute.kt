@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import com.flyjingfish.module_communication_annotation.BaseRouterClass
+import com.flyjingfish.module_communication_annotation.InvokeRoute
 import java.io.Serializable
 
 object ModuleRoute {
@@ -76,19 +77,26 @@ object ModuleRoute {
 
         fun go(context: Context){
             var clazz = allClazz[path]
+            var goRouterClazz :BaseRouterClass?= null
             if (clazz == null){
                 for ((moduleName, routeClazz) in allRouteClass) {
                     val pathClazz = routeClazz.getClassByPath(path)
                     if (pathClazz != null){
                         allClazz[path] = pathClazz
                         clazz = pathClazz
+                        goRouterClazz = routeClazz
                         break
                     }
                 }
             }
-            if (clazz != null){
-                intent.setClass(context,clazz)
-                context.startActivity(intent)
+            if (clazz != null && goRouterClazz != null){
+                goRouterClazz.goByPath(path,object : InvokeRoute{
+                    override fun onRoute() {
+                        intent.setClass(context,clazz)
+                        context.startActivity(intent)
+                    }
+                })
+
             }
         }
     }
