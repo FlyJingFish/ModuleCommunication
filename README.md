@@ -158,14 +158,8 @@ compileOnly(project(":communication"))
 
 **注意引入方式必须是 compileOnly ，否则会导致打包失败。并且在哪个 module 中使用就在哪引入**
 
-b、如果 ```lib-login``` 也已经引入过 ```communication.export``` 插件，就无需配置这一步（不报错找不到类就无需引入）
+b、如果 ```lib-login``` 也没有引入过 ```communication.export``` 插件，也同样需要引入
 
-```gradle
-dependencies {
-    //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.1.4'
-}
-```
 
 - 7、在 ```lib-login``` 模块使用 ```lib-user``` 暴露出来的的代码
 
