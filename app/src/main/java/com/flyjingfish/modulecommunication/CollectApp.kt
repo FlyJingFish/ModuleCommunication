@@ -14,12 +14,19 @@ object CollectApp {
     private val allIApplication = mutableSetOf<IApplication>()
     private val allRouteClazz = mutableSetOf<BaseRouterClass>()
 
+    /**
+     * 这一步才可以收集到所有的拦截器
+     */
     @AndroidAopCollectMethod
     @JvmStatic
     fun collectIntercept(sub: RouterIntercept){
         Log.e("CollectIntercept","collectIntercept=$sub")
         allRouterIntercept.add(sub)
     }
+
+    /**
+     * 这一步才可以收集到所有的路由路径信息
+     */
 
     @AndroidAopCollectMethod
     @JvmStatic
@@ -28,6 +35,9 @@ object CollectApp {
         allRouteClazz.add(sub)
     }
 
+    /**
+     * 收集所有的 module 的 IApplication 类
+     */
     @AndroidAopCollectMethod
     @JvmStatic
     fun collectIApplication(sub: IApplication){
@@ -37,8 +47,11 @@ object CollectApp {
 
     fun onCreate(application: Application){
         Log.e("CollectIntercept","getAllRouterIntercept-size=${allRouterIntercept.size}")
+        //设置全部的拦截器让其起作用
         RouterInterceptManager.addAllIntercept(allRouterIntercept)
+        //设置全部路由路径信息，这样ModuleRoute才可以起作用
         ModuleRoute.autoAddAllRouteClass(allRouteClazz)
+        //循环调用各个 module 的 IApplication.onCreate
         allIApplication.forEach {
             it.onCreate(application)
         }

@@ -272,6 +272,16 @@ communicationConfig{
 
 - @RouteParams 路由页面参数
 
+
+```gradle
+dependencies {
+    //使用拦截器（不是必须的）
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:1.1.4'
+    //使用路径的方式跳转才需要 （不是必须的）
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-route:1.1.4'
+}
+```
+
 示例
 
 ```kotlin
@@ -332,15 +342,89 @@ class LoginActivity: AppCompatActivity() {
         val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class)
         val user = userHelper.getUser()
         binding.btnGo.setOnClickListener {
+            //在 module-communication-route 可以使用路径跳转
+            ModuleRoute.builder("user/UserActivity")
+                            .putValue("params1","lalla")
+                            .putValue("params2",user)
+                            .go(this)
+            //直接使用路由帮助类，需借助上边介绍的通信功能
             `LibUser$$Router`.goUser_UserActivity(this,"hahah",user)
         }
 
         binding.btnGoFragment.setOnClickListener {
+            //在 module-communication-route 可以使用路径拿到 class ，反射新建fragment对象
+            val clazz = ModuleRoute.builder("user/UserFragment")
+                            .getClazz()
+            val fragment : Fragment = clazz?.getDeclaredConstructor()?.newInstance() as Fragment
+            //直接使用路由帮助类，需借助上边介绍的通信功能
             val fragment : Fragment = `LibUser$$Router`.newInstanceForUser_UserFragment("lalala",user) as Fragment
             supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
         }
 
         Log.e("user",""+user)
+    }
+}
+```
+
+想要让 `拦截器` 和 `ModuleRoute` 起作用，您还需要使用 AndroidAOP [点此跳转查看使用方式](https://github.com/FlyJingFish/AndroidAOP),没有特别需要的话，使用里边的 debugMode 就够了,配置完之后设置下边的信息
+
+```kotlin
+class MyApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        //一键初始化所有需要的信息
+        CollectApp.onCreate(this)
+    }
+}
+
+
+// 下边的可以按需选择，不一定全部都要设置
+object CollectApp {
+    private val allRouterIntercept = mutableSetOf<RouterIntercept>()
+    private val allIApplication = mutableSetOf<IApplication>()
+    private val allRouteClazz = mutableSetOf<BaseRouterClass>()
+
+    /**
+     * 这一步才可以收集到所有的拦截器
+     */
+    @AndroidAopCollectMethod
+    @JvmStatic
+    fun collectIntercept(sub: RouterIntercept){
+        Log.e("CollectIntercept","collectIntercept=$sub")
+        allRouterIntercept.add(sub)
+    }
+
+    /**
+     * 这一步才可以收集到所有的路由路径信息
+     */
+
+    @AndroidAopCollectMethod
+    @JvmStatic
+    fun collectRouterClass(sub: BaseRouterClass){
+        Log.e("CollectIntercept","collectRouterClass=$sub")
+        allRouteClazz.add(sub)
+    }
+
+    /**
+     * 收集所有的 module 的 IApplication 类
+     */
+    @AndroidAopCollectMethod
+    @JvmStatic
+    fun collectIApplication(sub: IApplication){
+        Log.e("CollectIntercept","collectIApplication=$sub")
+        allIApplication.add(sub)
+    }
+
+    fun onCreate(application: Application){
+        Log.e("CollectIntercept","getAllRouterIntercept-size=${allRouterIntercept.size}")
+        //设置全部的拦截器让其起作用
+        RouterInterceptManager.addAllIntercept(allRouterIntercept)
+        //设置全部路由路径信息，这样ModuleRoute才可以起作用
+        ModuleRoute.autoAddAllRouteClass(allRouteClazz)
+        //循环调用各个 module 的 IApplication.onCreate
+        allIApplication.forEach {
+            it.onCreate(application)
+        }
     }
 }
 ```

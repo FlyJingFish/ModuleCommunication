@@ -30,6 +30,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    api(libs.androidAop.annotation)
     api(project(":module-communication-annotation"))
     api(project(":module-communication-intercept"))
     api(project(":module-communication-route"))

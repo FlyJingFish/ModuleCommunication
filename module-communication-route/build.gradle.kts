@@ -14,9 +14,4 @@ apply("$rootDir/gradle/android_base.gradle")
 apply("$rootDir/gradle/android_publish.gradle")
 dependencies {
     implementation(project(mapOf("path" to ":module-communication-annotation")))
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    api(libs.androidAop.annotation)
-    ksp(libs.androidAop.ksp)
 }
