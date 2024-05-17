@@ -5,7 +5,7 @@ import com.flyjingfish.android_aop_annotation.anno.AndroidAopMatchClassMethod
 import com.flyjingfish.android_aop_annotation.base.MatchClassMethod
 import com.flyjingfish.android_aop_annotation.enums.MatchType
 import com.flyjingfish.module_communication_intercept.intercept.Proceed
-import com.flyjingfish.module_communication_intercept.intercept.RouterInterceptManager
+import com.flyjingfish.module_communication_intercept.RouterInterceptManager
 
 @AndroidAopMatchClassMethod(
     targetClassName = "com.flyjingfish.module_communication_annotation.BaseRouterClass",

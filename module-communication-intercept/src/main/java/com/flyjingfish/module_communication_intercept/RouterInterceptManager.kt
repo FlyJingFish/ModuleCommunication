@@ -1,6 +1,7 @@
-package com.flyjingfish.module_communication_intercept.intercept
+package com.flyjingfish.module_communication_intercept
 
-import com.flyjingfish.android_aop_annotation.ProceedJoinPoint
+import com.flyjingfish.module_communication_intercept.intercept.Proceed
+import com.flyjingfish.module_communication_intercept.intercept.RouterIntercept
 
 object RouterInterceptManager {
     private val intercepts = mutableSetOf<RouterIntercept>()
@@ -10,8 +11,8 @@ object RouterInterceptManager {
     }
 
     fun addAllIntercept(intercepts: MutableSet<RouterIntercept>) {
-        this.intercepts.clear()
-        this.intercepts.addAll(intercepts.sortedBy { it.order() })
+        RouterInterceptManager.intercepts.clear()
+        RouterInterceptManager.intercepts.addAll(intercepts.sortedBy { it.order() })
     }
 
     fun notifyIntercept(proceed : Proceed) {
