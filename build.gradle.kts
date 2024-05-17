@@ -4,6 +4,7 @@ buildscript {
         classpath("io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:${rootProject.properties["TestVersion"]}")
     }
 }
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.android.application") version "7.4.1" apply false
     id("com.android.library") version "7.4.1" apply false
@@ -11,8 +12,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.8.10" apply false
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
     id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
-
-    id("io.github.FlyJingFish.AndroidAop.android-aop") version "1.8.1" apply true
+    id("io.github.FlyJingFish.AndroidAop.android-aop") version libs.versions.androidAopVersion apply true
 }
 ext {
     set("sdkVersion",31)

@@ -24,6 +24,7 @@ import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -144,15 +145,31 @@ class CommunicationKspSymbolProcessor(
             }
             moduleName = fullName
 
+            val clazzClassName = ClassName.bestGuess(Class::class.qualifiedName!!)
+            val valueClassName = clazzClassName.parameterizedBy(STAR)
+
+            val mapClassName = ClassName.bestGuess("kotlin.collections.MutableMap")
+            val mapInterface = mapClassName.parameterizedBy(ClassName.bestGuess(String::class.qualifiedName!!),valueClassName)
+
+            val registerMapFun = whatsMyName("registerMap")
+
             val routeClassFile = "$moduleName\$\$RouterClass"
             val classBuilder = TypeSpec.objectBuilder(
                 routeClassFile
-            ).addSuperinterface(ClassName.bestGuess(BaseRouterClass::class.qualifiedName!!))
+            ).addProperty(
+                    PropertySpec.builder("classMap", mapInterface)
+                        .addModifiers(KModifier.PRIVATE)
+                        .initializer("mutableMapOf()")
+                        .build()
+                )
+                .addInitializerBlock(CodeBlock.of("registerMap()"))
+                .addSuperinterface(ClassName.bestGuess(BaseRouterClass::class.qualifiedName!!))
             val routeFile = "$moduleName\$\$Router"
             val routeBuilder = TypeSpec.objectBuilder(
                 routeFile
             ).addSuperinterface(ClassName.bestGuess(BaseRouter::class.qualifiedName!!))
-
+            val bindClassName = ClassName.bestGuess(Class::class.qualifiedName!!)
+            val classStar = bindClassName.parameterizedBy(STAR)
             val ksFiles = mutableListOf<KSFile>()
             for (symbol in symbols) {
                 val annotationMap = getAnnotation(symbol)
@@ -172,8 +189,7 @@ class CommunicationKspSymbolProcessor(
                 }
 
 
-                val bindClassName = ClassName.bestGuess(Class::class.qualifiedName!!)
-                val returnType = bindClassName.parameterizedBy(STAR)
+
 //            val android = PropertySpec.builder(classKey, returnType)
 //                .initializer("%T::class.java",  ClassName.bestGuess(
 //                    className
@@ -193,8 +209,11 @@ class CommunicationKspSymbolProcessor(
                     val classFunName = "get${classKey}Class"
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
+                        registerMapFun.addStatement("classMap[\"$path\"] = %T::class.java",ClassName.bestGuess(
+                            className
+                        ))
                         classBuilder.addFunction(whatsMyName(classFunName)
-                            .returns(returnType.copy(nullable = true))
+                            .returns(classStar.copy(nullable = true))
                             .addStatement("return %T::class.java",ClassName.bestGuess(
                                 className
                             ))
@@ -232,7 +251,7 @@ class CommunicationKspSymbolProcessor(
                         )
                     }else{
                         classBuilder.addFunction(whatsMyName(classFunName)
-                            .returns(returnType.copy(nullable = true))
+                            .returns(classStar.copy(nullable = true))
                             .addStatement("return null")
                             .build())
 
@@ -259,6 +278,9 @@ class CommunicationKspSymbolProcessor(
 
 
                     if (!emptyRoute){
+                        registerMapFun.addStatement("classMap[\"$path\"] = %T::class.java",ClassName.bestGuess(
+                            className
+                        ))
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(anyClassName.copy(nullable = true))
                             .addStatement("return %T()",ClassName.bestGuess(
@@ -353,6 +375,13 @@ class CommunicationKspSymbolProcessor(
 
                 ksFiles.add(symbol.containingFile!!)
             }
+            classBuilder.addFunction(registerMapFun.build())
+            val getClazzFun = whatsMyName("getClassByPath")
+                .addModifiers(KModifier.OVERRIDE)
+                .addParameter("path",String::class).returns(classStar.copy(nullable = true))
+                .addStatement("return classMap[path]")
+
+            classBuilder.addFunction(getClazzFun.build())
             writeToFile(classBuilder, routeModulePackageName,routeClassFile,true, ksFiles.toTypedArray())
             writeToFile(routeBuilder, routeModulePackageName,routeFile, true,ksFiles.toTypedArray())
         }

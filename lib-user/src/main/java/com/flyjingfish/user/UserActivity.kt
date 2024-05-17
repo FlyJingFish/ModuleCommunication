@@ -9,7 +9,7 @@ import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 import com.flyjingfish.module_communication_annotation.Route
 import com.flyjingfish.module_communication_annotation.RouteParams
 
-@Route("user/UserActivity")
+@Route("user/UserActivity1")
 class UserActivity : AppCompatActivity() {
 
     @delegate:RouteParams("params1")
