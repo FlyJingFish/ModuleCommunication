@@ -429,7 +429,7 @@ object CollectApp {
 }
 ```
 
-设置以下设置可以生成空的导航方法，这样方便移除当前module
+如果是使用通信路由帮助类，设置以下设置可以生成空的导航方法，这样方便移除当前module
 
 ```gradle
 communicationConfig{
