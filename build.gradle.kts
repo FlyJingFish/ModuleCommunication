@@ -100,6 +100,8 @@ fun updateREADME(readme :String,oldVersionName :String,newVersionName :String) {
     val exportText = configFile.readText()
     var text = exportText.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:"+oldVersionName,"io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:"+newVersionName)
     text = text.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:"+oldVersionName,"io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:"+newVersionName)
+    text = text.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:"+oldVersionName,"io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:"+newVersionName)
+    text = text.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-route:"+oldVersionName,"io.github.FlyJingFish.ModuleCommunication:module-communication-route:"+newVersionName)
     configFile.writeText(text)
 }
 val appVersionName = getAppVName()
