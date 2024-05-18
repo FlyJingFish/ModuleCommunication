@@ -276,9 +276,9 @@ communicationConfig{
 ```gradle
 dependencies {
     //使用拦截器（不是必须的）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:1.1.4'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:1.1.5'
     //使用路径的方式跳转才需要 （不是必须的）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-route:1.1.4'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-route:1.1.5'
 }
 ```
 
