@@ -5,6 +5,7 @@ import com.flyjingfish.module_communication_annotation.ExposeInterface
 import com.flyjingfish.module_communication_annotation.ImplementClass
 import com.flyjingfish.module_communication_annotation.Route
 import com.flyjingfish.module_communication_annotation.RouteParams
+import com.flyjingfish.module_communication_annotation.bean.ParamsInfo
 import com.flyjingfish.module_communication_annotation.bean.PathInfo
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouter
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClass
@@ -202,16 +203,33 @@ class CommunicationKspSymbolProcessor(
 
 
                 val paramMap = routeParamsMap[className]
-                val pathInfoStr = "%T(\"$path\",%T::class.java,$tag)"
+
+                val paramsInfoStringBuilder = StringBuilder()
+                paramMap?.forEach { (_, value) ->
+                    val config = value.annoMap["@RouteParams"]
+                    if (config != null){
+                        val paramsName : String = config["name"] as String
+                        val paramNullable : Boolean = config["nullable"] as Boolean
+                        val targetClassName: String = value.className
+
+                        paramsInfoStringBuilder.append("          add(ParamsInfo(\"$paramsName\",\"$targetClassName\",$paramNullable))\n")
+                    }
+                }
+
+                val pathInfoStr = "%T(\"$path\",%T::class.java,$tag,mutableListOf<%T>().apply {\n" +
+                        paramsInfoStringBuilder.toString() +
+                        "        })"
+                val paramListStr = "val paramsInfoList = mutableListOf<%T>()"
                 if (isSubtype(symbol,"android.app.Activity")){
                     val classFunName = "get${classKey}Class"
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
-
                         registerMapFun.addStatement("classMap[\"$path\"] = $pathInfoStr",ClassName.bestGuess(
                             PathInfo::class.qualifiedName!!
                         ),ClassName.bestGuess(
                             className
+                        ),ClassName.bestGuess(
+                            ParamsInfo::class.qualifiedName!!
                         ))
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(classStar.copy(nullable = true))
@@ -238,6 +256,8 @@ class CommunicationKspSymbolProcessor(
                                 PathInfo::class.qualifiedName!!
                             ),ClassName.bestGuess(
                                 className
+                            ),ClassName.bestGuess(
+                                ParamsInfo::class.qualifiedName!!
                             )
                         )
 
@@ -316,6 +336,8 @@ class CommunicationKspSymbolProcessor(
                             PathInfo::class.qualifiedName!!
                         ),ClassName.bestGuess(
                             className
+                        ),ClassName.bestGuess(
+                            ParamsInfo::class.qualifiedName!!
                         ))
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(anyClassName.copy(nullable = true))
