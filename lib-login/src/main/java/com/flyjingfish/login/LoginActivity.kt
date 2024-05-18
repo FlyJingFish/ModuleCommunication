@@ -5,10 +5,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.flyjingfish.login.databinding.ActivityLoginBinding
-import com.flyjingfish.module_communication_annotation.BindClass
 import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 import com.flyjingfish.module_communication_route.ModuleRoute
-import com.flyjingfish.user.`LibUser$$Router`
 import com.flyjingfish.user.UserHelper
 
 class LoginActivity: AppCompatActivity() {
@@ -28,7 +26,7 @@ class LoginActivity: AppCompatActivity() {
         }
         binding.btnGoFragment.setOnClickListener {
             val clazz = ModuleRoute.builder("user/UserFragment")
-                .getClazz()
+                .getClassByPath()
             val fragment : Fragment = clazz?.getDeclaredConstructor()?.newInstance() as Fragment
 //            val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",null) as Fragment
 //            supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()

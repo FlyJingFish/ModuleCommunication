@@ -1,6 +1,7 @@
 package com.flyjingfish.module_communication_intercept.intercept
 
 import com.flyjingfish.android_aop_annotation.ProceedJoinPoint
+import com.flyjingfish.module_communication_annotation.bean.PathInfo
 
 class Proceed(
     private val joinPoint: ProceedJoinPoint,
@@ -12,6 +13,10 @@ class Proceed(
      * 跳转页面时传入的数据
      */
     val paramsMap: MutableMap<String, Any?>,
+    /**
+     * 跳转页面的 [PathInfo]
+     */
+    val pathInfo: PathInfo,
     /**
      * true则时通过 ModuleRoute 类跳转的，false则是通过帮助类
      */

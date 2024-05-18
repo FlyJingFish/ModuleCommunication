@@ -1,5 +1,6 @@
 package com.flyjingfish.module_communication_annotation
 
+import com.flyjingfish.module_communication_annotation.interfaces.BindClass
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 

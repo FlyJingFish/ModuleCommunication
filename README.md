@@ -354,7 +354,7 @@ class LoginActivity: AppCompatActivity() {
         binding.btnGoFragment.setOnClickListener {
             //在 module-communication-route 可以使用路径拿到 class ，反射新建fragment对象
             val clazz = ModuleRoute.builder("user/UserFragment")
-                            .getClazz()
+                            .getClassByPath()
             val fragment : Fragment = clazz?.getDeclaredConstructor()?.newInstance() as Fragment
             //直接使用路由帮助类，需借助上边介绍的通信功能
             val fragment : Fragment = `LibUser$$Router`.newInstanceForUser_UserFragment("lalala",user) as Fragment
