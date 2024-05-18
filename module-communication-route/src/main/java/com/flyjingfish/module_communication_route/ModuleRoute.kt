@@ -203,7 +203,4 @@ object ModuleRoute {
         }
     }
 
-    fun isExist(tag: Int, item: Int): Boolean {
-        return tag and item > 0
-    }
 }
