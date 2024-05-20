@@ -50,7 +50,7 @@ object ModuleRoute {
     fun builder(moduleName: String, path: String) = RouteBuilder(path,moduleName)
 
     /**
-     * 自动解析页面跳转信息
+     * 自动解析 [Uri] 的页面跳转信息，之后直接调用 [RouteBuilder.go]
      */
     fun builder(uri: Uri) :RouteBuilder? {
         val path = uri.path
