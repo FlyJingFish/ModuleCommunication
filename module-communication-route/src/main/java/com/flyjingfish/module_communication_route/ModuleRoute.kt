@@ -67,6 +67,10 @@ object ModuleRoute {
          * 有相关路由页面才会返回 Intent 否则返回 null
          */
         fun getIntent(context: Context): Intent? {
+            if (context !is Activity){
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
             val clazzInfo = getClassInfo()
             clazzInfo?.let {
                 intent.setClass(context, it.pathInfo.clazz)
