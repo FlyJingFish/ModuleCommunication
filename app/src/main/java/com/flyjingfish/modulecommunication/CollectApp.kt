@@ -67,5 +67,6 @@ object CollectApp {
         allIApplication.forEach {
             it.onCreate(application)
         }
+        ModuleRoute.setApplication(application)
     }
 }

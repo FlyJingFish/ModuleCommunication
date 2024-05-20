@@ -21,7 +21,7 @@ class LoginActivity: AppCompatActivity() {
             ModuleRoute.builder("user/UserActivity")
                 .putValue("params1","lalla")
                 .putValue("params2",user)
-                .go(this)
+                .go()
 
         }
         binding.btnGoFragment.setOnClickListener {
