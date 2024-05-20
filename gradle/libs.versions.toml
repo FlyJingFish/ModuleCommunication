@@ -32,6 +32,7 @@ symbol-processing-gradle-plugin = { group = "com.google.devtools.ksp", name = "s
 androidAop-core = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-core" ,version.ref = "androidAopVersion" }
 androidAop-annotation = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-annotation" ,version.ref = "androidAopVersion" }
 androidAop-ksp = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-ksp" ,version.ref = "androidAopVersion" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect" ,version.ref = "org-jetbrains-kotlin-android" }
 [plugins]
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "org-jetbrains-kotlin-jvm" }
 com-android-library = { id = "com.android.library", version.ref = "agp" }

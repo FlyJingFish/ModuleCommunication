@@ -3,6 +3,7 @@ package com.flyjingfish.modulecommunication
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import com.flyjingfish.login.LoginActivity
 import com.flyjingfish.modulecommunication.databinding.ActivityMainBinding
@@ -22,5 +23,7 @@ class MainActivity : ComponentActivity() {
         binding.btnGoUser.setOnClickListener {
             startActivity(Intent(this,UserActivity::class.java))
         }
+
+        Log.e("MainActivity","------${Int::class.qualifiedName}")
     }
 }

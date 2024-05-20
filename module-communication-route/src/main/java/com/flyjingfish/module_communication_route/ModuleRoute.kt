@@ -4,10 +4,13 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import com.flyjingfish.module_communication_annotation.bean.ParamsInfo
 import com.flyjingfish.module_communication_annotation.bean.PathInfo
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClass
 import com.flyjingfish.module_communication_route.bean.ClassInfo
+import com.flyjingfish.module_communication_route.utils.Utils
 import com.flyjingfish.module_communication_route.utils.putValue
 
 object ModuleRoute {
@@ -45,6 +48,24 @@ object ModuleRoute {
      * module 名取自 生成的路由类 的前半部，例如 LibUser$$RouterClass 那就是 LibUser
      */
     fun builder(moduleName: String, path: String) = RouteBuilder(path,moduleName)
+
+    /**
+     * 自动解析页面跳转信息
+     */
+    fun builder(uri: Uri) :RouteBuilder? {
+        val path = uri.path
+        return if (path != null){
+            val builder = builder(path)
+            val pathInfo = builder.getInfoByPath()
+            if (pathInfo != null){
+                Utils.putPathParams(pathInfo,uri,builder)
+                builder
+            }else{
+                null
+            }
+        }else null
+    }
+
 
     class RouteBuilder(private val path: String, private val moduleName: String? = null) {
         private val intent = Intent()

@@ -14,4 +14,5 @@ apply("$rootDir/gradle/android_base.gradle")
 apply("$rootDir/gradle/android_publish.gradle")
 dependencies {
     implementation(project(mapOf("path" to ":module-communication-annotation")))
+    implementation(libs.gson)
 }
