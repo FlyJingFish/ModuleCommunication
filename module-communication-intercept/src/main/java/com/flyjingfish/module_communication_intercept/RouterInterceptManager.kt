@@ -17,6 +17,7 @@ object RouterInterceptManager {
 
     fun notifyIntercept(proceed : Proceed) {
         if (intercepts.isEmpty()) {
+            proceed.proceed()
             return
         }
         val thisIntercepts = mutableSetOf<RouterIntercept>().apply {

@@ -50,7 +50,7 @@ class ApplyExportPlugin: Plugin<Project> {
             val communicationConfig = project.extensions.getByType(CommunicationConfig::class.java)
             var moduleName = communicationConfig.exportModuleName
             if (moduleName.isEmpty()){
-                moduleName = project.properties[COMMON_MODULE_NAME].toString()
+                moduleName = (project.properties[COMMON_MODULE_NAME]?:"").toString()
             }
             if (moduleName.isNotEmpty()){
                 variantList.add(variant)
@@ -89,7 +89,7 @@ class ApplyExportPlugin: Plugin<Project> {
                     it.copyType = ExportTask.CopyType.ALL
                 }.dependsOn("ksp${variantNameCapitalized}Kotlin")
             }else{
-                project.logger.error("没有设置 Copy 的目标 moduleName")
+                project.logger.error("ModuleCommunication提示：没有设置<负责通信>的目标 moduleName")
             }
         }
         project.afterEvaluate {
