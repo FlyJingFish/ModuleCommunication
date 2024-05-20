@@ -15,7 +15,7 @@ internal object Utils {
      * @param rawUri raw uri
      * @return map with params
      */
-    fun splitQueryParameters(rawUri: Uri): Map<String, String?> {
+    private fun splitQueryParameters(rawUri: Uri): Map<String, String?> {
         val query = rawUri.encodedQuery
             ?: return emptyMap()
         val paramMap: MutableMap<String?, String> = LinkedHashMap()
@@ -41,7 +41,7 @@ internal object Utils {
     fun putPathParams(pathInfo: PathInfo, rawUri: Uri, builder : ModuleRoute.RouteBuilder) {
         val paramsInfo: MutableList<ParamsInfo> = pathInfo.paramsInfo
         if (paramsInfo.isNotEmpty()) {
-            val resultMap: Map<String, String?> = Utils.splitQueryParameters(rawUri)
+            val resultMap: Map<String, String?> = splitQueryParameters(rawUri)
             for (params in paramsInfo) {
                 val paramValue = resultMap[params.name]
                 paramValue?.let {
