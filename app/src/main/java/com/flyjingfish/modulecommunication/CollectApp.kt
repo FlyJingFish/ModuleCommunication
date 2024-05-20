@@ -4,7 +4,9 @@ import android.app.Application
 import android.util.Log
 import com.flyjingfish.android_aop_annotation.anno.AndroidAopCollectMethod
 import com.flyjingfish.base_lib.IApplication
+import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClass
+import com.flyjingfish.module_communication_annotation.interfaces.BindClass
 import com.flyjingfish.module_communication_intercept.intercept.RouterIntercept
 import com.flyjingfish.module_communication_intercept.RouterInterceptManager
 import com.flyjingfish.module_communication_route.ModuleRoute
@@ -43,6 +45,16 @@ object CollectApp {
     fun collectIApplication(sub: IApplication){
         Log.e("CollectIntercept","collectIApplication=$sub")
         allIApplication.add(sub)
+    }
+
+    /**
+     * 收集所有的 module 的 @ExposeInterface 共享实现类
+     */
+    @AndroidAopCollectMethod
+    @JvmStatic
+    fun collectBindClass(sub: BindClass<*>){
+        Log.e("CollectIntercept","collectBindClass=$sub")
+        ImplementClassUtils.addBindClass(sub)
     }
 
     fun onCreate(application: Application){

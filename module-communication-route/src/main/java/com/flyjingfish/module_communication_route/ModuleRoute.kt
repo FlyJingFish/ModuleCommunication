@@ -39,7 +39,11 @@ object ModuleRoute {
     class RouteBuilder(private val path: String, private val moduleName: String? = null) {
         private val intent = Intent()
         private val paramsMap = mutableMapOf<String, Any?>()
-        fun <T> putValue(paramName: String, paramsValue: T): RouteBuilder {
+        fun <T> putValue(paramName: String, paramsValue: T?): RouteBuilder {
+            if (paramsValue == null){
+                paramsMap[paramName] = null
+                return this
+            }
             paramsMap[paramName] = (paramsValue as Any)
             when (paramsValue) {
                 is Char -> {

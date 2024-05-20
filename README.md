@@ -450,8 +450,8 @@ communicationConfig{
 # ModuleCommunication必备混淆规则 -----start-----
 
 -keepnames @com.flyjingfish.module_communication_annotation.ExposeInterface class * {*;}
--keepnames class * implements com.flyjingfish.module_communication_annotation.BindClass
--keep class * implements com.flyjingfish.module_communication_annotation.BindClass{
+-keepnames class * implements com.flyjingfish.module_communication_annotation.interfaces.BindClass
+-keep class * implements com.flyjingfish.module_communication_annotation.interfaces.BindClass{
     public <init>();
 }
 
