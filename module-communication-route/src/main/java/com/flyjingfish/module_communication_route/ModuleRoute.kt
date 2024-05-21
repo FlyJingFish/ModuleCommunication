@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import com.flyjingfish.module_communication_annotation.bean.ParamsInfo
 import com.flyjingfish.module_communication_annotation.bean.PathInfo
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClass
 import com.flyjingfish.module_communication_route.bean.ClassInfo
@@ -67,7 +66,13 @@ object ModuleRoute {
     }
 
 
-    class RouteBuilder(private val path: String, private val moduleName: String? = null) {
+    class RouteBuilder(path: String, private val moduleName: String? = null) {
+        private val usePath: String = if (path.firstOrNull()?.toString() != "/"){
+            "/$path"
+        }else{
+            path
+        }
+
         private val intent = Intent()
         private val paramsMap = mutableMapOf<String, Any?>()
         fun <T> putValue(paramName: String, paramsValue: T?): RouteBuilder {
@@ -120,7 +125,7 @@ object ModuleRoute {
             }
 
             val clazzInfo = getClassInfo()
-            clazzInfo?.goRouterClazz?.goByPath(path, paramsMap, true,clazzInfo.pathInfo) {
+            clazzInfo?.goRouterClazz?.goByPath(usePath, paramsMap, true,clazzInfo.pathInfo) {
                 intent.setClass(context, clazzInfo.pathInfo.clazz)
                 context.startActivity(intent)
             }
@@ -153,23 +158,23 @@ object ModuleRoute {
         }
 
         private fun getClassInfo(): ClassInfo? {
-            var clazzInfo = allClazz[path]
+            var clazzInfo = allClazz[usePath]
             if (clazzInfo == null) {
                 if (moduleName != null){
                     val routeClazz = allRouteClass[moduleName]
                     if (routeClazz != null){
-                        val pathInfo = routeClazz.getInfoByPath(path)
+                        val pathInfo = routeClazz.getInfoByPath(usePath)
                         if (pathInfo != null) {
                             clazzInfo = ClassInfo(pathInfo, routeClazz)
-                            allClazz[path] = clazzInfo
+                            allClazz[usePath] = clazzInfo
                         }
                     }
                 }else{
                     for ((_, routeClazz) in allRouteClass) {
-                        val pathInfo = routeClazz.getInfoByPath(path)
+                        val pathInfo = routeClazz.getInfoByPath(usePath)
                         if (pathInfo != null) {
                             clazzInfo = ClassInfo(pathInfo, routeClazz)
-                            allClazz[path] = clazzInfo
+                            allClazz[usePath] = clazzInfo
                             break
                         }
                     }

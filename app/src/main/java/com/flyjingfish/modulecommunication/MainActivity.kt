@@ -24,6 +24,11 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent(this,UserActivity::class.java))
         }
 
+        binding.btnGoUri.setOnClickListener {
+//            startActivity(Intent(this,SchemeFilterActivity::class.java))
+            startActivity(Intent(this,WebActivity::class.java))
+        }
+
         Log.e("MainActivity","------${Int::class.qualifiedName}")
     }
 }

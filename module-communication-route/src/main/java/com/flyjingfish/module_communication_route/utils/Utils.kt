@@ -38,48 +38,66 @@ internal object Utils {
         } while (start < query.length)
         return Collections.unmodifiableMap(paramMap)
     }
-    fun putPathParams(pathInfo: PathInfo, rawUri: Uri, builder : ModuleRoute.RouteBuilder) {
+
+    fun putPathParams(pathInfo: PathInfo, rawUri: Uri, builder: ModuleRoute.RouteBuilder) {
         val paramsInfo: MutableList<ParamsInfo> = pathInfo.paramsInfo
         if (paramsInfo.isNotEmpty()) {
             val resultMap: Map<String, String?> = splitQueryParameters(rawUri)
             for (params in paramsInfo) {
                 val paramValue = resultMap[params.name]
                 paramValue?.let {
-                    putValue(params,it,builder)
+                    putValue(params, it, builder)
                 }
             }
         }
     }
-    private fun putValue(paramsInfo: ParamsInfo,strValue : String,builder: ModuleRoute.RouteBuilder){
-        when(paramsInfo.className){
-            String::class.qualifiedName ,Char::class.qualifiedName->{
+
+    private fun putValue(
+        paramsInfo: ParamsInfo,
+        strValue: String,
+        builder: ModuleRoute.RouteBuilder
+    ) {
+        when (paramsInfo.className) {
+            String::class.qualifiedName -> {
                 builder.putValue(paramsInfo.name, strValue)
             }
-            Byte::class.qualifiedName ->{
+
+            Char::class.qualifiedName -> {
+                builder.putValue(paramsInfo.name, strValue.firstOrNull())
+            }
+
+            Byte::class.qualifiedName -> {
                 builder.putValue(paramsInfo.name, strValue.toByte())
             }
-            Short::class.qualifiedName ->{
+
+            Short::class.qualifiedName -> {
                 builder.putValue(paramsInfo.name, strValue.toShort())
             }
-            Int::class.qualifiedName ->{
+
+            Int::class.qualifiedName -> {
                 builder.putValue(paramsInfo.name, strValue.toInt())
             }
-            Long::class.qualifiedName ->{
+
+            Long::class.qualifiedName -> {
                 builder.putValue(paramsInfo.name, strValue.toLong())
             }
-            Float::class.qualifiedName ->{
+
+            Float::class.qualifiedName -> {
                 builder.putValue(paramsInfo.name, strValue.toFloat())
             }
-            Double::class.qualifiedName ->{
+
+            Double::class.qualifiedName -> {
                 builder.putValue(paramsInfo.name, strValue.toDouble())
             }
-            Boolean::class.qualifiedName ->{
+
+            Boolean::class.qualifiedName -> {
                 builder.putValue(paramsInfo.name, strValue.toBoolean())
             }
-            else ->{
+
+            else -> {
                 val gson = Gson()
                 val clazz = Class.forName(paramsInfo.className)
-                val data = gson.fromJson<Any>(strValue,clazz)
+                val data = gson.fromJson<Any>(strValue, clazz)
                 builder.putValue(paramsInfo.name, data)
             }
 

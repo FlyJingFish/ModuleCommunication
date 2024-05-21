@@ -286,7 +286,7 @@ dependencies {
 
 ```kotlin
 // activity 
-@Route("user/UserActivity")
+@Route("/user/UserActivity")
 class UserActivity : AppCompatActivity() {
 
     @delegate:RouteParams("params1")
@@ -307,7 +307,7 @@ class UserActivity : AppCompatActivity() {
 }
 
 //fragment
-@Route("user/UserFragment")
+@Route("/user/UserFragment")
 class UserFragment : Fragment() {
     @delegate:RouteParams("params1")
     val params1 :String ? by lazy(LazyThreadSafetyMode.NONE) {

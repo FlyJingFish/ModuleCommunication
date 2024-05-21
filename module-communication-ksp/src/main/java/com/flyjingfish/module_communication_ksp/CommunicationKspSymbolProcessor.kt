@@ -186,14 +186,25 @@ class CommunicationKspSymbolProcessor(
             for (symbol in symbols) {
                 val annotationMap = getAnnotation(symbol)
                 val className = (symbol as KSClassDeclaration).packageName.asString() + "." + symbol
-                val path : String = annotationMap["@Route"]?.get("path") as String
+                val realPath : String = annotationMap["@Route"]?.get("path") as String
                 val tag : Int = annotationMap["@Route"]?.get("tag") as Int
 
+                val usePath: String = if (realPath.firstOrNull()?.toString() != "/"){
+                    "/$realPath"
+                }else{
+                    realPath
+                }
+
+                val clazzPath: String = if (realPath.firstOrNull()?.toString() == "/"){
+                    realPath.substring(1)
+                }else{
+                    realPath
+                }
 
 
                 val classKey:String
-                val routeClassName = if (path.isNotEmpty()){
-                    classKey = path.replace(".","_").replace("/","_")
+                val routeClassName = if (clazzPath.isNotEmpty()){
+                    classKey = clazzPath.replace(".","_").replace("/","_")
                         .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
                     classKey
                 }else{
@@ -216,7 +227,7 @@ class CommunicationKspSymbolProcessor(
                     }
                 }
 
-                val pathInfoStr = "%T(\"$path\",%T::class.java,$tag,mutableListOf<%T>().apply {\n" +
+                val pathInfoStr = "%T(\"$usePath\",%T::class.java,$tag,mutableListOf<%T>().apply {\n" +
                         paramsInfoStringBuilder.toString() +
                         "        })"
                 val paramListStr = "val paramsInfoList = mutableListOf<%T>()"
@@ -224,7 +235,7 @@ class CommunicationKspSymbolProcessor(
                     val classFunName = "get${classKey}Class"
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
-                        registerMapFun.addStatement("classMap[\"$path\"] = $pathInfoStr",ClassName.bestGuess(
+                        registerMapFun.addStatement("classMap[\"$usePath\"] = $pathInfoStr",ClassName.bestGuess(
                             PathInfo::class.qualifiedName!!
                         ),ClassName.bestGuess(
                             className
@@ -277,7 +288,7 @@ class CommunicationKspSymbolProcessor(
                             }
                         }
                         whatsMyName1.addStatement(
-                            "routeClazz.goByPath(\"$path\",paramMap,false,pathInfo){"
+                            "routeClazz.goByPath(\"$usePath\",paramMap,false,pathInfo){"
                         )
                         whatsMyName1.addStatement(
                             "  val intent = %T(context,routeClazz.$classFunName())",
@@ -332,7 +343,7 @@ class CommunicationKspSymbolProcessor(
 
 
                     if (!emptyRoute){
-                        registerMapFun.addStatement("classMap[\"$path\"] = $pathInfoStr",ClassName.bestGuess(
+                        registerMapFun.addStatement("classMap[\"$usePath\"] = $pathInfoStr",ClassName.bestGuess(
                             PathInfo::class.qualifiedName!!
                         ),ClassName.bestGuess(
                             className
