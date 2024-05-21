@@ -51,7 +51,7 @@
 buildscript {
     dependencies {
         //必须项 👇
-        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.1.6'
+        classpath 'io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:1.1.7'
     }
 }
 ```
@@ -163,7 +163,7 @@ b、如果 ```lib-login``` 也没有引入过 ```communication.export``` 插件�
 ```gradle
 dependencies {
     //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.1.6'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:1.1.7'
 }
 ```
 
@@ -268,17 +268,20 @@ communicationConfig{
 
 #### 4⃣️、路由注解
 
+**更多详细用法[点此查看](https://github.com/FlyJingFish/LightRouter)**
+
 - @Route 路由页面
 
 - @RouteParams 路由页面参数
+
 
 //👇👇👇这两个库都需要 [AndroidAOP](https://github.com/FlyJingFish/AndroidAOP) 提供支持,详细使用方式下文有介绍
 ```gradle
 dependencies {
     //使用拦截器（不是必须的）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:1.1.6'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:1.1.7'
     //使用路径的方式跳转才需要 （不是必须的）
-    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-route:1.1.6'
+    implementation 'io.github.FlyJingFish.ModuleCommunication:module-communication-route:1.1.7'
 }
 ```
 
