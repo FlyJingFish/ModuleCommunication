@@ -346,7 +346,7 @@ class LoginActivity: AppCompatActivity() {
         val user = userHelper.getUser()
         binding.btnGo.setOnClickListener {
             //在 module-communication-route 可以使用路径跳转
-            ModuleRoute.builder("user/UserActivity")
+            ModuleRoute.builder("/user/UserActivity")
                             .putValue("params1","lalla")
                             .putValue("params2",user)
                             .go(this)
@@ -356,7 +356,7 @@ class LoginActivity: AppCompatActivity() {
 
         binding.btnGoFragment.setOnClickListener {
             //在 module-communication-route 可以使用路径拿到 class ，反射新建fragment对象
-            val clazz = ModuleRoute.builder("user/UserFragment")
+            val clazz = ModuleRoute.builder("/user/UserFragment")
                             .getClassByPath()
             val fragment : Fragment = clazz?.getDeclaredConstructor()?.newInstance() as Fragment
             //直接使用路由帮助类，需借助上边介绍的通信功能
