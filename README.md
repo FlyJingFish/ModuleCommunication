@@ -360,7 +360,7 @@ class LoginActivity: AppCompatActivity() {
                             .getClassByPath()
             val fragment : Fragment = clazz?.getDeclaredConstructor()?.newInstance() as Fragment
             //直接使用路由帮助类，需借助上边介绍的通信功能
-            val fragment : Fragment = `LibUser$$Router`.newInstanceForUser_UserFragment("lalala",user) as Fragment
+            val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",user) as Fragment
             supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
         }
 
