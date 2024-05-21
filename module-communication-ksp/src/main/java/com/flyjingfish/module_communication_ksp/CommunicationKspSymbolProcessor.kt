@@ -248,7 +248,7 @@ class CommunicationKspSymbolProcessor(
                 val classMapTypeNames = paramsClazz.toTypedArray()
                 val paramListStr = "val paramsInfoList = mutableListOf<%T>()"
 //                logger.error("paramsInfoStringBuilder=$paramsInfoStringBuilder")
-                if (isSubtype(symbol,"android.app.Activity")){
+                if (symbol.isSubtype("android.app.Activity")){
                     val classFunName = "get${classKey}Class"
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
@@ -344,7 +344,7 @@ class CommunicationKspSymbolProcessor(
                     }
 
                     routeBuilder.addFunction(whatsMyName1.build())
-                }else if (isSubtype(symbol,"androidx.fragment.app.Fragment") || isSubtype(symbol,"android.app.Fragment")){
+                }else if (symbol.isSubtype("androidx.fragment.app.Fragment") || symbol.isSubtype("android.app.Fragment")){
                     val classFunName = "new${classKey}"
                     val anyClassName = ClassName.bestGuess(Any::class.qualifiedName!!)
                     val whatsMyName2 = whatsMyName("new$routeClassName")
@@ -364,7 +364,7 @@ class CommunicationKspSymbolProcessor(
                             symbol.toString()
                         )
 
-                        if (isSubtype(symbol,"androidx.fragment.app.Fragment")){
+                        if (symbol.isSubtype("androidx.fragment.app.Fragment")){
                             activityBuilder.superclass(ClassName.bestGuess("androidx.fragment.app.Fragment"))
                         }else{
                             activityBuilder.superclass(ClassName.bestGuess("android.app.Fragment"))
@@ -395,7 +395,7 @@ class CommunicationKspSymbolProcessor(
                             }
                         }
 
-                        if (isSubtype(symbol,"androidx.fragment.app.Fragment")){
+                        if (symbol.isSubtype("androidx.fragment.app.Fragment")){
                             whatsMyName2.addStatement(
                                 "if (instance is %T) {"
                                 ,ClassName.bestGuess(
@@ -476,17 +476,6 @@ class CommunicationKspSymbolProcessor(
         return symbols.filter { !it.validate() }.toList()
     }
 
-    private fun isSubtype(symbol: KSClassDeclaration,superType :String):Boolean{
-        symbol.getAllSuperTypes().toList().forEach {
-            val className = "${it.declaration.packageName.asString()}.${it}"
-            if (className == superType){
-                return true
-            }
-//            logger.error("symbol=${symbol},superTypes= ${it.declaration.packageName.asString()+"."+it}")
-        }
-        return false
-    }
-
     private val routeParamsMap = mutableMapOf<String,MutableMap<String,RouteParamsConfig>>()
     private fun processRouteParams(resolver: Resolver): List<KSAnnotated> {
         val symbols =
@@ -513,7 +502,7 @@ class CommunicationKspSymbolProcessor(
             map[key] = config
 //            logger.error("annotationMap=$annotationMap")
 //            logger.error("symbolLocation=$className${symbol}")
-//            logger.error("symbolType=${symbol.type.resolve().declaration.packageName.asString()}.${symbol.type}")
+//            logger.error("symbolType=${(symbol.type.resolve().declaration as KSClassDeclaration).superTypes}")
 
         }
         return symbols.filter { !it.validate() }.toList()

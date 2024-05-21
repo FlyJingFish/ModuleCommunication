@@ -27,8 +27,8 @@ public class DetailActivity extends AppCompatActivity {
     private User user;
     @RouteParams(name = "userIds")
     private int[] userIds;
-//    @RouteParams(name = "userList")
-//    private ArrayList<User> userList;
+    @RouteParams(name = "userList")
+    private ArrayList<User> userList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
