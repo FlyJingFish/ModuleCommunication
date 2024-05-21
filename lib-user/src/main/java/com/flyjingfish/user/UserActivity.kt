@@ -38,7 +38,7 @@ class UserActivity : AppCompatActivity() {
         val theme = R.style.LoginAppTheme
         val bundle = Bundle()
 
-
+//        intent.putExtra("ss", mutableListOf<User>())
         Log.e("UserActivity","params1=$params1,params2=$params2")
     }
 }

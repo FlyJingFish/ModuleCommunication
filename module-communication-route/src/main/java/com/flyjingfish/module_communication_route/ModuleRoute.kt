@@ -11,6 +11,7 @@ import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClas
 import com.flyjingfish.module_communication_route.bean.ClassInfo
 import com.flyjingfish.module_communication_route.utils.Utils
 import com.flyjingfish.module_communication_route.utils.putValue
+import kotlin.reflect.KClass
 
 object ModuleRoute {
     private val allRouteClass = mutableMapOf<String, BaseRouterClass>()
@@ -99,7 +100,7 @@ object ModuleRoute {
 
             val clazzInfo = getClassInfo()
             clazzInfo?.let {
-                intent.setClass(context, it.pathInfo.clazz)
+                intent.setClass(context, it.pathInfo.clazz.java)
             }
             return if (clazzInfo != null){
                 intent
@@ -126,7 +127,7 @@ object ModuleRoute {
 
             val clazzInfo = getClassInfo()
             clazzInfo?.goRouterClazz?.goByPath(usePath, paramsMap, true,clazzInfo.pathInfo) {
-                intent.setClass(context, clazzInfo.pathInfo.clazz)
+                intent.setClass(context, clazzInfo.pathInfo.clazz.java)
                 context.startActivity(intent)
             }
         }
@@ -145,6 +146,14 @@ object ModuleRoute {
          * 根据路径信息获取到对应的 [Class] 类
          */
         fun getClassByPath(): Class<*>? {
+            val clazzInfo = getClassInfo()
+            return clazzInfo?.pathInfo?.clazz?.java
+        }
+
+        /**
+         * 根据路径信息获取到对应的 [Class] 类
+         */
+        fun getKClassByPath(): KClass<*>? {
             val clazzInfo = getClassInfo()
             return clazzInfo?.pathInfo?.clazz
         }

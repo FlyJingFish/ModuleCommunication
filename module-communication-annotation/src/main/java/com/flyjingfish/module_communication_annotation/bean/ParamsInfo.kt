@@ -1,3 +1,5 @@
 package com.flyjingfish.module_communication_annotation.bean
 
-class ParamsInfo(val name: String, val className: String, val nullable: Boolean)
+import kotlin.reflect.KClass
+
+class ParamsInfo(val name: String, val clazz: KClass<*>, val nullable: Boolean)

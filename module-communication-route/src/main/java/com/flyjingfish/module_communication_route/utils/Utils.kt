@@ -51,53 +51,51 @@ internal object Utils {
             }
         }
     }
-
     private fun putValue(
         paramsInfo: ParamsInfo,
         strValue: String,
         builder: ModuleRoute.RouteBuilder
     ) {
-        when (paramsInfo.className) {
-            String::class.qualifiedName -> {
+        when (paramsInfo.clazz) {
+            String::class -> {
                 builder.putValue(paramsInfo.name, strValue)
             }
 
-            Char::class.qualifiedName -> {
+            Char::class -> {
                 builder.putValue(paramsInfo.name, strValue.firstOrNull())
             }
 
-            Byte::class.qualifiedName -> {
+            Byte::class -> {
                 builder.putValue(paramsInfo.name, strValue.toByte())
             }
 
-            Short::class.qualifiedName -> {
+            Short::class -> {
                 builder.putValue(paramsInfo.name, strValue.toShort())
             }
 
-            Int::class.qualifiedName -> {
+            Int::class -> {
                 builder.putValue(paramsInfo.name, strValue.toInt())
             }
 
-            Long::class.qualifiedName -> {
+            Long::class -> {
                 builder.putValue(paramsInfo.name, strValue.toLong())
             }
 
-            Float::class.qualifiedName -> {
+            Float::class -> {
                 builder.putValue(paramsInfo.name, strValue.toFloat())
             }
 
-            Double::class.qualifiedName -> {
+            Double::class -> {
                 builder.putValue(paramsInfo.name, strValue.toDouble())
             }
 
-            Boolean::class.qualifiedName -> {
+            Boolean::class -> {
                 builder.putValue(paramsInfo.name, strValue.toBoolean())
             }
 
             else -> {
                 val gson = Gson()
-                val clazz = Class.forName(paramsInfo.className)
-                val data = gson.fromJson<Any>(strValue, clazz)
+                val data = gson.fromJson<Any>(strValue, paramsInfo.clazz.java)
                 builder.putValue(paramsInfo.name, data)
             }
 

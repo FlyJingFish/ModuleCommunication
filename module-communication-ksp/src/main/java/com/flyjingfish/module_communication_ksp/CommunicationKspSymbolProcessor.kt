@@ -34,6 +34,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STAR
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import java.io.File
 import java.io.FileInputStream
@@ -216,32 +217,42 @@ class CommunicationKspSymbolProcessor(
                 val paramMap = routeParamsMap[className]
 
                 val paramsInfoStringBuilder = StringBuilder()
+                val paramsClazz = mutableListOf<TypeName>()
+                paramsClazz.add(ClassName.bestGuess(
+                    PathInfo::class.qualifiedName!!
+                ))
+                paramsClazz.add(ClassName.bestGuess(
+                    className
+                ))
+                paramsClazz.add(ClassName.bestGuess(
+                    ParamsInfo::class.qualifiedName!!
+                ))
                 paramMap?.forEach { (_, value) ->
                     val config = value.annoMap["@RouteParams"]
                     if (config != null){
                         val paramsName : String = config["name"] as String
                         val paramNullable : Boolean = config["nullable"] as Boolean
                         val targetClassName: String = value.className
-
-                        paramsInfoStringBuilder.append("          add(ParamsInfo(\"$paramsName\",\"$targetClassName\",$paramNullable))\n")
+                        val typeName = value.getTypeClazzName()
+                            ?: throw IllegalArgumentException("不支持 $className 的 $paramsName 的类型：$targetClassName")
+                        paramsInfoStringBuilder.append("          add(ParamsInfo(\"$paramsName\",%T::class,$paramNullable))\n")
+                        paramsClazz.add(typeName)
                     }
                 }
 
-                val pathInfoStr = "%T(\"$usePath\",%T::class.java,$tag,mutableListOf<%T>().apply {\n" +
+                val pathInfoStr = "%T(\"$usePath\",%T::class,$tag,mutableListOf<%T>().apply {\n" +
                         paramsInfoStringBuilder.toString() +
                         "        })"
+
+
+                val classMapTypeNames = paramsClazz.toTypedArray()
                 val paramListStr = "val paramsInfoList = mutableListOf<%T>()"
+//                logger.error("paramsInfoStringBuilder=$paramsInfoStringBuilder")
                 if (isSubtype(symbol,"android.app.Activity")){
                     val classFunName = "get${classKey}Class"
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
-                        registerMapFun.addStatement("classMap[\"$usePath\"] = $pathInfoStr",ClassName.bestGuess(
-                            PathInfo::class.qualifiedName!!
-                        ),ClassName.bestGuess(
-                            className
-                        ),ClassName.bestGuess(
-                            ParamsInfo::class.qualifiedName!!
-                        ))
+                        registerMapFun.addStatement("classMap[\"$usePath\"] = $pathInfoStr",*classMapTypeNames)
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(classStar.copy(nullable = true))
                             .addStatement("return %T::class.java",ClassName.bestGuess(
@@ -263,13 +274,7 @@ class CommunicationKspSymbolProcessor(
                         )
 
                         whatsMyName1.addStatement(
-                            "val pathInfo = $pathInfoStr",ClassName.bestGuess(
-                                PathInfo::class.qualifiedName!!
-                            ),ClassName.bestGuess(
-                                className
-                            ),ClassName.bestGuess(
-                                ParamsInfo::class.qualifiedName!!
-                            )
+                            "val pathInfo = $pathInfoStr",*classMapTypeNames
                         )
 
                         whatsMyName1.addStatement(
@@ -300,12 +305,14 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
-                                val paramNullable : Boolean = config["nullable"] as Boolean
-                                val targetClassName: String = value.className
-                                whatsMyName1.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
-                                whatsMyName1.addStatement(
-                                    "  intent.putExtra(\"$paramsName\",$paramsName)",
-                                )
+                                val typeName = value.getTypeName()
+                                typeName?.let {
+                                    whatsMyName1.addParameter(paramsName,it)
+                                    whatsMyName1.addStatement(
+                                        "  intent.putExtra(\"$paramsName\",$paramsName)",
+                                    )
+                                }
+
                             }
                         }
                         whatsMyName1.addStatement(
@@ -327,9 +334,11 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
-                                val paramNullable : Boolean = config["nullable"] as Boolean
-                                val targetClassName: String = value.className
-                                whatsMyName1.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
+                                val typeName = value.getTypeName()
+                                typeName?.let {
+                                    whatsMyName1.addParameter(paramsName,it)
+                                }
+
                             }
                         }
                     }
@@ -343,13 +352,7 @@ class CommunicationKspSymbolProcessor(
 
 
                     if (!emptyRoute){
-                        registerMapFun.addStatement("classMap[\"$usePath\"] = $pathInfoStr",ClassName.bestGuess(
-                            PathInfo::class.qualifiedName!!
-                        ),ClassName.bestGuess(
-                            className
-                        ),ClassName.bestGuess(
-                            ParamsInfo::class.qualifiedName!!
-                        ))
+                        registerMapFun.addStatement("classMap[\"$usePath\"] = $pathInfoStr",*classMapTypeNames)
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(anyClassName.copy(nullable = true))
                             .addStatement("return %T()",ClassName.bestGuess(
@@ -382,12 +385,13 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
-                                val paramNullable : Boolean = config["nullable"] as Boolean
-                                val targetClassName: String = value.className
-                                whatsMyName2.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
-                                whatsMyName2.addStatement(
-                                    "intent.putExtra(\"$paramsName\",$paramsName)",
-                                )
+                                val typeName = value.getTypeName()
+                                typeName?.let {
+                                    whatsMyName2.addParameter(paramsName,it)
+                                    whatsMyName2.addStatement(
+                                        "intent.putExtra(\"$paramsName\",$paramsName)",
+                                    )
+                                }
                             }
                         }
 
@@ -429,9 +433,10 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
-                                val paramNullable : Boolean = config["nullable"] as Boolean
-                                val targetClassName: String = value.className
-                                whatsMyName2.addParameter(paramsName,ClassName.bestGuess(targetClassName).copy(nullable = paramNullable))
+                                val typeName = value.getTypeName()
+                                typeName?.let {
+                                    whatsMyName2.addParameter(paramsName,it)
+                                }
                             }
                         }
                         whatsMyName2.addStatement(
@@ -495,7 +500,10 @@ class CommunicationKspSymbolProcessor(
                 parent = parent?.parent
             }
             className = className.substring(0,className.length-1)
-            val config = RouteParamsConfig("${symbol.type.resolve().declaration.packageName.asString()}.${symbol.type}",annotationMap)
+            val classShortName = "${symbol.type.resolve().declaration}"
+            val realClassName = "${symbol.type.resolve().declaration.packageName.asString()}.${classShortName}"
+            val seeClassName = "${symbol.type.resolve().declaration.packageName.asString()}.${symbol.type}"
+            val config = RouteParamsConfig(seeClassName,realClassName,symbol,annotationMap)
             var map = routeParamsMap[className]
             if (map == null){
                 map = mutableMapOf()

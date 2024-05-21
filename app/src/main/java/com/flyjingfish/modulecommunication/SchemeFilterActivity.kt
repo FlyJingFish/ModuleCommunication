@@ -13,13 +13,16 @@ import com.google.gson.Gson
 class SchemeFilterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //        val uri = intent.data
         val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class)
         val user = userHelper?.getUser()
         val gson = Gson()
-//        val uriTest = "lightrouter://test.flyjingfish.com/user/DetailActivity?age=10&name=hahahaha&aChar=a&user=${gson.toJson(user)}"
-//        Log.e("SchemeFilterActivity",uriTest)
-//        val uri = uriTest.toUri()
-        val uri = intent.data
+        val intArray = intArrayOf(1,2,3)
+//        Log.e("SchemeFilterActivity",gson.toJson(intArray))
+        val uriTest = "lightrouter://test.flyjingfish.com/user/DetailActivity?age=10&name=hahahaha&aChar=a&user=${gson.toJson(user)}&userIds=${gson.toJson(intArray)}"
+        Log.e("SchemeFilterActivity",uriTest)
+
+        val uri = uriTest.toUri()
         uri?.let {
             ModuleRoute.builder(it)?.go()
             finish()
