@@ -28,7 +28,7 @@ public class DetailActivity extends AppCompatActivity {
     @RouteParams(name = "userIds")
     private int[] userIds;
     @RouteParams(name = "userList")
-    private ArrayList<User> userList;
+    private TestBean[] userList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,8 +40,9 @@ public class DetailActivity extends AppCompatActivity {
         aChar = getIntent().getCharExtra("aChar",'s');
         user = (User) getIntent().getSerializableExtra("user");
         userIds = getIntent().getIntArrayExtra("userIds");
+        userList = (TestBean[]) getIntent().getSerializableExtra("userList");
 
-        String logText = "age="+age+",name="+name+",aChar="+aChar+",user="+user+",userIds="+ userIds;
+        String logText = "age="+age+",name="+name+",aChar="+aChar+",user="+user+",userIds="+ userIds+"userList="+userList;
         binding.tvText.setText(logText);
         Log.e("DetailActivity",logText);
 

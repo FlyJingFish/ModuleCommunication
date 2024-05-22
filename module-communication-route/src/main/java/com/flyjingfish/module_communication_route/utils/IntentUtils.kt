@@ -83,6 +83,8 @@ fun <T> Intent.putValue(paramName: String, paramsValue: T) {
                 intent.putExtra(paramName, paramsValue as Array<out CharSequence>)
             } else if (paramsValue.isArrayOf<String>()) {
                 intent.putExtra(paramName, paramsValue as Array<out String>)
+            } else if (paramsValue.isArrayOf<Serializable>()) {
+                intent.putExtra(paramName, paramsValue as Array<out Serializable>)
             }
         }
 

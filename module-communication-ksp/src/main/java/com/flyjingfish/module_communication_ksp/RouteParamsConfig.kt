@@ -33,18 +33,17 @@ data class RouteParamsConfig(val className:String,val realClassName :String, val
                     val typeArguments = element.typeArguments
                     val type = typeArguments[0].type
                     if (type != null){
+                        val isSubtype = (type.resolve().declaration as KSClassDeclaration).isSubtype("java.io.Serializable")
+                                ||(type.resolve().declaration as KSClassDeclaration).isSubtype("android.os.Parcelable")
+
                         val subPackageName = type.resolve().declaration.packageName.asString()
                         val subClazzName = type.resolve().declaration.toString()
                         val typeClazzName = "$subPackageName.$subClazzName"
                         val typeName = ClassName.bestGuess(this.realClassName)
-                        if (typeClazzName == "android.os.Parcelable"
-                            ||typeClazzName == "kotlin.CharSequence"
-                            ||typeClazzName == "kotlin.String"
-                            ||typeClazzName == "java.lang.CharSequence"
-                            ||typeClazzName == "java.lang.String"){
+                        if (isSubtype){
                             typeName.parameterizedBy(ClassName.bestGuess(typeClazzName))
                         }else{
-                            null
+                            throw IllegalArgumentException("$typeClazzName 至少需要实现 java.io.Serializable 或 android.os.Parcelable 这两个接口中的一个")
                         }
                     }else{
                         null
