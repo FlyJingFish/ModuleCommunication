@@ -18,7 +18,7 @@ object ModuleRoute {
     private val allClazz = mutableMapOf<String, ClassInfo?>()
     private var application : Application ?= null
 
-    private fun addRouteClass(moduleName: String, routeClazz: BaseRouterClass) {
+    fun addRouteClass(moduleName: String, routeClazz: BaseRouterClass) {
         allRouteClass[moduleName] = routeClazz
     }
 

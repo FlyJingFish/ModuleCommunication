@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import java.io.Serializable
 
-fun <T> Intent.putValue(paramName: String, paramsValue: T) {
+internal fun <T> Intent.putValue(paramName: String, paramsValue: T) {
     val intent: Intent = this
     when (paramsValue) {
         is Char -> {
