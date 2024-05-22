@@ -8,6 +8,9 @@ object RouterInterceptManager {
 
     fun addIntercept(intercept: RouterIntercept) {
         intercepts.add(intercept)
+        val newIntercept = intercepts.sortedBy { it.order() }
+        intercepts.clear()
+        intercepts.addAll(newIntercept)
     }
 
     fun addAllIntercept(intercepts: MutableSet<RouterIntercept>) {

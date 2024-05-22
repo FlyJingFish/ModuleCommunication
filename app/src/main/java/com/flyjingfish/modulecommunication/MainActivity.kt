@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import com.flyjingfish.login.LoginActivity
+import com.flyjingfish.module_communication_intercept.RouterInterceptManager
+import com.flyjingfish.module_communication_intercept.intercept.RouterIntercept
 import com.flyjingfish.modulecommunication.databinding.ActivityMainBinding
 import com.flyjingfish.user.UserActivity
 

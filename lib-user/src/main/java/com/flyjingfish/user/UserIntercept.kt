@@ -11,6 +11,6 @@ class UserIntercept : RouterIntercept {
     }
 
     override fun order(): Int {
-        return 2
+        return 3
     }
 }
