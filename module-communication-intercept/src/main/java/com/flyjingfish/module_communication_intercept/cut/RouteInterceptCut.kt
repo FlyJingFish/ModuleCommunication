@@ -1,5 +1,6 @@
 package com.flyjingfish.module_communication_intercept.cut
 
+import android.content.Intent
 import com.flyjingfish.android_aop_annotation.ProceedJoinPoint
 import com.flyjingfish.android_aop_annotation.anno.AndroidAopMatchClassMethod
 import com.flyjingfish.android_aop_annotation.base.MatchClassMethod
@@ -19,7 +20,8 @@ internal class RouteInterceptCut : MatchClassMethod{
         val map = joinPoint.args?.get(1)
         val byPath = joinPoint.args?.get(2)
         val pathInfo = joinPoint.args?.get(3)
-        val proceed = Proceed(joinPoint,path as String,map as MutableMap<String,Any?>,pathInfo as PathInfo,byPath as Boolean)
+        val intent = joinPoint.args?.get(4)
+        val proceed = Proceed(joinPoint,path as String,map as MutableMap<String,Any?>,pathInfo as PathInfo,byPath as Boolean,intent as Intent)
         RouterInterceptManager.notifyIntercept(proceed)
         return null
     }

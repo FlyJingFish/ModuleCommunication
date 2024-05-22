@@ -126,8 +126,10 @@ object ModuleRoute {
             }
 
             val clazzInfo = getClassInfo()
-            clazzInfo?.goRouterClazz?.goByPath(usePath, paramsMap, true,clazzInfo.pathInfo) {
-                intent.setClass(context, clazzInfo.pathInfo.clazz.java)
+            clazzInfo?.let {
+                intent.setClass(context, it.pathInfo.clazz.java)
+            }
+            clazzInfo?.goRouterClazz?.goByPath(usePath, paramsMap, true,clazzInfo.pathInfo,intent) {
                 context.startActivity(intent)
             }
         }

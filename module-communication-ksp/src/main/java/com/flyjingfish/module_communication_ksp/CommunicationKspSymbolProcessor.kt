@@ -292,11 +292,9 @@ class CommunicationKspSymbolProcessor(
                                 )
                             }
                         }
+
                         whatsMyName1.addStatement(
-                            "routeClazz.goByPath(\"$usePath\",paramMap,false,pathInfo){"
-                        )
-                        whatsMyName1.addStatement(
-                            "  val intent = %T(context,routeClazz.$classFunName())",
+                            "val intent = %T(context,routeClazz.$classFunName())",
                             ClassName.bestGuess(
                                 "android.content.Intent"
                             )
@@ -309,12 +307,15 @@ class CommunicationKspSymbolProcessor(
                                 typeName?.let {
                                     whatsMyName1.addParameter(paramsName,it)
                                     whatsMyName1.addStatement(
-                                        "  intent.putExtra(\"$paramsName\",$paramsName)",
+                                        "intent.putExtra(\"$paramsName\",$paramsName)",
                                     )
                                 }
 
                             }
                         }
+                        whatsMyName1.addStatement(
+                            "routeClazz.goByPath(\"$usePath\",paramMap,false,pathInfo,intent){"
+                        )
                         whatsMyName1.addStatement(
                             "  context.startActivity(intent)",
                         )
@@ -464,6 +465,7 @@ class CommunicationKspSymbolProcessor(
                     ,ClassName.bestGuess(Any::class.qualifiedName!!).copy(nullable = true)))
                 .addParameter("byPath", Boolean::class)
                 .addParameter("pathInfo", PathInfo::class)
+                .addParameter("intent", Any::class)
                 .addParameter("invokeRoute", Runnable::class)
                 .addStatement("invokeRoute.run()")
                 .addModifiers(KModifier.OVERRIDE)

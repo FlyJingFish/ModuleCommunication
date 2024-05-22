@@ -9,6 +9,7 @@ interface BaseRouterClass {
         params: MutableMap<String, Any?>,
         byPath: Boolean,
         pathInfo: PathInfo,
+        intent:Any,
         invokeRoute: Runnable
     )
 }

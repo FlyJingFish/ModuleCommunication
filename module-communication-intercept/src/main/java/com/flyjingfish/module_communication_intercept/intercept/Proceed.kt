@@ -1,5 +1,6 @@
 package com.flyjingfish.module_communication_intercept.intercept
 
+import android.content.Intent
 import com.flyjingfish.android_aop_annotation.ProceedJoinPoint
 import com.flyjingfish.module_communication_annotation.bean.PathInfo
 
@@ -20,7 +21,12 @@ class Proceed(
     /**
      * true则时通过 ModuleRoute 类跳转的，false则是通过帮助类
      */
-    val byPath:Boolean
+    val byPath:Boolean,
+    /**
+     * 页面跳转的 [Intent]
+     *
+     */
+    val intent: Intent
 ) {
     internal var hasNext = false
     internal lateinit var listener: OnProceedListener
