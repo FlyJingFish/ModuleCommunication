@@ -19,7 +19,7 @@ class Proceed(
      */
     val pathInfo: PathInfo,
     /**
-     * true则时通过 ModuleRoute 类跳转的，false则是通过帮助类
+     * true则是通过 ModuleRoute 类跳转的，false则是通过帮助类
      */
     val byPath:Boolean,
     /**
