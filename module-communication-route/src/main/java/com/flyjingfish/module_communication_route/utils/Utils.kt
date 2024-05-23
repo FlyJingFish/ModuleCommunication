@@ -146,11 +146,6 @@ internal object Utils {
                 val data = gson.fromJson<BooleanArray>(strValue, paramsInfo.clazz.java)
                 builder.putValue(paramsInfo.name, data)
             }
-            Array<Parcelable>::class -> {
-                val gson = Gson()
-                val data = gson.fromJson<Array<Parcelable>>(strValue, paramsInfo.clazz.java)
-                builder.putValue(paramsInfo.name, data)
-            }
             Array<CharSequence>::class -> {
                 val gson = Gson()
                 val data = gson.fromJson<Array<CharSequence>>(strValue, paramsInfo.clazz.java)
@@ -159,11 +154,6 @@ internal object Utils {
             Array<String>::class -> {
                 val gson = Gson()
                 val data = gson.fromJson<Array<String>>(strValue, paramsInfo.clazz.java)
-                builder.putValue(paramsInfo.name, data)
-            }
-            Array<out Serializable>::class -> {
-                val gson = Gson()
-                val data = gson.fromJson<Array<Serializable>>(strValue, paramsInfo.clazz.java)
                 builder.putValue(paramsInfo.name, data)
             }
             ArrayList::class -> {
@@ -194,7 +184,9 @@ internal object Utils {
             else -> {
                 val gson = Gson()
                 val data = gson.fromJson<Any>(strValue, paramsInfo.clazz.java)
-                if (data is Serializable){
+                if (data is Array<*> && data.isArrayOf<Parcelable>()){
+                    builder.putValue(paramsInfo.name, data as Array<out Parcelable>)
+                }else if (data is Serializable){
                     builder.putValue(paramsInfo.name, data)
                 }
             }

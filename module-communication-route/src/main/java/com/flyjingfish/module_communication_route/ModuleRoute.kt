@@ -249,9 +249,6 @@ object ModuleRoute {
         fun putValue(paramName: String, paramsValue: Array<String>?): RouteBuilder {
             return autoPutValue(paramName, paramsValue)
         }
-        fun putValue(paramName: String, paramsValue: Array<out Serializable>?): RouteBuilder {
-            return autoPutValue(paramName, paramsValue)
-        }
         fun putValue(paramName: String, paramsValue: Bundle?): RouteBuilder {
             return autoPutValue(paramName, paramsValue)
         }
