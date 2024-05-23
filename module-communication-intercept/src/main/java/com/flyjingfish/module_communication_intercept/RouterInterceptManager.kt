@@ -1,6 +1,6 @@
 package com.flyjingfish.module_communication_intercept
 
-import com.flyjingfish.module_communication_intercept.intercept.Proceed
+import com.flyjingfish.module_communication_intercept.intercept.InterceptPoint
 import com.flyjingfish.module_communication_intercept.intercept.RouterIntercept
 
 object RouterInterceptManager {
@@ -31,29 +31,29 @@ object RouterInterceptManager {
         RouterInterceptManager.intercepts.addAll(intercepts.sortedBy { it.order() })
     }
 
-    internal fun notifyIntercept(proceed : Proceed) {
+    internal fun notifyIntercept(point : InterceptPoint) {
         if (intercepts.isEmpty()) {
-            proceed.proceed()
+            point.proceed()
             return
         }
         val thisIntercepts = mutableSetOf<RouterIntercept>().apply {
             addAll(intercepts)
         }
         val iterator = thisIntercepts.iterator()
-        proceed.listener = object : Proceed.OnProceedListener {
+        point.listener = object : InterceptPoint.OnProceedListener {
             override fun onInvoke() {
                 if (iterator.hasNext()) {
                     val intercept = iterator.next()
                     iterator.remove()
-                    proceed.hasNext = iterator.hasNext()
-                    intercept.onIntercept(proceed)
+                    point.hasNext = iterator.hasNext()
+                    intercept.onIntercept(point)
                 }
             }
         }
 
-        proceed.hasNext = thisIntercepts.size > 1
+        point.hasNext = thisIntercepts.size > 1
         val intercept = iterator.next()
         iterator.remove()
-        intercept.onIntercept(proceed)
+        intercept.onIntercept(point)
     }
 }

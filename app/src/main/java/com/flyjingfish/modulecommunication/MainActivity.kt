@@ -1,13 +1,12 @@
 package com.flyjingfish.modulecommunication
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import com.flyjingfish.login.LoginActivity
 import com.flyjingfish.module_communication_intercept.RouterInterceptManager
-import com.flyjingfish.module_communication_intercept.intercept.Proceed
+import com.flyjingfish.module_communication_intercept.intercept.InterceptPoint
 import com.flyjingfish.module_communication_intercept.intercept.RouterIntercept
 import com.flyjingfish.modulecommunication.databinding.ActivityMainBinding
 import com.flyjingfish.user.UserActivity
@@ -29,7 +28,7 @@ class MainActivity : ComponentActivity() {
 
         binding.btnGoUri.setOnClickListener {
             RouterInterceptManager.addIntercept(object :RouterIntercept{
-                override fun onIntercept(proceed: Proceed) {
+                override fun onIntercept(proceed: InterceptPoint) {
                     Log.e("onIntercept","--MainActivity--${proceed.path},params = ${proceed.paramsMap},byPath = ${proceed.byPath}")
                     proceed.proceed()
                 }

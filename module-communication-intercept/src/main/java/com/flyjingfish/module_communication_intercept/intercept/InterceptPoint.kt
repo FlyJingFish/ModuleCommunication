@@ -4,7 +4,7 @@ import android.content.Intent
 import com.flyjingfish.android_aop_annotation.ProceedJoinPoint
 import com.flyjingfish.module_communication_annotation.bean.PathInfo
 
-class Proceed(
+class InterceptPoint(
     private val joinPoint: ProceedJoinPoint,
     /**
      * 路由页面的 path
