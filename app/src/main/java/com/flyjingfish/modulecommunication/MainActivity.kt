@@ -28,9 +28,9 @@ class MainActivity : ComponentActivity() {
 
         binding.btnGoUri.setOnClickListener {
             RouterInterceptManager.addIntercept(object :RouterIntercept{
-                override fun onIntercept(proceed: InterceptPoint) {
-                    Log.e("onIntercept","--MainActivity--${proceed.path},params = ${proceed.paramsMap},byPath = ${proceed.byPath}")
-                    proceed.proceed()
+                override fun onIntercept(point: InterceptPoint) {
+                    Log.e("onIntercept","--MainActivity--${point.path},params = ${point.paramsMap},byPath = ${point.byPath}")
+                    point.proceed()
                 }
 
                 override fun order(): Int {
