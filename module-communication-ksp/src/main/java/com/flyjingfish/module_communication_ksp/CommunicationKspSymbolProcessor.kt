@@ -235,8 +235,15 @@ class CommunicationKspSymbolProcessor(
                         val targetClassName: String = value.className
                         val typeName = value.getTypeClazzName()
                             ?: throw IllegalArgumentException("不支持 $className 的 $paramsName 的类型：$targetClassName")
-                        paramsInfoStringBuilder.append("          add(ParamsInfo(\"$paramsName\",%T::class,$paramNullable))\n")
-                        paramsClazz.add(typeName)
+                        if (typeName.genericsClazzTypeName != null){
+                            paramsInfoStringBuilder.append("          add(ParamsInfo(\"$paramsName\",%T::class,%T::class,$paramNullable))\n")
+                            paramsClazz.add(typeName.clazzTypeName)
+                            paramsClazz.add(typeName.genericsClazzTypeName)
+//                            logger.error("typeName.genericsClazzTypeName=${typeName.genericsClazzTypeName}")
+                        }else{
+                            paramsInfoStringBuilder.append("          add(ParamsInfo(\"$paramsName\",%T::class,null,$paramNullable))\n")
+                            paramsClazz.add(typeName.clazzTypeName)
+                        }
                     }
                 }
 
@@ -303,11 +310,23 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
-                                val typeName = value.getTypeName()
+                                val paramNullable: Boolean = config["nullable"] as Boolean
+                                val typeName = value.getTypeClazzName()
                                 typeName?.let {
-                                    whatsMyName1.addParameter(paramsName,it)
+                                    whatsMyName1.addParameter(paramsName,it.typeName.copy(nullable = paramNullable))
+                                    val putStr = if (it.genericsClazzTypeName == null){
+                                        "intent.putExtra(\"$paramsName\",$paramsName)"
+                                    } else if (it.genericsClazzTypeName.toString() == String::class.qualifiedName){
+                                        "intent.putStringArrayListExtra(\"$paramsName\",$paramsName)"
+                                    } else if (it.genericsClazzTypeName.toString() == Int::class.qualifiedName){
+                                        "intent.putIntegerArrayListExtra(\"$paramsName\",$paramsName)"
+                                    } else if (it.genericsClazzTypeName.toString() == CharSequence::class.qualifiedName){
+                                        "intent.putCharSequenceArrayListExtra(\"$paramsName\",$paramsName)"
+                                    } else {
+                                        "intent.putParcelableArrayListExtra(\"$paramsName\",$paramsName)"
+                                    }
                                     whatsMyName1.addStatement(
-                                        "intent.putExtra(\"$paramsName\",$paramsName)",
+                                        putStr
                                     )
                                 }
 
@@ -386,11 +405,23 @@ class CommunicationKspSymbolProcessor(
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
                                 val paramsName : String = config["name"] as String
-                                val typeName = value.getTypeName()
+                                val paramNullable: Boolean = config["nullable"] as Boolean
+                                val typeName = value.getTypeClazzName()
                                 typeName?.let {
-                                    whatsMyName2.addParameter(paramsName,it)
+                                    whatsMyName2.addParameter(paramsName,it.typeName.copy(nullable = paramNullable))
+                                    val putStr = if (it.genericsClazzTypeName == null){
+                                        "intent.putExtra(\"$paramsName\",$paramsName)"
+                                    } else if (it.genericsClazzTypeName.toString() == String::class.qualifiedName){
+                                        "intent.putStringArrayListExtra(\"$paramsName\",$paramsName)"
+                                    } else if (it.genericsClazzTypeName.toString() == Int::class.qualifiedName){
+                                        "intent.putIntegerArrayListExtra(\"$paramsName\",$paramsName)"
+                                    } else if (it.genericsClazzTypeName.toString() == CharSequence::class.qualifiedName){
+                                        "intent.putCharSequenceArrayListExtra(\"$paramsName\",$paramsName)"
+                                    } else {
+                                        "intent.putParcelableArrayListExtra(\"$paramsName\",$paramsName)"
+                                    }
                                     whatsMyName2.addStatement(
-                                        "intent.putExtra(\"$paramsName\",$paramsName)",
+                                        putStr
                                     )
                                 }
                             }

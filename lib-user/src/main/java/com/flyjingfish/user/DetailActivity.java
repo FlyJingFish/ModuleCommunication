@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.flyjingfish.module_communication_annotation.Route;
 import com.flyjingfish.module_communication_annotation.RouteParams;
 import com.flyjingfish.user.databinding.ActivityDetailBinding;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,10 @@ public class DetailActivity extends AppCompatActivity {
     private int[] userIds;
     @RouteParams(name = "userList")
     private TestBean[] userList;
+    @RouteParams(name = "userIdList")
+    private ArrayList<String> userIdList;
+    @RouteParams(name = "userTestBean2List")
+    private ArrayList<TestBean2> userTestBean2List;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,8 +46,14 @@ public class DetailActivity extends AppCompatActivity {
         user = (User) getIntent().getSerializableExtra("user");
         userIds = getIntent().getIntArrayExtra("userIds");
         userList = (TestBean[]) getIntent().getSerializableExtra("userList");
+        userIdList = getIntent().getStringArrayListExtra("userIdList");
+        userTestBean2List = getIntent().getParcelableArrayListExtra("userTestBean2List");
 
-        String logText = "age="+age+",name="+name+",aChar="+aChar+",user="+user+",userIds="+ userIds+"userList="+userList;
+        Gson gson = new Gson();
+
+        String logText = "age="+age+",name="+name+",aChar="+aChar+",user="+user
+                +",userIds="+ gson.toJson(userIds)+",userList="+gson.toJson(userList)+",userIdList="
+                +userIdList+",userTestBean2List="+userTestBean2List;
         binding.tvText.setText(logText);
         Log.e("DetailActivity",logText);
 

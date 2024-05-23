@@ -6,11 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import com.flyjingfish.module_communication_annotation.bean.PathInfo
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClass
 import com.flyjingfish.module_communication_route.bean.ClassInfo
 import com.flyjingfish.module_communication_route.utils.Utils
 import com.flyjingfish.module_communication_route.utils.putValue
+import java.io.Serializable
+import java.util.ArrayList
 import kotlin.reflect.KClass
 
 object ModuleRoute {
@@ -76,15 +79,6 @@ object ModuleRoute {
 
         private val intent = Intent()
         private val paramsMap = mutableMapOf<String, Any?>()
-        fun <T> putValue(paramName: String, paramsValue: T?): RouteBuilder {
-            if (paramsValue == null){
-                paramsMap[paramName] = null
-                return this
-            }
-            paramsMap[paramName] = (paramsValue as Any)
-            intent.putValue(paramName,paramsValue)
-            return this
-        }
 
         fun getBundle():Bundle?{
             return intent.extras
@@ -193,6 +187,118 @@ object ModuleRoute {
             }
 
             return clazzInfo
+        }
+
+        fun putValue(paramName: String, paramsValue: Char?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: CharArray?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Byte?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: ByteArray?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Short?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: ShortArray?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Int?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: IntArray?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Long?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: LongArray?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Float?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: FloatArray?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Double?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: DoubleArray?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Boolean?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: BooleanArray?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: String?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Array<out Parcelable>?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Array<CharSequence>?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Array<String>?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Array<out Serializable>?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Bundle?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Serializable?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putValue(paramName: String, paramsValue: Parcelable?): RouteBuilder {
+            return autoPutValue(paramName, paramsValue)
+        }
+        fun putIntegerArrayListValue(paramName: String, paramsValue: ArrayList<Int>?): RouteBuilder {
+            if (putMapValue(paramName, paramsValue)){
+                intent.putIntegerArrayListExtra(paramName, paramsValue)
+            }
+            return this
+        }
+        fun putStringArrayListValue(paramName: String, paramsValue: ArrayList<String>?): RouteBuilder {
+            if (putMapValue(paramName, paramsValue)){
+                intent.putStringArrayListExtra(paramName, paramsValue)
+            }
+            return this
+        }
+        fun putCharSequenceArrayListValue(paramName: String, paramsValue: ArrayList<CharSequence>?): RouteBuilder {
+            if (putMapValue(paramName, paramsValue)){
+                intent.putCharSequenceArrayListExtra(paramName, paramsValue)
+            }
+            return this
+        }
+        fun putParcelableArrayListValue(paramName: String, paramsValue: ArrayList<out Parcelable>?): RouteBuilder {
+            if (putMapValue(paramName, paramsValue)){
+                intent.putParcelableArrayListExtra(paramName, paramsValue)
+            }
+            return this
+        }
+
+        private fun <T> putMapValue(paramName: String, paramsValue: T?): Boolean {
+            if (paramsValue == null){
+                paramsMap[paramName] = null
+                return false
+            }
+            paramsMap[paramName] = (paramsValue as Any)
+            return true
+        }
+        private fun <T> autoPutValue(paramName: String, paramsValue: T?): RouteBuilder {
+            if (putMapValue(paramName, paramsValue)){
+                intent.putValue(paramName,paramsValue)
+            }
+            return this
         }
     }
 

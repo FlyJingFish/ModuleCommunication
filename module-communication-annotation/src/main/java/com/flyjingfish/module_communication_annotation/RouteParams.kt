@@ -9,7 +9,7 @@ annotation class RouteParams(
      */
     val name: String,
     /**
-     * 生成的函数的参数是否是可空类型
+     * 生成的函数的参数是否是可空类型,同时也表示这一项是否为必传项
      */
     val nullable: Boolean = false
 )
