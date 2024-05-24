@@ -107,32 +107,6 @@ object ModuleRoute {
         }
 
         /**
-         * 有相关路由页面才会返回 Intent 否则返回 null
-         */
-        fun getIntent(context: Context): Intent? {
-            val clazzInfo = getClassInfo()
-            clazzInfo?.let {
-                intent.setClass(context, it.pathInfo.clazz.java)
-                if (context !is Activity) {
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-            }
-            return if (clazzInfo != null) {
-                intent
-            } else null
-        }
-
-        /**
-         * 有相关路由页面才会返回 Intent 否则返回 null
-         * 需要 [ModuleRoute].[setApplication] 来初始化 application.
-         */
-        fun getIntent(): Intent? {
-            val app = application
-                ?: throw IllegalArgumentException("请调用 ModuleRoute.setApplication 来初始化 application.")
-            return getIntent(app as Context)
-        }
-
-        /**
          * 跳转页面
          * @param context 上下文参数
          * @param onNavigationBack 返回跳转结果
