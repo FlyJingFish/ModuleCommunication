@@ -17,6 +17,7 @@ import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClas
 import com.flyjingfish.module_communication_annotation.interfaces.NewAny
 import com.flyjingfish.module_communication_route.bean.ClassInfo
 import com.flyjingfish.module_communication_route.bean.NavigationResult
+import com.flyjingfish.module_communication_route.callback.OnGoActivity
 import com.flyjingfish.module_communication_route.callback.OnNavigationBack
 import com.flyjingfish.module_communication_route.lost.RouterLostManager
 import com.flyjingfish.module_communication_route.utils.Utils
@@ -91,6 +92,7 @@ object ModuleRoute {
         private val paramsMap = mutableMapOf<String, Any?>()
         private var classInfo : ClassInfo ?= null
         private var isSearchClassInfo = false
+        private var onGoActivity: OnGoActivity ?= null
 
         fun getPath(): String {
             return usePath
@@ -172,12 +174,27 @@ object ModuleRoute {
 
         private fun goActivity(context: Context,intent: Intent){
             if (Looper.getMainLooper() == Looper.myLooper()){
+                if (onGoActivity != null){
+                    onGoActivity?.onGo(context, intent)
+                    return
+                }
                 context.startActivity(intent)
             }else{
                 handler.post {
-                    context.startActivity(intent)
+                    if (onGoActivity != null){
+                        onGoActivity?.onGo(context, intent)
+                    }else{
+                        context.startActivity(intent)
+                    }
                 }
             }
+        }
+
+        /**
+         * 设置此项之后 你需要自己去写 [Context.startActivity]
+         */
+        fun setOnGoActivity(onGoActivity: OnGoActivity){
+            this.onGoActivity = onGoActivity
         }
 
         /**
