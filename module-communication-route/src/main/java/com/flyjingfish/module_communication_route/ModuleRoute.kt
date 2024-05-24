@@ -174,10 +174,10 @@ object ModuleRoute {
          * 跳转页面，需要 [ModuleRoute].[setApplication] 来初始化 application.
          * @param onNavigationBack 返回跳转结果
          */
-        fun go(onNavigationBack: OnNavigationBack ?= null){
+        fun go(onNavigationBack: OnNavigationBack ?= null):Any? {
             val app = application
                 ?: throw IllegalArgumentException("请调用 ModuleRoute.setApplication 来初始化 application.")
-            go(app as Context,onNavigationBack)
+            return go(app as Context,onNavigationBack)
         }
 
         /**
