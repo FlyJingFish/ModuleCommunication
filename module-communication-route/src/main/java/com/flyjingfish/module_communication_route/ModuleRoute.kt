@@ -14,7 +14,9 @@ import com.flyjingfish.module_communication_annotation.enums.PathType
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClass
 import com.flyjingfish.module_communication_annotation.interfaces.NewAny
 import com.flyjingfish.module_communication_route.bean.ClassInfo
+import com.flyjingfish.module_communication_route.bean.NavigationResult
 import com.flyjingfish.module_communication_route.callback.OnNavigationBack
+import com.flyjingfish.module_communication_route.lost.RouterLostManager
 import com.flyjingfish.module_communication_route.utils.Utils
 import com.flyjingfish.module_communication_route.utils.putValue
 import java.io.Serializable
@@ -141,8 +143,11 @@ object ModuleRoute {
             {
                 add(ParamsInfo("params1",String::class,null,false))
             })
-
-            onNavigationBack?.onResult(clazzInfo != null,this)
+            val found = clazzInfo != null
+            onNavigationBack?.onResult(NavigationResult(found,this,context))
+            if (!found){
+                RouterLostManager.notifyRouterLost(context,this)
+            }
             if (clazzInfo != null && clazzInfo.pathInfo.type == PathType.ACTIVITY){
                 intent.setClass(context, clazzInfo.pathInfo.clazz.java)
                 if (context !is Activity) {
