@@ -61,7 +61,7 @@ object CollectApp {
     }
 
     /**
-     * 收集所有的 module 的 @ExposeInterface 共享实现类
+     * 这一步才可以收集到所有的降级处理器
      */
     @AndroidAopCollectMethod
     @JvmStatic
