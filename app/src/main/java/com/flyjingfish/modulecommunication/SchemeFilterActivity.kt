@@ -6,12 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.core.net.toUri
 import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 import com.flyjingfish.module_communication_route.ModuleRoute
+import com.flyjingfish.module_communication_route.callback.OnNavigationBack
 import com.flyjingfish.user.TestBean
 import com.flyjingfish.user.TestBean2
 import com.flyjingfish.user.UserHelper
 import com.google.gson.Gson
 import java.util.ArrayList
-import java.util.Arrays
 
 
 class SchemeFilterActivity : ComponentActivity() {

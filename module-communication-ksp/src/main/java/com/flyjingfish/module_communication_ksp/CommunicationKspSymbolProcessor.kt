@@ -7,9 +7,11 @@ import com.flyjingfish.module_communication_annotation.Route
 import com.flyjingfish.module_communication_annotation.RouteParams
 import com.flyjingfish.module_communication_annotation.bean.ParamsInfo
 import com.flyjingfish.module_communication_annotation.bean.PathInfo
+import com.flyjingfish.module_communication_annotation.enums.PathType
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouter
 import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClass
 import com.flyjingfish.module_communication_annotation.interfaces.BindClass
+import com.flyjingfish.module_communication_annotation.interfaces.NewAny
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.processing.CodeGenerator
@@ -225,6 +227,9 @@ class CommunicationKspSymbolProcessor(
                     className
                 ))
                 paramsClazz.add(ClassName.bestGuess(
+                    PathType::class.qualifiedName!!
+                ))
+                paramsClazz.add(ClassName.bestGuess(
                     ParamsInfo::class.qualifiedName!!
                 ))
                 paramMap?.forEach { (_, value) ->
@@ -247,15 +252,17 @@ class CommunicationKspSymbolProcessor(
                     }
                 }
 
-                val pathInfoStr = "%T(\"$usePath\",%T::class,$tag,mutableListOf<%T>().apply {\n" +
-                        paramsInfoStringBuilder.toString() +
-                        "        })"
+                val pathInfoStr :String
 
+                val classMapTypeNames : Array<*>
 
-                val classMapTypeNames = paramsClazz.toTypedArray()
                 val paramListStr = "val paramsInfoList = mutableListOf<%T>()"
 //                logger.error("paramsInfoStringBuilder=$paramsInfoStringBuilder")
                 if (symbol.isSubtype("android.app.Activity")){
+                    pathInfoStr = "%T(\"$usePath\",%T::class,$tag,%T.ACTIVITY, null ,mutableListOf<%T>().apply {\n" +
+                            paramsInfoStringBuilder.toString() +
+                            "        })"
+                    classMapTypeNames = paramsClazz.toTypedArray()
                     val classFunName = "get${classKey}Class"
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
@@ -365,6 +372,20 @@ class CommunicationKspSymbolProcessor(
 
                     routeBuilder.addFunction(whatsMyName1.build())
                 }else if (symbol.isSubtype("androidx.fragment.app.Fragment") || symbol.isSubtype("android.app.Fragment")){
+                    paramsClazz.add(3,ClassName.bestGuess(
+                        NewAny::class.qualifiedName!!
+                    ))
+                    paramsClazz.add(4,ClassName.bestGuess(
+                        className
+                    ))
+                    pathInfoStr = "%T(\"$usePath\",%T::class,$tag,%T.FRAGMENT, object :%T{\n" +
+                            "                override fun newInstance(): Any {\n" +
+                            "                    return %T()\n" +
+                            "                }\n" +
+                            "            },mutableListOf<%T>().apply {\n" +
+                            paramsInfoStringBuilder.toString() +
+                            "        })"
+                    classMapTypeNames = paramsClazz.toTypedArray()
                     val classFunName = "new${classKey}"
                     val anyClassName = ClassName.bestGuess(Any::class.qualifiedName!!)
                     val whatsMyName2 = whatsMyName("new$routeClassName")
