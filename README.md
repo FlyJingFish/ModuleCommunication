@@ -373,7 +373,7 @@ class LoginActivity: AppCompatActivity() {
 }
 ```
 
-想要让 `拦截器` 和 `ModuleRoute` 起作用，您还需要使用 AndroidAOP [点此跳转查看使用方式](https://github.com/FlyJingFish/AndroidAOP),没有特别需要的话，使用里边的 debugMode 就够了,配置完之后设置下边的信息
+想要让 `拦截器` 和 `ModuleRoute` 起作用，您还需要使用 AndroidAOP [点此跳转查看使用方式](https://github.com/FlyJingFish/AndroidAOP),没有特别需要的话，使用里边的 debugMode 就够了,配置完之后设置下边的信息。更多路由的详细用法[点此查看](https://github.com/FlyJingFish/LightRouter)
 
 ```kotlin
 class MyApp : Application() {
