@@ -268,14 +268,14 @@ communicationConfig{
 
 #### 4⃣️、路由注解
 
-**更多详细用法[点此查看](https://github.com/FlyJingFish/LightRouter)**
+## 更多详细用法[点此查看](https://github.com/FlyJingFish/LightRouter)
 
 - @Route 路由页面
 
 - @RouteParams 路由页面参数
 
 
-//👇👇👇这两个库都需要 [AndroidAOP](https://github.com/FlyJingFish/AndroidAOP) 提供支持,详细使用方式下文有介绍
+👇👇👇这两个库都需要 [AndroidAOP](https://github.com/FlyJingFish/AndroidAOP) 提供支持,详细使用方式下文有介绍
 ```gradle
 dependencies {
     //使用拦截器（不是必须的）
