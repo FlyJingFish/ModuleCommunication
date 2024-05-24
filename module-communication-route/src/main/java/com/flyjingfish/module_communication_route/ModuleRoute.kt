@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import androidx.fragment.app.Fragment
 import com.flyjingfish.module_communication_annotation.bean.ParamsInfo
@@ -27,6 +29,7 @@ object ModuleRoute {
     private val allRouteClass = mutableMapOf<String, BaseRouterClass>()
     private val allClazz = mutableMapOf<String, ClassInfo?>()
     private var application: Application? = null
+    private val handler = Handler(Looper.getMainLooper())
 
     fun addRouteClass(moduleName: String, routeClazz: BaseRouterClass) {
         allRouteClass[moduleName] = routeClazz
@@ -135,14 +138,6 @@ object ModuleRoute {
         fun go(context: Context, onNavigationBack: OnNavigationBack ?= null):Any? {
             val clazzInfo = getClassInfo()
 
-            PathInfo("/user/UserActivity",ModuleRoute::class,0,PathType.ACTIVITY, object :NewAny{
-                override fun newInstance(): Any {
-                    return 1
-                }
-            },mutableListOf<ParamsInfo>().apply
-            {
-                add(ParamsInfo("params1",String::class,null,false))
-            })
             val found = clazzInfo != null
             onNavigationBack?.onResult(NavigationResult(found,this,context))
             if (!found){
@@ -160,7 +155,7 @@ object ModuleRoute {
                     clazzInfo.pathInfo,
                     intent
                 ) {
-                    context.startActivity(intent)
+                    goActivity(context, intent)
                 }
             }else if (clazzInfo != null && clazzInfo.pathInfo.type == PathType.FRAGMENT){
                 val instance = clazzInfo.pathInfo.newInstance()
@@ -173,6 +168,16 @@ object ModuleRoute {
             }
 
             return null
+        }
+
+        private fun goActivity(context: Context,intent: Intent){
+            if (Looper.getMainLooper() == Looper.myLooper()){
+                context.startActivity(intent)
+            }else{
+                handler.post {
+                    context.startActivity(intent)
+                }
+            }
         }
 
         /**
