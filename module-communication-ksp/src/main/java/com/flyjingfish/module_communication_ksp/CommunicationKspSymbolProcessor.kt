@@ -495,7 +495,7 @@ class CommunicationKspSymbolProcessor(
             classBuilder.addProperty(
                 PropertySpec.builder("classMap", javaMapInterface)
                     .addModifiers(KModifier.PRIVATE)
-                    .initializer("HashMap<String, PathInfo>($classMapCount)")
+                    .initializer("if (initClazzMap) HashMap<String, PathInfo>($classMapCount) else HashMap<String, PathInfo>()")
                     .build()
             )
                 .primaryConstructor(FunSpec.constructorBuilder()
