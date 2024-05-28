@@ -504,8 +504,8 @@ class CommunicationKspSymbolProcessor(
                         .build())
                     .build())
                 .addInitializerBlock(CodeBlock.of("if (initClazzMap){\n" +
-                        "      registerMap()\n" +
-                        "    }"))
+                        "  registerMap()\n" +
+                        "}\n"))
             classBuilder.addFunction(registerMapFun.build())
             val getClazzFun = whatsMyName("getInfoByPath")
                 .addModifiers(KModifier.OVERRIDE)
