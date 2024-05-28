@@ -13,7 +13,6 @@ import com.flyjingfish.module_communication_annotation.interfaces.BaseRouterClas
 import com.flyjingfish.module_communication_annotation.interfaces.BindClass
 import com.flyjingfish.module_communication_annotation.interfaces.NewAny
 import com.google.devtools.ksp.containingFile
-import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
@@ -155,7 +154,8 @@ class CommunicationKspSymbolProcessor(
             val valueClassName = clazzClassName.parameterizedBy(STAR)
 
             val mapClassName = ClassName.bestGuess("kotlin.collections.MutableMap")
-            val mapInterface = mapClassName.parameterizedBy(ClassName.bestGuess(String::class.qualifiedName!!),
+            val javaMapClassName = ClassName.bestGuess("java.util.HashMap")
+            val javaMapInterface = javaMapClassName.parameterizedBy(ClassName.bestGuess(String::class.qualifiedName!!),
                 ClassName.bestGuess(PathInfo::class.qualifiedName!!))
 
             val registerMapFun = whatsMyName("registerMap")
@@ -163,20 +163,7 @@ class CommunicationKspSymbolProcessor(
             val routeClassFile = "$moduleName\$\$RouterClass"
             val classBuilder = TypeSpec.classBuilder(
                 routeClassFile
-            ).addProperty(
-                    PropertySpec.builder("classMap", mapInterface)
-                        .addModifiers(KModifier.PRIVATE)
-                        .initializer("mutableMapOf()")
-                        .build()
-                )
-                .primaryConstructor(FunSpec.constructorBuilder()
-                    .addParameter(ParameterSpec.builder("initClazzMap", Boolean::class)
-                        .defaultValue("true")
-                        .build())
-                    .build())
-                .addInitializerBlock(CodeBlock.of("if (initClazzMap){\n" +
-                        "      registerMap()\n" +
-                        "    }"))
+            )
                 .addSuperinterface(ClassName.bestGuess(BaseRouterClass::class.qualifiedName!!))
             val routeFile = "$moduleName\$\$Router"
             val routeBuilder = TypeSpec.objectBuilder(
@@ -186,6 +173,7 @@ class CommunicationKspSymbolProcessor(
             val classStar = bindClassName.parameterizedBy(STAR)
             val ksFiles = mutableListOf<KSFile>()
             val pathInfoClazz = "com.flyjingfish.module_communication_annotation.bean.PathInfo"
+            var classMapCount = 0
             for (symbol in symbols) {
                 val annotationMap = getAnnotation(symbol)
                 val className = (symbol as KSClassDeclaration).packageName.asString() + "." + symbol
@@ -266,6 +254,7 @@ class CommunicationKspSymbolProcessor(
                     val classFunName = "get${classKey}Class"
                     val whatsMyName1 = whatsMyName("go$routeClassName")
                     if (!emptyRoute){
+                        classMapCount++
                         registerMapFun.addStatement("classMap[\"$usePath\"] = $pathInfoStr",*classMapTypeNames)
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(classStar.copy(nullable = true))
@@ -393,6 +382,7 @@ class CommunicationKspSymbolProcessor(
 
 
                     if (!emptyRoute){
+                        classMapCount++
                         registerMapFun.addStatement("classMap[\"$usePath\"] = $pathInfoStr",*classMapTypeNames)
                         classBuilder.addFunction(whatsMyName(classFunName)
                             .returns(anyClassName.copy(nullable = true))
@@ -502,6 +492,20 @@ class CommunicationKspSymbolProcessor(
 
                 ksFiles.add(symbol.containingFile!!)
             }
+            classBuilder.addProperty(
+                PropertySpec.builder("classMap", javaMapInterface)
+                    .addModifiers(KModifier.PRIVATE)
+                    .initializer("HashMap<String, PathInfo>($classMapCount)")
+                    .build()
+            )
+                .primaryConstructor(FunSpec.constructorBuilder()
+                    .addParameter(ParameterSpec.builder("initClazzMap", Boolean::class)
+                        .defaultValue("true")
+                        .build())
+                    .build())
+                .addInitializerBlock(CodeBlock.of("if (initClazzMap){\n" +
+                        "      registerMap()\n" +
+                        "    }"))
             classBuilder.addFunction(registerMapFun.build())
             val getClazzFun = whatsMyName("getInfoByPath")
                 .addModifiers(KModifier.OVERRIDE)
