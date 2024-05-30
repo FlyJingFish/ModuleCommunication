@@ -147,18 +147,15 @@ object ModuleRoute {
         }
 
         private fun goActivity(context: Context,intent: Intent){
-            val onGoActivity = this.onGoActivity
             if (Looper.getMainLooper() == Looper.myLooper()){
-                if (onGoActivity != null){
-                    onGoActivity.onGo(context, intent)
-                    return
+                val onGoActivity = this.onGoActivity
+                if (onGoActivity?.onGo(context, intent) == false){
+                    context.startActivity(intent)
                 }
-                context.startActivity(intent)
             }else{
                 handler.post {
-                    if (onGoActivity != null){
-                        onGoActivity.onGo(context, intent)
-                    }else{
+                    val onGoActivity = this.onGoActivity
+                    if (onGoActivity?.onGo(context, intent) == false){
                         context.startActivity(intent)
                     }
                 }
@@ -174,7 +171,7 @@ object ModuleRoute {
         }
 
         /**
-         * 跳转页面，需要 [ModuleRoute].[setApplication] 来初始化 application.
+         * 跳转页面，需要 [ModuleRoute.setApplication] 来初始化 application.
          * @param onNavigationBack 返回跳转结果
          */
         fun go(onNavigationBack: OnNavigationBack ?= null):Any? {
