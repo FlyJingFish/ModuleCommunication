@@ -149,15 +149,17 @@ object ModuleRoute {
         private fun goActivity(context: Context,intent: Intent){
             if (Looper.getMainLooper() == Looper.myLooper()){
                 val onGoActivity = this.onGoActivity
-                if (onGoActivity?.onGo(context, intent) == false){
-                    context.startActivity(intent)
+                if (onGoActivity?.onGo(context, intent) == true){
+                    return
                 }
+                context.startActivity(intent)
             }else{
                 handler.post {
                     val onGoActivity = this.onGoActivity
-                    if (onGoActivity?.onGo(context, intent) == false){
-                        context.startActivity(intent)
+                    if (onGoActivity?.onGo(context, intent) == true){
+                        return@post
                     }
+                    context.startActivity(intent)
                 }
             }
         }

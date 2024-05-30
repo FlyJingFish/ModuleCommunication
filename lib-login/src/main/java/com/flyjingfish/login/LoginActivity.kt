@@ -1,5 +1,7 @@
 package com.flyjingfish.login
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.flyjingfish.login.databinding.ActivityLoginBinding
 import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 import com.flyjingfish.module_communication_route.ModuleRoute
+import com.flyjingfish.module_communication_route.callback.OnGoActivity
 import com.flyjingfish.user.UserHelper
 
 class LoginActivity: AppCompatActivity() {
@@ -21,6 +24,11 @@ class LoginActivity: AppCompatActivity() {
             ModuleRoute.builder("user/UserActivity")
                 .putValue("params1","lalla")
                 .putValue("params2",user)
+//                .setOnGoActivity(object :OnGoActivity{
+//                    override fun onGo(context: Context, intent: Intent): Boolean {
+//                        return false
+//                    }
+//                })
                 .go()
 
         }
