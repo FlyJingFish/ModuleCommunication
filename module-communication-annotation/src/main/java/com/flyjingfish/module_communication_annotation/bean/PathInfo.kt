@@ -10,7 +10,7 @@ class PathInfo(
     val tag: Int,
     val type: PathType,
     private val newAny: NewAny?,
-    val paramsInfo: MutableList<ParamsInfo>
+    val paramsInfo: List<ParamsInfo>
 ) {
 
     /**

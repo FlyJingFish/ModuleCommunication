@@ -45,7 +45,7 @@ internal object Utils {
     }
 
     fun putPathParams(pathInfo: PathInfo, rawUri: Uri, builder: ModuleRoute.RouteBuilder) {
-        val paramsInfo: MutableList<ParamsInfo> = pathInfo.paramsInfo
+        val paramsInfo: List<ParamsInfo> = pathInfo.paramsInfo
         if (paramsInfo.isNotEmpty()) {
             val resultMap: Map<String, String?> = splitQueryParameters(rawUri)
             for (params in paramsInfo) {
