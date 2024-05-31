@@ -8,9 +8,10 @@ import com.flyjingfish.login.LoginHelper
 import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 import com.flyjingfish.module_communication_annotation.Route
 import com.flyjingfish.module_communication_annotation.RouteParams
+import com.flyjingfish.user.databinding.ActivityUserBinding
 
 @Route("/user/UserActivity")
-class UserActivity : AppCompatActivity() {
+class UserActivity: BaseActivity<ActivityUserBinding>() {
 
     @delegate:RouteParams("params1")
     val params1 :String ? by lazy(LazyThreadSafetyMode.NONE) {

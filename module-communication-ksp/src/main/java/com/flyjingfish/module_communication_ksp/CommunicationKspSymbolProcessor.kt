@@ -694,34 +694,37 @@ class CommunicationKspSymbolProcessor(
         writeApi:Boolean = false,
         writeKt:Boolean = true
     ) {
-        val typeSpec = typeBuilder.build()
-        val kotlinFile = FileSpec.builder(packageName, fileName).addType(typeSpec)
-            .build()
-        if (writeKt){
-            codeGenerator
-                .createNewFile(
-                    Dependencies(false, symbol.containingFile!!),
-                    packageName,
-                    fileName
-                )
-                .writer()
-                .use {
-                    kotlinFile.writeTo(it)
-                }
-        }
-        if (writeApi){
+        try {
+            val typeSpec = typeBuilder.build()
+            val kotlinFile = FileSpec.builder(packageName, fileName).addType(typeSpec)
+                .build()
+            if (writeKt){
+                codeGenerator
+                    .createNewFile(
+                        Dependencies(false, symbol.containingFile!!),
+                        packageName,
+                        fileName
+                    )
+                    .writer()
+                    .use {
+                        kotlinFile.writeTo(it)
+                    }
+            }
+            if (writeApi){
 
-            codeGenerator
-                .createNewFile(
-                    Dependencies(false, symbol.containingFile!!),
-                    packageName,
-                    "$fileName.kt",
-                    "api"
-                )
-                .writer()
-                .use {
-                    kotlinFile.writeTo(it)
-                }
+                codeGenerator
+                    .createNewFile(
+                        Dependencies(false, symbol.containingFile!!),
+                        packageName,
+                        "$fileName.kt",
+                        "api"
+                    )
+                    .writer()
+                    .use {
+                        kotlinFile.writeTo(it)
+                    }
+            }
+        } catch (e: Exception) {
         }
     }
 
@@ -732,32 +735,35 @@ class CommunicationKspSymbolProcessor(
         writeApi:Boolean = false,
         ksFiles : Array<KSFile>
     ) {
-        val typeSpec = typeBuilder.build()
-        val kotlinFile = FileSpec.builder(packageName, fileName).addType(typeSpec)
-            .build()
-        codeGenerator
-            .createNewFile(
-                Dependencies(false, *ksFiles),
-                packageName,
-                fileName
-            )
-            .writer()
-            .use {
-                kotlinFile.writeTo(it)
-            }
-        if (writeApi){
-
+        try {
+            val typeSpec = typeBuilder.build()
+            val kotlinFile = FileSpec.builder(packageName, fileName).addType(typeSpec)
+                .build()
             codeGenerator
                 .createNewFile(
                     Dependencies(false, *ksFiles),
                     packageName,
-                    "$fileName.kt",
-                    "api"
+                    fileName
                 )
                 .writer()
                 .use {
                     kotlinFile.writeTo(it)
                 }
+            if (writeApi){
+
+                codeGenerator
+                    .createNewFile(
+                        Dependencies(false, *ksFiles),
+                        packageName,
+                        "$fileName.kt",
+                        "api"
+                    )
+                    .writer()
+                    .use {
+                        kotlinFile.writeTo(it)
+                    }
+            }
+        } catch (e: Exception) {
         }
     }
 }
