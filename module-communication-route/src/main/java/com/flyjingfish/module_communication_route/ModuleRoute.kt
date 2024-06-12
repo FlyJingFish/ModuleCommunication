@@ -146,6 +146,11 @@ object ModuleRoute {
             return null
         }
 
+        /**
+         * 跳转页面
+         * @param context 上下文参数
+         * @param function 返回跳转结果
+         */
         fun go(context: Context, function: (NavigationResult) -> Unit):Any? {
             return go(context,object : OnNavigationBack{
                 override fun onResult(result: NavigationResult) {
@@ -200,6 +205,10 @@ object ModuleRoute {
             return go(app as Context,onNavigationBack)
         }
 
+        /**
+         * 跳转页面，需要 [ModuleRoute.setApplication] 来初始化 application.
+         * @param function 返回跳转结果
+         */
         fun go(function: (NavigationResult) -> Unit) :Any?{
             val app = application
                 ?: throw IllegalArgumentException("请调用 ModuleRoute.setApplication 来初始化 application.")
