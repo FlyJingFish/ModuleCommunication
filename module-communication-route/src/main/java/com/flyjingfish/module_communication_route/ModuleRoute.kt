@@ -146,6 +146,13 @@ object ModuleRoute {
             return null
         }
 
+        fun go(context: Context, function: (NavigationResult) -> Unit):Any? {
+            return go(context,object : OnNavigationBack{
+                override fun onResult(result: NavigationResult) {
+                    function.invoke(result)
+                }
+            })
+        }
         private fun goActivity(context: Context,intent: Intent){
             if (Looper.getMainLooper() == Looper.myLooper()){
                 val onGoActivity = this.onGoActivity
@@ -173,6 +180,17 @@ object ModuleRoute {
         }
 
         /**
+         * 设置此项之后 你需要自己去写 [Context.startActivity]
+         */
+        fun setOnGoActivity(function: (context: Context, intent: Intent) -> Boolean):RouteBuilder{
+            return setOnGoActivity(object : OnGoActivity{
+                override fun onGo(context: Context, intent: Intent): Boolean {
+                    return function.invoke(context, intent)
+                }
+            })
+        }
+
+        /**
          * 跳转页面，需要 [ModuleRoute.setApplication] 来初始化 application.
          * @param onNavigationBack 返回跳转结果
          */
@@ -182,6 +200,15 @@ object ModuleRoute {
             return go(app as Context,onNavigationBack)
         }
 
+        fun go(function: (NavigationResult) -> Unit) :Any?{
+            val app = application
+                ?: throw IllegalArgumentException("请调用 ModuleRoute.setApplication 来初始化 application.")
+            return go(app as Context,object : OnNavigationBack{
+                override fun onResult(result: NavigationResult) {
+                    function.invoke(result)
+                }
+            })
+        }
         /**
          * 根据路径信息获取到对应的 [Class] 类
          */

@@ -1,5 +1,6 @@
 package com.flyjingfish.modulecommunication
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,9 +9,7 @@ import com.flyjingfish.login.LoginActivity
 import com.flyjingfish.module_communication_intercept.RouterInterceptManager
 import com.flyjingfish.module_communication_intercept.intercept.InterceptPoint
 import com.flyjingfish.module_communication_intercept.intercept.RouterIntercept
-import com.flyjingfish.module_communication_route.ModuleRoute
-import com.flyjingfish.module_communication_route.bean.NavigationResult
-import com.flyjingfish.module_communication_route.callback.OnNavigationBack
+import com.flyjingfish.module_communication_route.ModuleRoute.builder
 import com.flyjingfish.modulecommunication.databinding.ActivityMainBinding
 import com.flyjingfish.user.UserActivity
 
@@ -30,12 +29,16 @@ class MainActivity : ComponentActivity() {
         }
 
         binding.btnGoUri.setOnClickListener {
-            ModuleRoute.builder("/sss/sss").go(object : OnNavigationBack{
-                override fun onResult(result: NavigationResult) {
-                    Log.e("onLost","--MainActivity--result=${result.found}")
+//            ModuleRoute.builder("/sss/sss").go(object : OnNavigationBack{
+//                override fun onResult(result: NavigationResult) {
+//                    Log.e("onLost","--MainActivity--result=${result.found}")
+//                }
+//
+//            })
+            builder("/sss/sss").setOnGoActivity { context: Context, intent: Intent -> true }
+                .go {
+                    Log.e("onLost","--MainActivity--result=${it.found}")
                 }
-
-            })
             RouterInterceptManager.addIntercept(object :RouterIntercept{
                 override fun onIntercept(point: InterceptPoint) {
                     Log.e("onIntercept","--MainActivity--${point.path},params = ${point.paramsMap},byPath = ${point.byPath}")
