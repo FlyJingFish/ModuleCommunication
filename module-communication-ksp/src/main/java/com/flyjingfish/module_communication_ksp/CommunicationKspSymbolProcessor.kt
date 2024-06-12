@@ -302,6 +302,18 @@ class CommunicationKspSymbolProcessor(
                                 "android.content.Intent"
                             )
                         )
+                        whatsMyName1.addStatement(
+                            "if (context !is %T) {",
+                            ClassName.bestGuess(
+                                "android.app.Activity"
+                            )
+                        )
+                        whatsMyName1.addStatement(
+                            "    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)"
+                        )
+                        whatsMyName1.addStatement(
+                            "}"
+                        )
                         paramMap?.forEach { (_, value) ->
                             val config = value.annoMap["@RouteParams"]
                             if (config != null){
@@ -332,7 +344,7 @@ class CommunicationKspSymbolProcessor(
                             "routeClazz.goByPath(\"$usePath\",paramMap,false,pathInfo,intent){"
                         )
                         whatsMyName1.addStatement(
-                            "  context.startActivity(intent)",
+                            "    context.startActivity(intent)",
                         )
                         whatsMyName1.addStatement(
                             "}"
