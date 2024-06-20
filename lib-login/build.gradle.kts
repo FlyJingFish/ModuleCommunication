@@ -7,7 +7,7 @@ plugins {
 
 communicationConfig{
     exportModuleName = "communication"
-    exposeResIds.addAll(arrayOf(
+    exposeResIds(
         "R.drawable.login_logo",
         "R.mipmap.login_logo2",
         "R.string.login_text",
@@ -28,7 +28,7 @@ communicationConfig{
         "R.color.textcolor_btn_tiger_bottom",
         "R.font.call_font",
         "R.transition.login_tran"
-    ))
+    )
     //直接可以输入 assets 下的文件夹或者文件路径即可
     exposeAssets.addAll(arrayOf(
         "matching",

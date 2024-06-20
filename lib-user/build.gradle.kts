@@ -7,9 +7,9 @@ plugins {
 communicationConfig{
     exportModuleName = "communication"
     exportEmptyRoute = false
-    exposeResIds.addAll(arrayOf(
+    exposeResIds(
         "R.layout.activity_user"
-    ))
+    )
 }
 android {
     namespace = "com.flyjingfish.user"

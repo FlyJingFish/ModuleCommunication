@@ -20,6 +20,16 @@ open class CommunicationConfig {
      * 要copy的 assets
      */
     val exposeAssets = mutableListOf<String>()
+
+    fun exposeResIds(vararg filters: String): CommunicationConfig {
+        this.exposeResIds.addAll(filters)
+        return this
+    }
+
+    fun exposeAssets(vararg filters: String): CommunicationConfig {
+        this.exposeAssets.addAll(filters)
+        return this
+    }
     override fun toString(): String {
         return "CommunicationConfig(exportModuleName='$exportModuleName', exposeResIds=$exposeResIds, exposeAssets=$exposeAssets)"
     }
