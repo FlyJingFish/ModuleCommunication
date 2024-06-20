@@ -30,10 +30,10 @@ communicationConfig{
         "R.transition.login_tran"
     )
     //直接可以输入 assets 下的文件夹或者文件路径即可
-    exposeAssets.addAll(arrayOf(
+    exposeAssets(
         "matching",
         "swipe_like"
-    ))
+    )
 }
 
 android {

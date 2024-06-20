@@ -21,13 +21,13 @@ open class CommunicationConfig {
      */
     val exposeAssets = mutableListOf<String>()
 
-    fun exposeResIds(vararg filters: String): CommunicationConfig {
-        this.exposeResIds.addAll(filters)
+    fun exposeResIds(vararg resId: String): CommunicationConfig {
+        this.exposeResIds.addAll(resId)
         return this
     }
 
-    fun exposeAssets(vararg filters: String): CommunicationConfig {
-        this.exposeAssets.addAll(filters)
+    fun exposeAssets(vararg assetsPath: String): CommunicationConfig {
+        this.exposeAssets.addAll(assetsPath)
         return this
     }
     override fun toString(): String {
