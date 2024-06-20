@@ -52,7 +52,7 @@ abstract class ExportTask : DefaultTask() {
         TmpUtils.exportTmp()
     }
 
-    fun searchAssetsFileAndCopy(curProject: Project){
+    private fun searchAssetsFileAndCopy(curProject: Project){
         val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.assetsName}"
         val libraryExtension = project.extensions.getByName("android") as LibraryExtension
         val variantNames = libraryExtension.sourceSets.names
@@ -108,7 +108,7 @@ abstract class ExportTask : DefaultTask() {
         IncrementalRecordUtils.recordExposeAssets(communicationConfig.exposeAssets)
     }
 
-    fun searchResFileAndCopy(curProject: Project){
+    private fun searchResFileAndCopy(curProject: Project){
         val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}"
         val libraryExtension = project.extensions.getByName("android") as LibraryExtension
         val variantNames = libraryExtension.sourceSets.names
