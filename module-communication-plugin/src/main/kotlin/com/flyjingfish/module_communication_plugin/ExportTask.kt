@@ -136,7 +136,7 @@ abstract class ExportTask : DefaultTask() {
             val res = libraryExtension.sourceSets.getByName(name).res
             for (srcDir in res.srcDirs) {
                 if (srcDir.exists()){
-                    val genFile = srcDir.listFiles()
+                    val genFile = srcDir.listFiles() ?: continue
                     for (resValue in resValues) {
                         var color = false
                         if (Dom4jData.fileRes.contains(resValue.dir) || resValue.dir == "color"){//复制文件的
