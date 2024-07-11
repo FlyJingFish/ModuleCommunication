@@ -5,7 +5,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 
 fun KSClassDeclaration.isSubtype(superType :String):Boolean{
     getAllSuperTypes().toList().forEach {
-        val className = "${it.declaration.packageName.asString()}.${it}"
+        val className = "${it.declaration.packageName.asString()}.${it.declaration}"
         if (className == superType){
             return true
         }
