@@ -150,7 +150,7 @@ communication -> generateCommunication
 
 - 6、在需要使用 ```lib-login``` 模块 上引入通信模块 ```communication```
 
-a、```lib-login``` 引入通信模块([配置了这里就无需配置这一步](#%E4%BA%8C%E6%96%B0%E5%A2%9E%E8%B4%9F%E8%B4%A3%E9%80%9A%E4%BF%A1%E7%9A%84-module))
+a、```lib-login``` 引入通信模块([配置了这里3 以及 `id 'communication.export'` 就无需配置这一步](#%E4%BA%8C%E6%96%B0%E5%A2%9E%E8%B4%9F%E8%B4%A3%E9%80%9A%E4%BF%A1%E7%9A%84-module))
 
 ```gradle
 compileOnly(project(":communication"))
