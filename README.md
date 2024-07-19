@@ -126,7 +126,7 @@ interface UserHelper {
 data class User (val id:String)
 ```
 
-- 4、在```@ExposeInterface```注解的接口类的实现类上使用 ```@ImplementClass(UserHelper::class)```，**实现类必须只有一个**
+- 4、在```@ExposeInterface```注解的接口类的实现类上使用 ```@ImplementClass(UserHelper::class)```
 
 ```kotlin
 @ImplementClass(UserHelper::class)
@@ -150,7 +150,7 @@ communication -> generateCommunication
 
 - 6、在需要使用 ```lib-login``` 模块 上引入通信模块 ```communication```
 
-a、```lib-login``` 引入通信模块
+a、```lib-login``` 引入通信模块([配置了这里就无需配置这一步](#%E4%BA%8C%E6%96%B0%E5%A2%9E%E8%B4%9F%E8%B4%A3%E9%80%9A%E4%BF%A1%E7%9A%84-module))
 
 ```gradle
 compileOnly(project(":communication"))
