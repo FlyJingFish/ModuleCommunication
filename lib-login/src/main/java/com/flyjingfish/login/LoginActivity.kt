@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import com.flyjingfish.login.databinding.ActivityLoginBinding
 import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 import com.flyjingfish.module_communication_route.ModuleRoute
-import com.flyjingfish.module_communication_route.callback.OnGoActivity
 import com.flyjingfish.user.UserHelper
 
 class LoginActivity: AppCompatActivity() {

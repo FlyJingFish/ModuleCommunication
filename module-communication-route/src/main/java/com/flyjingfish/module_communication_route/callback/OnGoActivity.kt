@@ -6,6 +6,6 @@ import android.content.Intent
 /**
  * 设置此项之后 你需要自己去写 [Context.startActivity]
  */
-interface OnGoActivity {
+fun interface OnGoActivity {
     fun onGo(context: Context, intent: Intent):Boolean
 }
