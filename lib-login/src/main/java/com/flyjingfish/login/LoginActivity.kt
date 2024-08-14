@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.flyjingfish.login.databinding.ActivityLoginBinding
 import com.flyjingfish.module_communication_annotation.ImplementClassUtils
 import com.flyjingfish.module_communication_route.ModuleRoute
+import com.flyjingfish.user.`LibUser$$Router`
 import com.flyjingfish.user.UserHelper
 
 class LoginActivity: AppCompatActivity() {
@@ -19,23 +20,23 @@ class LoginActivity: AppCompatActivity() {
         val userHelper = ImplementClassUtils.getSingleInstance<UserHelper>(UserHelper::class)
         val user = userHelper?.getUser()
         binding.btnGo.setOnClickListener {
-//            `LibUser$$Router`.goUser_UserActivity(this,"hahah",null)
-            ModuleRoute.builder("user/UserActivity")
-                .putValue("params1","lalla")
-                .putValue("params2",user)
-//                .setOnGoActivity(object :OnGoActivity{
-//                    override fun onGo(context: Context, intent: Intent): Boolean {
-//                        return false
-//                    }
-//                })
-                .go()
+            `LibUser$$Router`.goUser_UserActivity(this,"hahah",null)
+//            ModuleRoute.builder("user/UserActivity")
+//                .putValue("params1","lalla")
+//                .putValue("params2",user)
+////                .setOnGoActivity(object :OnGoActivity{
+////                    override fun onGo(context: Context, intent: Intent): Boolean {
+////                        return false
+////                    }
+////                })
+//                .go()
 
         }
         binding.btnGoFragment.setOnClickListener {
-            val clazz = ModuleRoute.builder("user/UserFragment")
-                .getClassByPath()
-            val fragment : Fragment = clazz?.getDeclaredConstructor()?.newInstance() as Fragment
-//            val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",null) as Fragment
+//            val clazz = ModuleRoute.builder("user/UserFragment")
+//                .getClassByPath()
+//            val fragment : Fragment = clazz?.getDeclaredConstructor()?.newInstance() as Fragment
+            val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",null) as Fragment
             supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
         }
 

@@ -2,6 +2,7 @@
 buildscript {
     dependencies {
         classpath("io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:${rootProject.properties["TestVersion"]}")
+//        classpath("io.github.FlyJingFish.AndroidAop:android-aop-plugin:2.0.8")
     }
 }
 @Suppress("DSL_SCOPE_VIOLATION")
@@ -14,6 +15,7 @@ plugins {
     id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
     alias(libs.plugins.androidAop.plugin)
 }
+//apply(plugin = "android.aop")
 ext {
     set("sdkVersion",31)
     set("minSdkVersion",21)
