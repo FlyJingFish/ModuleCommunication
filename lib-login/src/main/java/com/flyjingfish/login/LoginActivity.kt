@@ -36,7 +36,7 @@ class LoginActivity: AppCompatActivity() {
                 .getClassByPath()
             val fragment : Fragment = clazz?.getDeclaredConstructor()?.newInstance() as Fragment
 //            val fragment : Fragment = `LibUser$$Router`.newUser_UserFragment("lalala",null) as Fragment
-//            supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
+            supportFragmentManager.beginTransaction().replace(R.id.container,fragment).commit()
         }
 
         Log.e("user",""+user)
