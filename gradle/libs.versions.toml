@@ -15,7 +15,7 @@ material = "1.6.0"
 gson = "2.10.1"
 sdkVersion = "31"
 minSdkVersion = "21"
-androidAopVersion = "2.0.8"
+androidAopVersion = "2.0.9"
 [libraries]
 kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet_version" }
 ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
