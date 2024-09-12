@@ -19,7 +19,7 @@ class CommunicationModulePlugin : Plugin<Project> {
         androidComponents.onVariants { variant ->
             variantList.add(variant)
             variant.sources.java?.let { java ->
-                val path = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.pathName}"
+                val path = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.pathName}".replace('/',File.separatorChar)
                 val file = File("${project.buildDir}$path")
                 if (!file.exists()){
                     file.mkdirs()
@@ -28,7 +28,7 @@ class CommunicationModulePlugin : Plugin<Project> {
             }
 
             variant.sources.assets?.let { assets ->
-                val path = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.assetsName}"
+                val path = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.assetsName}".replace('/',File.separatorChar)
                 val file = File("${project.buildDir}$path")
                 if (!file.exists()){
                     file.mkdirs()
@@ -36,7 +36,7 @@ class CommunicationModulePlugin : Plugin<Project> {
                 assets.addStaticSourceDirectory("build$path")
             }
 
-            val path = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}"
+            val path = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}".replace('/',File.separatorChar)
             val file = File("${project.buildDir}$path")
             if (!file.exists()){
                 file.mkdirs()

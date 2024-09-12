@@ -53,7 +53,7 @@ abstract class ExportTask : DefaultTask() {
     }
 
     private fun searchAssetsFileAndCopy(curProject: Project){
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.assetsName}"
+        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.assetsName}".replace('/', File.separatorChar)
         val libraryExtension = project.extensions.getByName("android") as LibraryExtension
         val variantNames = libraryExtension.sourceSets.names
 
@@ -72,7 +72,7 @@ abstract class ExportTask : DefaultTask() {
                 for (srcDir in assets.srcDirs) {
                     if (srcDir.exists()){
                         for (resValue in resValuesDel) {
-                            val targetFile = File("${buildFile.absolutePath}/$resValue")
+                            val targetFile = File("${buildFile.absolutePath}${File.separator}$resValue")
                             if (targetFile.exists()){
                                 targetFile.deleteRecursively()
                             }
@@ -94,8 +94,8 @@ abstract class ExportTask : DefaultTask() {
             for (srcDir in res.srcDirs) {
                 if (srcDir.exists()){
                     for (resValue in resValues) {
-                        val targetFile = File("${buildFile.absolutePath}/$resValue")
-                        val file = File("${srcDir.absolutePath}/$resValue")
+                        val targetFile = File("${buildFile.absolutePath}${File.separator}$resValue")
+                        val file = File("${srcDir.absolutePath}${File.separator}$resValue")
                         if (file.exists()){
                             file.copyRecursively(targetFile,true)
                         }
@@ -109,7 +109,7 @@ abstract class ExportTask : DefaultTask() {
     }
 
     private fun searchResFileAndCopy(curProject: Project){
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}"
+        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}".replace('/',File.separatorChar)
         val libraryExtension = project.extensions.getByName("android") as LibraryExtension
         val variantNames = libraryExtension.sourceSets.names
 
@@ -146,8 +146,8 @@ abstract class ExportTask : DefaultTask() {
                             val collection = curProject.files(dirs).asFileTree.filter { it.name.startsWith(resValue.fileName) }
 
                             for (file in collection.files) {
-                                val copyPath = "${file.parentFile.name}/${file.name}"
-                                val targetFile = File("${buildFile.absolutePath}/$copyPath")
+                                val copyPath = "${file.parentFile.name}${File.separator}${file.name}"
+                                val targetFile = File("${buildFile.absolutePath}${File.separator}$copyPath")
                                 file.copyTo(targetFile,true)
                                 IncrementalRecordUtils.recordResFile(moduleKey,copyPath)
                                 if (resValue.dir == "color"){
@@ -167,7 +167,7 @@ abstract class ExportTask : DefaultTask() {
                                     val nodeName: String = element.name
                                     val name: String = element.attribute("name").value
                                     if (name == resValue.fileName && nodeName != "item"){
-                                        val targetFile = File("${buildFile.absolutePath}/${file.parentFile.name}",file.name)
+                                        val targetFile = File("${buildFile.absolutePath}${File.separator}${file.parentFile.name}",file.name)
                                         if (!targetFile.exists()){
                                             targetFile.parentFile?.mkdirs()
                                             targetFile.createNewFile()
@@ -199,8 +199,8 @@ abstract class ExportTask : DefaultTask() {
 
     private fun searchApiFileAndCopy(curProject: Project){
         val variantName = variant.name
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.pathName}"
-        val genFile = curProject.file("${curProject.buildDir}/generated/ksp/${variantName}").listFiles()
+        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.pathName}".replace('/',File.separatorChar)
+        val genFile = curProject.file("${curProject.buildDir}${File.separator}generated${File.separator}ksp${File.separator}${variantName}").listFiles()
         val collection = curProject.files(genFile).asFileTree.filter { it.name.endsWith(".api") }
 
         val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
@@ -219,7 +219,7 @@ abstract class ExportTask : DefaultTask() {
             }
 
             for (packageName in recordPackageSet) {
-                val packageFile = File(buildFile.absolutePath +"/"+ packageName.replace(".","/"))
+                val packageFile = File(buildFile.absolutePath + File.separator + packageName.replace(".",File.separator))
                 packageFile.deleteRecursively()
             }
         }
@@ -228,7 +228,9 @@ abstract class ExportTask : DefaultTask() {
             val packageName = getPackageName(file)
             packageName?.let {
                 IncrementalRecordUtils.recordCodeFile(moduleKey,it)
-                val packagePath = buildFile.absolutePath +"/"+ it.replace(".","/")
+                val packagePath = buildFile.absolutePath + File.separator + it.replace(".",
+                    File.separator
+                )
                 val targetFile = File(packagePath,file.name.replace(".api",""))
                 file.copyTo(targetFile,true)
             }

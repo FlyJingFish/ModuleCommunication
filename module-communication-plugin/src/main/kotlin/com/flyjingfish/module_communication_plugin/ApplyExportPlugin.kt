@@ -8,6 +8,7 @@ import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
+import java.io.File
 
 class ApplyExportPlugin: Plugin<Project> {
     companion object{
@@ -55,8 +56,9 @@ class ApplyExportPlugin: Plugin<Project> {
             if (moduleName.isNotEmpty()){
                 variantList.add(variant)
                 for ((index,exposeAsset) in communicationConfig.exposeAssets.withIndex()) {
-                    if (exposeAsset.substring(0,1) == "/"){
-                        communicationConfig.exposeAssets[index] = exposeAsset.substring(1)
+                    if (exposeAsset.substring(0,1) == "/"||exposeAsset.substring(0,1) == "\\"){
+                        communicationConfig.exposeAssets[index] = exposeAsset.substring(1).replace('/',
+                            File.separatorChar)
                     }
                 }
                 val variantName = variant.name

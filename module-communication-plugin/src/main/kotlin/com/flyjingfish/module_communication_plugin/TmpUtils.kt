@@ -56,7 +56,7 @@ object TmpUtils {
 
     fun initTmp(project: Project, variant: Variant){
         val dir = project.projectDir
-        val codePath = "build/${LibVersion.buildDir}/${variant.name}"
+        val codePath = "build/${LibVersion.buildDir}/${variant.name}".replace("/", File.separator)
         val buildFile = File(dir, codePath)
         buildConfigCacheFile = File(buildFile.absolutePath, "tmp.json")
         if (temporaryDirMkdirs()){
