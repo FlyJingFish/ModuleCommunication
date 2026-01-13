@@ -1,6 +1,5 @@
 package com.flyjingfish.module_communication_plugin
 
-import com.android.build.api.variant.Variant
 import com.android.build.gradle.internal.coverage.JacocoReportTask
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -54,9 +53,9 @@ object TmpUtils {
     }
 
 
-    fun initTmp(project: Project, variant: Variant){
+    fun initTmp(project: Project, variantName: String){
         val dir = project.projectDir
-        val codePath = "build/${LibVersion.buildDir}/${variant.name}".replace("/", File.separator)
+        val codePath = "build/${LibVersion.buildDir}/${variantName}".replace("/", File.separator)
         val buildFile = File(dir, codePath)
         buildConfigCacheFile = File(buildFile.absolutePath, "tmp.json")
         if (temporaryDirMkdirs()){

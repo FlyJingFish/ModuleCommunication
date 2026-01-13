@@ -15,3 +15,5 @@
 local.properties
 build/
 .idea
+# 所有包含 bin 文件夹的目录，Cursor 会生成很多 bin 文件夹，这里排除掉
+**/bin/

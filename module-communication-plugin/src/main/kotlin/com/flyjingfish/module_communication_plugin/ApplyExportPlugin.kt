@@ -64,28 +64,28 @@ class ApplyExportPlugin: Plugin<Project> {
                 val variantName = variant.name
                 val variantNameCapitalized = variantName.capitalized()
                 project.tasks.register("generateCommunicationCode$variantNameCapitalized", ExportTask::class.java) {
-                    it.variant = variant
+                    it.variantName = variant.name
                     it.communicationConfig = communicationConfig
                     it.exportModuleName = moduleName
                     it.copyType = ExportTask.CopyType.COPY_CODE
                 }.dependsOn("ksp${variantNameCapitalized}Kotlin")
 
                 project.tasks.register("generateCommunicationRes$variantNameCapitalized", ExportTask::class.java) {
-                    it.variant = variant
+                    it.variantName = variant.name
                     it.communicationConfig = communicationConfig
                     it.exportModuleName = moduleName
                     it.copyType = ExportTask.CopyType.COPY_RES
                 }
 
                 project.tasks.register("generateCommunicationAssets$variantNameCapitalized", ExportTask::class.java) {
-                    it.variant = variant
+                    it.variantName = variant.name
                     it.communicationConfig = communicationConfig
                     it.exportModuleName = moduleName
                     it.copyType = ExportTask.CopyType.COPY_ASSETS
                 }
 
                 project.tasks.register("generateCommunicationAll$variantNameCapitalized", ExportTask::class.java) {
-                    it.variant = variant
+                    it.variantName = variant.name
                     it.communicationConfig = communicationConfig
                     it.exportModuleName = moduleName
                     it.copyType = ExportTask.CopyType.ALL

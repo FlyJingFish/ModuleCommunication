@@ -1,6 +1,5 @@
 package com.flyjingfish.module_communication_plugin
 
-import com.android.build.api.variant.Variant
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -18,7 +17,7 @@ abstract class ExportTask : DefaultTask() {
     }
 
     @get:Input
-    abstract var variant: Variant
+    abstract var variantName: String
     @get:Input
     abstract var communicationConfig: CommunicationConfig
     @get:Input
@@ -32,7 +31,7 @@ abstract class ExportTask : DefaultTask() {
 
     @TaskAction
     fun taskAction() {
-        TmpUtils.initTmp(project.project(":${exportModuleName}".replace("\"","")),variant)
+        TmpUtils.initTmp(project.project(":${exportModuleName}".replace("\"","")),variantName)
         when(copyType){
             CopyType.COPY_RES ->{
                 searchResFileAndCopy(project)
@@ -53,7 +52,7 @@ abstract class ExportTask : DefaultTask() {
     }
 
     private fun searchAssetsFileAndCopy(curProject: Project){
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.assetsName}".replace('/', File.separatorChar)
+        val codePath = "/${LibVersion.buildDir}/${variantName}/${LibVersion.assetsName}".replace('/', File.separatorChar)
         val libraryExtension = project.extensions.getByName("android") as LibraryExtension
         val variantNames = libraryExtension.sourceSets.names
 
@@ -109,7 +108,7 @@ abstract class ExportTask : DefaultTask() {
     }
 
     private fun searchResFileAndCopy(curProject: Project){
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}".replace('/',File.separatorChar)
+        val codePath = "/${LibVersion.buildDir}/${variantName}/${LibVersion.resName}".replace('/',File.separatorChar)
         val libraryExtension = project.extensions.getByName("android") as LibraryExtension
         val variantNames = libraryExtension.sourceSets.names
 
@@ -198,8 +197,7 @@ abstract class ExportTask : DefaultTask() {
     }
 
     private fun searchApiFileAndCopy(curProject: Project){
-        val variantName = variant.name
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.pathName}".replace('/',File.separatorChar)
+        val codePath = "/${LibVersion.buildDir}/${variantName}/${LibVersion.pathName}".replace('/',File.separatorChar)
         val genFile = curProject.file("${curProject.buildDir}${File.separator}generated${File.separator}ksp${File.separator}${variantName}").listFiles()
         val collection = curProject.files(genFile).asFileTree.filter { it.name.endsWith(".api") }
 
