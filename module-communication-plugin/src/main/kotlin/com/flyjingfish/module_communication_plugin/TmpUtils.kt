@@ -53,10 +53,9 @@ object TmpUtils {
     }
 
 
-    fun initTmp(project: Project, variantName: String){
-        val dir = project.projectDir
+    fun initTmp(projectDir: File, variantName: String){
         val codePath = "build/${LibVersion.buildDir}/${variantName}".replace("/", File.separator)
-        val buildFile = File(dir, codePath)
+        val buildFile = File(projectDir, codePath)
         buildConfigCacheFile = File(buildFile.absolutePath, "tmp.json")
         if (temporaryDirMkdirs()){
             val bean :IncrementalRecord? = optFromJsonString(readAsString(buildConfigCacheFile.absolutePath),IncrementalRecord::class.java)

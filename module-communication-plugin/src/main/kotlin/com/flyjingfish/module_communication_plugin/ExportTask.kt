@@ -23,6 +23,10 @@ abstract class ExportTask : DefaultTask() {
     @get:Input
     abstract var exportModuleName: String
     @get:Input
+    abstract var exportProjectDir: String
+    @get:Input
+    abstract var sourceSetNames: List<String>
+    @get:Input
     abstract var copyType: CopyType
 
     enum class CopyType{
@@ -31,7 +35,8 @@ abstract class ExportTask : DefaultTask() {
 
     @TaskAction
     fun taskAction() {
-        TmpUtils.initTmp(project.project(":${exportModuleName}".replace("\"","")),variantName)
+        val exportProjectDirFile = File(exportProjectDir)
+        TmpUtils.initTmp(exportProjectDirFile, variantName)
         when(copyType){
             CopyType.COPY_RES ->{
                 searchResFileAndCopy(project)
@@ -53,11 +58,11 @@ abstract class ExportTask : DefaultTask() {
 
     private fun searchAssetsFileAndCopy(curProject: Project){
         val codePath = "/${LibVersion.buildDir}/${variantName}/${LibVersion.assetsName}".replace('/', File.separatorChar)
-        val libraryExtension = project.extensions.getByName("android") as LibraryExtension
-        val variantNames = libraryExtension.sourceSets.names
+        // Use sourceSetNames from @Input instead of accessing extension at execution time
+        val variantNames = sourceSetNames
 
         val moduleKey = curProject.buildDir.absolutePath
-        val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
+        val dir = File(exportProjectDir)
         val path = "build$codePath"
         val buildFile = File(dir, path)
 
@@ -67,8 +72,11 @@ abstract class ExportTask : DefaultTask() {
         }
         if (resValuesDel.isNotEmpty()){
             for (name in variantNames) {
-                val assets = libraryExtension.sourceSets.getByName(name).assets
-                for (srcDir in assets.srcDirs) {
+                // Read sourceSets from file system instead of extension
+                val sourceSetDir = File(curProject.projectDir, "src${File.separator}$name")
+                val assetsDir = File(sourceSetDir, "assets")
+                val srcDirs = if (assetsDir.exists()) listOf(assetsDir) else emptyList()
+                for (srcDir in srcDirs) {
                     if (srcDir.exists()){
                         for (resValue in resValuesDel) {
                             val targetFile = File("${buildFile.absolutePath}${File.separator}$resValue")
@@ -89,8 +97,11 @@ abstract class ExportTask : DefaultTask() {
             return
         }
         for (name in variantNames) {
-            val res = libraryExtension.sourceSets.getByName(name).assets
-            for (srcDir in res.srcDirs) {
+            // Read sourceSets from file system instead of extension
+            val sourceSetDir = File(curProject.projectDir, "src${File.separator}$name")
+            val assetsDir = File(sourceSetDir, "assets")
+            val srcDirs = if (assetsDir.exists()) listOf(assetsDir) else emptyList()
+            for (srcDir in srcDirs) {
                 if (srcDir.exists()){
                     for (resValue in resValues) {
                         val targetFile = File("${buildFile.absolutePath}${File.separator}$resValue")
@@ -109,11 +120,11 @@ abstract class ExportTask : DefaultTask() {
 
     private fun searchResFileAndCopy(curProject: Project){
         val codePath = "/${LibVersion.buildDir}/${variantName}/${LibVersion.resName}".replace('/',File.separatorChar)
-        val libraryExtension = project.extensions.getByName("android") as LibraryExtension
-        val variantNames = libraryExtension.sourceSets.names
+        // Use sourceSetNames from @Input instead of accessing extension at execution time
+        val variantNames = sourceSetNames
 
         val moduleKey = curProject.buildDir.absolutePath
-        val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
+        val dir = File(exportProjectDir)
         val path = "build$codePath"
         val buildFile = File(dir, path)
 
@@ -132,8 +143,11 @@ abstract class ExportTask : DefaultTask() {
             return
         }
         for (name in variantNames) {
-            val res = libraryExtension.sourceSets.getByName(name).res
-            for (srcDir in res.srcDirs) {
+            // Read sourceSets from file system instead of extension
+            val sourceSetDir = File(curProject.projectDir, "src${File.separator}$name")
+            val resDir = File(sourceSetDir, "res")
+            val srcDirs = if (resDir.exists()) listOf(resDir) else emptyList()
+            for (srcDir in srcDirs) {
                 if (srcDir.exists()){
                     val genFile = srcDir.listFiles() ?: continue
                     for (resValue in resValues) {
@@ -201,7 +215,7 @@ abstract class ExportTask : DefaultTask() {
         val genFile = curProject.file("${curProject.buildDir}${File.separator}generated${File.separator}ksp${File.separator}${variantName}").listFiles()
         val collection = curProject.files(genFile).asFileTree.filter { it.name.endsWith(".api") }
 
-        val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
+        val dir = File(exportProjectDir)
         val path = "build$codePath"
         val buildFile = File(dir, path)
 

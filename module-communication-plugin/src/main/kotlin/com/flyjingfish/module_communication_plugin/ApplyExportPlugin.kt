@@ -3,6 +3,7 @@ package com.flyjingfish.module_communication_plugin
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
@@ -63,10 +64,24 @@ class ApplyExportPlugin: Plugin<Project> {
                 }
                 val variantName = variant.name
                 val variantNameCapitalized = variantName.capitalized()
+                // Resolve export project directory and sourceSets at configuration time for Configuration Cache compatibility
+                val modulePath = moduleName.replace("\"", "").trim()
+                val normalizedPath = if (modulePath.startsWith(":")) modulePath else ":$modulePath"
+                val exportProject = project.rootProject.findProject(normalizedPath)
+                    ?: throw IllegalStateException("Project with path '$normalizedPath' could not be found at configuration time. Please check the exportModuleName configuration.")
+                val exportProjectDir = exportProject.projectDir.absolutePath
+                
+                // Get sourceSets at configuration time
+                val libraryExtension = project.extensions.findByType(LibraryExtension::class.java)
+                    ?: throw IllegalStateException("Android LibraryExtension not found in project ${project.name}. Make sure the Android library plugin is applied.")
+                val sourceSetNames = libraryExtension.sourceSets.names.toList()
+                
                 project.tasks.register("generateCommunicationCode$variantNameCapitalized", ExportTask::class.java) {
                     it.variantName = variant.name
                     it.communicationConfig = communicationConfig
                     it.exportModuleName = moduleName
+                    it.exportProjectDir = exportProjectDir
+                    it.sourceSetNames = sourceSetNames
                     it.copyType = ExportTask.CopyType.COPY_CODE
                 }.dependsOn("ksp${variantNameCapitalized}Kotlin")
 
@@ -74,6 +89,8 @@ class ApplyExportPlugin: Plugin<Project> {
                     it.variantName = variant.name
                     it.communicationConfig = communicationConfig
                     it.exportModuleName = moduleName
+                    it.exportProjectDir = exportProjectDir
+                    it.sourceSetNames = sourceSetNames
                     it.copyType = ExportTask.CopyType.COPY_RES
                 }
 
@@ -81,6 +98,8 @@ class ApplyExportPlugin: Plugin<Project> {
                     it.variantName = variant.name
                     it.communicationConfig = communicationConfig
                     it.exportModuleName = moduleName
+                    it.exportProjectDir = exportProjectDir
+                    it.sourceSetNames = sourceSetNames
                     it.copyType = ExportTask.CopyType.COPY_ASSETS
                 }
 
@@ -88,6 +107,8 @@ class ApplyExportPlugin: Plugin<Project> {
                     it.variantName = variant.name
                     it.communicationConfig = communicationConfig
                     it.exportModuleName = moduleName
+                    it.exportProjectDir = exportProjectDir
+                    it.sourceSetNames = sourceSetNames
                     it.copyType = ExportTask.CopyType.ALL
                 }.dependsOn("ksp${variantNameCapitalized}Kotlin")
             }else{
