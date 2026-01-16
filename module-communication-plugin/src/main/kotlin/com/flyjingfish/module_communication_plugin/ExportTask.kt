@@ -1,9 +1,6 @@
 package com.flyjingfish.module_communication_plugin
 
-import com.android.build.api.variant.Variant
-import com.android.build.gradle.LibraryExtension
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import java.io.BufferedReader
@@ -16,13 +13,14 @@ abstract class ExportTask : DefaultTask() {
     init {
         group = "communication"
     }
-
     @get:Input
-    abstract var variant: Variant
+    abstract var runtimeProject :RuntimeProject
+    @get:Input
+    abstract var variantName: String
     @get:Input
     abstract var communicationConfig: CommunicationConfig
     @get:Input
-    abstract var exportModuleName: String
+    abstract var communicationProjectDir: String
     @get:Input
     abstract var copyType: CopyType
 
@@ -32,33 +30,31 @@ abstract class ExportTask : DefaultTask() {
 
     @TaskAction
     fun taskAction() {
-        TmpUtils.initTmp(project.project(":${exportModuleName}".replace("\"","")),variant)
+        TmpUtils.initTmp(communicationProjectDir,variantName)
         when(copyType){
             CopyType.COPY_RES ->{
-                searchResFileAndCopy(project)
+                searchResFileAndCopy(runtimeProject)
             }
             CopyType.COPY_CODE ->{
-                searchApiFileAndCopy(project)
+                searchApiFileAndCopy(runtimeProject)
             }
             CopyType.COPY_ASSETS ->{
-                searchAssetsFileAndCopy(project)
+                searchAssetsFileAndCopy(runtimeProject)
             }
             else -> {
-                searchApiFileAndCopy(project)
-                searchResFileAndCopy(project)
-                searchAssetsFileAndCopy(project)
+                searchApiFileAndCopy(runtimeProject)
+                searchResFileAndCopy(runtimeProject)
+                searchAssetsFileAndCopy(runtimeProject)
             }
         }
         TmpUtils.exportTmp()
     }
 
-    private fun searchAssetsFileAndCopy(curProject: Project){
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.assetsName}".replace('/', File.separatorChar)
-        val libraryExtension = project.extensions.getByName("android") as LibraryExtension
-        val variantNames = libraryExtension.sourceSets.names
+    private fun searchAssetsFileAndCopy(curProject: RuntimeProject){
+        val codePath = "/${LibVersion.buildDir}/${variantName}/${LibVersion.assetsName}".replace('/', File.separatorChar)
+        val variantNames = curProject.variantNames
 
-        val moduleKey = curProject.buildDir.absolutePath
-        val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
+        val dir = communicationProjectDir
         val path = "build$codePath"
         val buildFile = File(dir, path)
 
@@ -68,8 +64,9 @@ abstract class ExportTask : DefaultTask() {
         }
         if (resValuesDel.isNotEmpty()){
             for (name in variantNames) {
-                val assets = libraryExtension.sourceSets.getByName(name).assets
-                for (srcDir in assets.srcDirs) {
+                val assetsStr = curProject.assets[name]?:continue
+                val assets = assetsStr.map { File(it) }
+                for (srcDir in assets) {
                     if (srcDir.exists()){
                         for (resValue in resValuesDel) {
                             val targetFile = File("${buildFile.absolutePath}${File.separator}$resValue")
@@ -90,8 +87,9 @@ abstract class ExportTask : DefaultTask() {
             return
         }
         for (name in variantNames) {
-            val res = libraryExtension.sourceSets.getByName(name).assets
-            for (srcDir in res.srcDirs) {
+            val assetsStr = curProject.assets[name]?:continue
+            val assets = assetsStr.map { File(it) }
+            for (srcDir in assets) {
                 if (srcDir.exists()){
                     for (resValue in resValues) {
                         val targetFile = File("${buildFile.absolutePath}${File.separator}$resValue")
@@ -108,13 +106,12 @@ abstract class ExportTask : DefaultTask() {
         IncrementalRecordUtils.recordExposeAssets(communicationConfig.exposeAssets)
     }
 
-    private fun searchResFileAndCopy(curProject: Project){
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.resName}".replace('/',File.separatorChar)
-        val libraryExtension = project.extensions.getByName("android") as LibraryExtension
-        val variantNames = libraryExtension.sourceSets.names
+    private fun searchResFileAndCopy(curProject: RuntimeProject){
+        val codePath = "/${LibVersion.buildDir}/${variantName}/${LibVersion.resName}".replace('/',File.separatorChar)
+        val variantNames = curProject.variantNames
 
         val moduleKey = curProject.buildDir.absolutePath
-        val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
+        val dir = communicationProjectDir
         val path = "build$codePath"
         val buildFile = File(dir, path)
 
@@ -133,8 +130,9 @@ abstract class ExportTask : DefaultTask() {
             return
         }
         for (name in variantNames) {
-            val res = libraryExtension.sourceSets.getByName(name).res
-            for (srcDir in res.srcDirs) {
+            val resStr = curProject.res[name]?:continue
+            val res = resStr.map { File(it) }
+            for (srcDir in res) {
                 if (srcDir.exists()){
                     val genFile = srcDir.listFiles() ?: continue
                     for (resValue in resValues) {
@@ -143,9 +141,17 @@ abstract class ExportTask : DefaultTask() {
                             val dirs = genFile.filter {
                                 it.name.startsWith(resValue.dir)
                             }
-                            val collection = curProject.files(dirs).asFileTree.filter { it.name.startsWith(resValue.fileName) }
-
-                            for (file in collection.files) {
+                            val collection = dirs
+                                .asSequence()
+                                .filter { it.exists() }
+                                .flatMap { file ->
+                                    when {
+                                        file.isDirectory -> file.walkTopDown()
+                                        file.isFile -> sequenceOf(file)
+                                        else -> emptySequence()
+                                    }
+                                }.filter { it.name.startsWith(resValue.fileName) }
+                            for (file in collection) {
                                 val copyPath = "${file.parentFile.name}${File.separator}${file.name}"
                                 val targetFile = File("${buildFile.absolutePath}${File.separator}$copyPath")
                                 file.copyTo(targetFile,true)
@@ -159,9 +165,17 @@ abstract class ExportTask : DefaultTask() {
                             val dirs = genFile.filter {
                                 it.name.startsWith("values")
                             }
-                            val collection = curProject.files(dirs).asFileTree.filter { it.name.endsWith(".xml") }
-
-                            for (file in collection.files) {
+                            val collection = dirs
+                                .asSequence()
+                                .filter { it.exists() }
+                                .flatMap { file ->
+                                    when {
+                                        file.isDirectory -> file.walkTopDown()
+                                        file.isFile -> sequenceOf(file)
+                                        else -> emptySequence()
+                                    }
+                                }.filter { it.name.endsWith(".xml") }
+                            for (file in collection) {
                                 val elements = Dom4jData.getXmlFileElements(file) ?: continue
                                 for (element in elements) {
                                     val nodeName: String = element.name
@@ -197,13 +211,21 @@ abstract class ExportTask : DefaultTask() {
         }
     }
 
-    private fun searchApiFileAndCopy(curProject: Project){
-        val variantName = variant.name
-        val codePath = "/${LibVersion.buildDir}/${variant.name}/${LibVersion.pathName}".replace('/',File.separatorChar)
-        val genFile = curProject.file("${curProject.buildDir}${File.separator}generated${File.separator}ksp${File.separator}${variantName}").listFiles()
-        val collection = curProject.files(genFile).asFileTree.filter { it.name.endsWith(".api") }
+    private fun searchApiFileAndCopy(curProject: RuntimeProject){
+        val codePath = "/${LibVersion.buildDir}/${variantName}/${LibVersion.pathName}".replace('/',File.separatorChar)
+        val genFile = File("${curProject.buildDir}${File.separator}generated${File.separator}ksp${File.separator}${variantName}").listFiles()?: return
+        val collection = genFile
+            .asSequence()
+            .filter { it.exists() }
+            .flatMap { file ->
+                when {
+                    file.isDirectory -> file.walkTopDown()
+                    file.isFile -> sequenceOf(file)
+                    else -> emptySequence()
+                }
+            }.filter { it.name.endsWith(".api") }
 
-        val dir = project.project(":${exportModuleName}".replace("\"","")).projectDir
+        val dir = communicationProjectDir
         val path = "build$codePath"
         val buildFile = File(dir, path)
 
@@ -211,7 +233,7 @@ abstract class ExportTask : DefaultTask() {
         val isClear = IncrementalRecordUtils.clearCodeFile(moduleKey,buildFile)
         if (isClear){
             val recordPackageSet = mutableSetOf<String>()
-            for (file in collection.files) {
+            for (file in collection) {
                 val packageName = getPackageName(file)
                 packageName?.let {
                     recordPackageSet.add(it)
@@ -224,7 +246,7 @@ abstract class ExportTask : DefaultTask() {
             }
         }
 
-        for (file in collection.files) {
+        for (file in collection) {
             val packageName = getPackageName(file)
             packageName?.let {
                 IncrementalRecordUtils.recordCodeFile(moduleKey,it)

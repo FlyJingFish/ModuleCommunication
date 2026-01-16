@@ -3,6 +3,7 @@ package com.flyjingfish.module_communication_plugin
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
@@ -63,31 +64,50 @@ class ApplyExportPlugin: Plugin<Project> {
                 }
                 val variantName = variant.name
                 val variantNameCapitalized = variantName.capitalized()
+                val runtimeProject = RuntimeProject.get(project)
+
+                val normalizedPath = moduleName
+                    .removeSurrounding("\"")
+                    .trim()
+                    .let { if (it.startsWith(":")) it else ":$it" }
+
+                val exportProject = requireNotNull(project.rootProject.findProject(normalizedPath)) {
+                    "Project with path '$normalizedPath' could not be found at configuration time. " +
+                            "Please check the exportModuleName configuration."
+                }
+
+                val exportProjectDir = exportProject.projectDir.absolutePath
+
+
                 project.tasks.register("generateCommunicationCode$variantNameCapitalized", ExportTask::class.java) {
-                    it.variant = variant
+                    it.runtimeProject = runtimeProject
+                    it.variantName = variant.name
                     it.communicationConfig = communicationConfig
-                    it.exportModuleName = moduleName
+                    it.communicationProjectDir = exportProjectDir
                     it.copyType = ExportTask.CopyType.COPY_CODE
                 }.dependsOn("ksp${variantNameCapitalized}Kotlin")
 
                 project.tasks.register("generateCommunicationRes$variantNameCapitalized", ExportTask::class.java) {
-                    it.variant = variant
+                    it.runtimeProject = runtimeProject
+                    it.variantName = variant.name
                     it.communicationConfig = communicationConfig
-                    it.exportModuleName = moduleName
+                    it.communicationProjectDir = exportProjectDir
                     it.copyType = ExportTask.CopyType.COPY_RES
                 }
 
                 project.tasks.register("generateCommunicationAssets$variantNameCapitalized", ExportTask::class.java) {
-                    it.variant = variant
+                    it.runtimeProject = runtimeProject
+                    it.variantName = variant.name
                     it.communicationConfig = communicationConfig
-                    it.exportModuleName = moduleName
+                    it.communicationProjectDir = exportProjectDir
                     it.copyType = ExportTask.CopyType.COPY_ASSETS
                 }
 
                 project.tasks.register("generateCommunicationAll$variantNameCapitalized", ExportTask::class.java) {
-                    it.variant = variant
+                    it.runtimeProject = runtimeProject
+                    it.variantName = variant.name
                     it.communicationConfig = communicationConfig
-                    it.exportModuleName = moduleName
+                    it.communicationProjectDir = exportProjectDir
                     it.copyType = ExportTask.CopyType.ALL
                 }.dependsOn("ksp${variantNameCapitalized}Kotlin")
             }else{
