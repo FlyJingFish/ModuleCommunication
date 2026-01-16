@@ -1,18 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     dependencies {
-        classpath("io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:${rootProject.properties["TestVersion"]}")
+        classpath("io.github.flyjingfish:modulecommunication-plugin:${rootProject.properties["TestVersion"]}")
 //        classpath("io.github.FlyJingFish.AndroidAop:android-aop-plugin:2.0.8")
     }
 }
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application") version "7.4.1" apply false
-    id("com.android.library") version "7.4.1" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.10" apply false
-    id("org.jetbrains.kotlin.jvm") version "1.8.10" apply false
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
-    id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
+    id("com.android.application") version "8.2.2" apply false
+    id("com.android.library") version "8.2.2" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.23" apply false
+    id("org.jetbrains.kotlin.jvm") version "1.9.23" apply false
+    id("com.vanniktech.maven.publish") version "0.33.0"
+    id("com.google.devtools.ksp") version "1.9.23-1.0.20" apply false
     alias(libs.plugins.androidAop.plugin)
 }
 //apply(plugin = "android.aop")
@@ -102,30 +102,20 @@ fun updateLib(readme :String,oldVersionName :String,newVersionName :String) {
 fun updateREADME(readme :String,oldVersionName :String,newVersionName :String) {
     val configFile = File(readme)
     val exportText = configFile.readText()
-    var text = exportText.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:$oldVersionName",
-        "io.github.FlyJingFish.ModuleCommunication:module-communication-plugin:$newVersionName"
+    var text = exportText.replace("io.github.flyjingfish:modulecommunication-plugin:$oldVersionName",
+        "io.github.flyjingfish:modulecommunication-plugin:$newVersionName"
     )
-    text = text.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:$oldVersionName",
-        "io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:$newVersionName"
+    text = text.replace("io.github.flyjingfish:modulecommunication-annotation:$oldVersionName",
+        "io.github.flyjingfish:modulecommunication-annotation:$newVersionName"
     )
-    text = text.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:$oldVersionName",
-        "io.github.FlyJingFish.ModuleCommunication:module-communication-intercept:$newVersionName"
+    text = text.replace("io.github.flyjingfish:modulecommunication-intercept:$oldVersionName",
+        "io.github.flyjingfish:modulecommunication-intercept:$newVersionName"
     )
-    text = text.replace("io.github.FlyJingFish.ModuleCommunication:module-communication-route:$oldVersionName",
-        "io.github.FlyJingFish.ModuleCommunication:module-communication-route:$newVersionName"
+    text = text.replace("io.github.flyjingfish:modulecommunication-route:$oldVersionName",
+        "io.github.flyjingfish:modulecommunication-route:$newVersionName"
     )
     configFile.writeText(text)
 }
 val appVersionName = getAppVName()
 group = properties["PROJ_GROUP"].toString()
 version = appVersionName
-nexusPublishing {
-    repositories {
-        create("Nexus") {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username.set(properties["ossrhUsername"].toString())
-            password.set(properties["ossrhPassword"].toString())
-        }
-    }
-}

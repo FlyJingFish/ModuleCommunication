@@ -3,9 +3,9 @@ ksp = "1.8.10-1.0.9"
 kotlinpoet_version = "1.15.3"
 gradle_version = "7.4.1"
 dom4j_version = "1.6.1"
-org-jetbrains-kotlin-jvm = "1.8.10"
-agp = "7.4.1"
-org-jetbrains-kotlin-android = "1.8.10"
+org-jetbrains-kotlin-jvm = "1.9.23"
+agp = "8.2.2"
+org-jetbrains-kotlin-android = "1.9.23"
 core-ktx = "1.6.1"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
@@ -15,7 +15,7 @@ material = "1.6.0"
 gson = "2.10.1"
 sdkVersion = "31"
 minSdkVersion = "21"
-androidAopVersion = "2.1.4"
+androidAopVersion = "2.7.4"
 [libraries]
 kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet_version" }
 ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "ksp" }
@@ -29,12 +29,12 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 symbol-processing-gradle-plugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp" }
-androidAop-core = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-core" ,version.ref = "androidAopVersion" }
-androidAop-annotation = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-annotation" ,version.ref = "androidAopVersion" }
-androidAop-ksp = { group = "io.github.FlyJingFish.AndroidAop", name = "android-aop-ksp" ,version.ref = "androidAopVersion" }
+androidAop-core = { group = "io.github.flyjingfish", name = "androidaop-core" ,version.ref = "androidAopVersion" }
+androidAop-annotation = { group = "io.github.flyjingfish", name = "androidaop-annotation" ,version.ref = "androidAopVersion" }
+androidAop-ksp = { group = "io.github.flyjingfish", name = "androidaop-apt" ,version.ref = "androidAopVersion" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect" ,version.ref = "org-jetbrains-kotlin-android" }
 [plugins]
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "org-jetbrains-kotlin-jvm" }
 com-android-library = { id = "com.android.library", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
-androidAop-plugin = { id = "io.github.FlyJingFish.AndroidAop.android-aop", version.ref = "androidAopVersion" }
+androidAop-plugin = { id = "io.github.flyjingfish.androidaop", version.ref = "androidAopVersion" }
