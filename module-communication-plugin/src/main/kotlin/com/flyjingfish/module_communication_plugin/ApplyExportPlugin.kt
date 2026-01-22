@@ -3,7 +3,6 @@ package com.flyjingfish.module_communication_plugin
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
@@ -42,8 +41,8 @@ class ApplyExportPlugin: Plugin<Project> {
         if (!hasKsp){
             project.plugins.apply("com.google.devtools.ksp")
         }
-        project.dependencies.add("implementation","io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:${LibVersion.version}")
-        project.dependencies.add("ksp","io.github.FlyJingFish.ModuleCommunication:module-communication-ksp:${LibVersion.version}")
+        project.dependencies.add("implementation","io.github.flyjingfish:modulecommunication-annotation:${LibVersion.version}")
+        project.dependencies.add("ksp","io.github.flyjingfish:modulecommunication-ksp:${LibVersion.version}")
 
         applyCommonDependencies(project)
 

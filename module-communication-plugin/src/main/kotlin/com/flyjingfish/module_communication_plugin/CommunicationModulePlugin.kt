@@ -14,7 +14,7 @@ class CommunicationModulePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         variantList.clear()
         val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
-        project.dependencies.add("implementation","io.github.FlyJingFish.ModuleCommunication:module-communication-annotation:${LibVersion.version}")
+        project.dependencies.add("implementation","io.github.flyjingfish:modulecommunication-annotation:${LibVersion.version}")
         val libraryExtension = project.extensions.getByName("android") as LibraryExtension
         androidComponents.onVariants { variant ->
             variantList.add(variant)

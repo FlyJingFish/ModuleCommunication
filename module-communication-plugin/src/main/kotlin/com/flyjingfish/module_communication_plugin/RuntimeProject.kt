@@ -4,7 +4,6 @@ import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import java.io.File
 import java.io.Serializable
-import java.nio.charset.Charset
 
 data class RuntimeProject(
     val projectDir: File,

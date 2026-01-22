@@ -51,7 +51,7 @@
 buildscript {
     dependencies {
         //必须项 👇
-        classpath 'io.github.flyjingfish:modulecommunication-plugin:1.3.0'
+        classpath 'io.github.flyjingfish:modulecommunication-plugin:1.3.1'
     }
 }
 ```
@@ -163,7 +163,7 @@ b、如果 ```lib-login``` 也没有引入过 ```communication.export``` 插件�
 ```gradle
 dependencies {
     //必须项 👇（可以直接放在公共 module）
-    implementation 'io.github.flyjingfish:modulecommunication-annotation:1.3.0'
+    implementation 'io.github.flyjingfish:modulecommunication-annotation:1.3.1'
 }
 ```
 
@@ -279,9 +279,9 @@ communicationConfig{
 ```gradle
 dependencies {
     //使用拦截器（不是必须的）
-    implementation 'io.github.flyjingfish:modulecommunication-intercept:1.3.0'
+    implementation 'io.github.flyjingfish:modulecommunication-intercept:1.3.1'
     //使用路径的方式跳转才需要 （不是必须的）
-    implementation 'io.github.flyjingfish:modulecommunication-route:1.3.0'
+    implementation 'io.github.flyjingfish:modulecommunication-route:1.3.1'
 }
 ```
 
