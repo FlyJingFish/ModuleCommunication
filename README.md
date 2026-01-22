@@ -1,6 +1,6 @@
 # ModuleCommunication
 
-[![Maven central](https://img.shields.io/maven-central/v/io.github.FlyJingFish.ModuleCommunication/module-communication-annotation)](https://central.sonatype.com/search?q=io.github.FlyJingFish.ModuleCommunication)
+[![Maven central](https://img.shields.io/maven-central/v/io.github.flyjingfish/modulecommunication-annotation)](https://central.sonatype.com/artifact/io.github.flyjingfish/modulecommunication-annotation)
 [![GitHub stars](https://img.shields.io/github/stars/FlyJingFish/ModuleCommunication.svg)](https://github.com/FlyJingFish/ModuleCommunication/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/FlyJingFish/ModuleCommunication.svg)](https://github.com/FlyJingFish/ModuleCommunication/network/members)
 [![GitHub issues](https://img.shields.io/github/issues/FlyJingFish/ModuleCommunication.svg)](https://github.com/FlyJingFish/ModuleCommunication/issues)
